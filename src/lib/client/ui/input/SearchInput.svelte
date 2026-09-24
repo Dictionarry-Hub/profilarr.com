@@ -233,8 +233,7 @@
 		{/if}
 		{#if mode !== 'inline'}
 			<!-- The trigger shows the current query, so a filter set in the popup stays visible. -->
-			<div
-				class="{triggerDisplay} min-w-0 flex-1 {boxClass} {radius} hover:bg-surface-hover">
+			<div class="{triggerDisplay} min-w-0 flex-1 {boxClass} {radius} hover:bg-surface-hover">
 				<Search
 					size={14}
 					class="shrink-0 text-text-muted" />

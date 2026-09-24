@@ -165,8 +165,7 @@ export function parseToken<T>(token: string, fields: FilterField<T>[]): RulePars
 }
 
 export type CommitResult =
-	| { ok: true; rules: FilterRule[]; remaining: string }
-	| { ok: false; error: string };
+	{ ok: true; rules: FilterRule[]; remaining: string } | { ok: false; error: string };
 
 /**
  * Commits the field rules in the input and leaves plain words behind as text.

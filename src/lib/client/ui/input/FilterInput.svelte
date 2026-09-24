@@ -50,6 +50,7 @@
 		fields,
 		rules = $bindable([]),
 		value = $bindable(''),
+		// eslint-disable-next-line no-useless-assignment -- write-only bindable, read by the parent
 		active = $bindable([]),
 		debounce = 150,
 		placeholder = 'Filter...',

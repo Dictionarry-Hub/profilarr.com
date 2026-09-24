@@ -88,6 +88,10 @@
 			upgradeUntil: entry.upgradeUntil && profile.upgradesAllowed
 		}))
 	);
+	function qualityKind(row: QualityRow): string {
+		return row.group ? 'group' : 'quality';
+	}
+
 	const qualityColumns: Column<QualityRow>[] = [
 		{ key: 'position', header: 'Position', width: 'w-24' },
 		{ key: 'name', header: 'Name' },
@@ -291,7 +295,9 @@
 						class="group/row flex items-center justify-between gap-3 rounded-control px-3 py-2 transition-colors hover:bg-surface-hover">
 						<span class="min-w-0">
 							<span
-								class="block truncate text-sm font-medium {row.slug ? linkName : ''}">
+								class="block truncate text-sm font-medium {row.slug
+									? linkName
+									: ''}">
 								{row.name}
 							</span>
 							{#if row.tags.length > 0}
@@ -389,7 +395,7 @@
 			class="font-medium"
 			class:text-text-muted={!row.enabled}>{row.name}</span>
 		{#if row.upgradeUntil}
-			<Tooltip text="Upgrades until this {row.group ? 'group' : 'quality'} is reached.">
+			<Tooltip text="Upgrades until this {qualityKind(row)} is reached.">
 				<Badge
 					icon={TrendingUp}
 					iconColor="text-success-icon"><span class="sr-only">Upgrade until</span></Badge>
@@ -397,7 +403,7 @@
 		{/if}
 		{#if !row.enabled}
 			<Tooltip
-				text="This {row.group ? 'group' : 'quality'} is disabled, so its releases are not downloaded.">
+				text="This {qualityKind(row)} is disabled, so its releases are not downloaded.">
 				<Badge
 					icon={CircleSlash}
 					iconColor="text-danger-icon"><span class="sr-only">Disabled</span></Badge>
@@ -552,9 +558,9 @@
 			{#if enabledQualities.length === 1}
 				<div class="mt-4">
 					<Callout type="info">
-						Only one {onlyEnabledKind} is enabled, so quality order does not separate
-						releases here. This usually means custom formats are used to separate
-						qualities instead; see
+						Only one {onlyEnabledKind} is enabled, so quality order does not separate releases
+						here. This usually means custom formats are used to separate qualities instead;
+						see
 						<a
 							href="#scoring"
 							class="text-link-text hover:underline">Scoring</a
