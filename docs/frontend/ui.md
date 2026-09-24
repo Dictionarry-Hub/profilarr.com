@@ -156,6 +156,7 @@ pages and the API reference.
 | `cell`     | `Snippet<[row: T, column: Column<T>]>` | no                 |              |
 | `card`     | `Snippet<[row: T]>`                    | yes                |              |
 | `expanded` | `Snippet<[row: T]>`                    | no                 |              |
+| `footer`   | `Snippet`                              | no                 |              |
 
 `columns`, `href`, `cell`, and `expanded` pass through to `Table` (`Column` comes from
 `src/lib/client/ui/table/types.ts`: key, header, icon, width, align, sortable). `icon` is an
@@ -166,7 +167,8 @@ expand, so a card should carry its own summary of whatever the expanded row show
 expanded content and no `href` toggles open on click anywhere in the row, not only on its chevron.
 Interactive table rows and linked cards carry `group/row`, so cell content can react to hovering the
 whole row (`group-hover/row:underline`); quality profile scoring uses it to underline custom format
-names like links.
+names like links. `footer` renders as a full-width last row of the table (a `tfoot` cell) and below
+the card grid, for controls such as the quality list's show-disabled button.
 
 ```svelte
 <script lang="ts">

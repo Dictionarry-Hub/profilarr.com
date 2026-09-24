@@ -5,6 +5,9 @@
 		ArrowDown10,
 		ArrowDownAZ,
 		ArrowDownZA,
+		ChevronDown,
+		ChevronUp,
+		CircleSlash,
 		CopyPlus,
 		Earth,
 		PanelBottomOpen,
@@ -16,6 +19,7 @@
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Badge from '$lib/client/ui/badge/Badge.svelte';
 	import Button from '$lib/client/ui/button/Button.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import Dropdown from '$lib/client/ui/dropdown/Dropdown.svelte';
 	import DropdownHeader from '$lib/client/ui/dropdown/DropdownHeader.svelte';
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
@@ -37,6 +41,42 @@
 	const minScore = $derived(profile.minimumCustomFormatScore.toLocaleString('en-US'));
 	const upgradeUntilScore = $derived(profile.upgradeUntilScore.toLocaleString('en-US'));
 	const scoreIncrement = $derived(profile.upgradeScoreIncrement.toLocaleString('en-US'));
+
+	interface QualityRow {
+		position: number;
+		name: string;
+		items: string[];
+		group: boolean;
+		enabled: boolean;
+		upgradeUntil: boolean;
+		[key: string]: unknown;
+	}
+
+	// A single quality is its own only item. Disabled entries after the last
+	// enabled one are hidden until asked for; ones above it always show.
+	const qualityRows = $derived(
+		profile.qualities.map((entry, i): QualityRow => ({
+			position: i + 1,
+			name: entry.group?.name ?? entry.quality ?? '',
+			items: entry.group?.members ?? (entry.quality ? [entry.quality] : []),
+			group: entry.group !== null,
+			enabled: entry.enabled,
+			upgradeUntil: entry.upgradeUntil && profile.upgradesAllowed
+		}))
+	);
+	const qualityColumns: Column<QualityRow>[] = [
+		{ key: 'position', header: 'Position', width: 'w-24' },
+		{ key: 'name', header: 'Name' },
+		{ key: 'items', header: 'Items' }
+	];
+	const lastEnabled = $derived(qualityRows.findLastIndex((row) => row.enabled));
+	const enabledQualities = $derived(qualityRows.filter((row) => row.enabled));
+	const onlyEnabledKind = $derived(enabledQualities[0]?.group ? 'quality group' : 'quality');
+	const hiddenQualities = $derived(qualityRows.length - lastEnabled - 1);
+	let showDisabledQualities = $state(false);
+	const visibleQualities = $derived(
+		showDisabledQualities ? qualityRows : qualityRows.slice(0, lastEnabled + 1)
+	);
 
 	interface ScoreRow extends ProfileCustomFormatScore {
 		radarrScore: number | null;
@@ -311,6 +351,53 @@
 	</div>
 {/snippet}
 
+{#snippet qualityItems(row: QualityRow)}
+	<div class="flex flex-wrap gap-1">
+		{#each row.items as item (item)}
+			<Badge size="sm">{item}</Badge>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet qualityToggle()}
+	<div class="flex justify-center">
+		<Button
+			type="button"
+			variant="ghost"
+			size="sm"
+			icon={showDisabledQualities ? ChevronUp : ChevronDown}
+			class="text-text-muted"
+			aria-expanded={showDisabledQualities}
+			onclick={() => (showDisabledQualities = !showDisabledQualities)}>
+			{showDisabledQualities ? 'Hide' : 'Show'}
+			{hiddenQualities} disabled {hiddenQualities === 1 ? 'quality' : 'qualities'}
+		</Button>
+	</div>
+{/snippet}
+
+{#snippet qualityName(row: QualityRow)}
+	<span class="inline-flex items-center gap-2">
+		<span
+			class="font-medium"
+			class:text-text-muted={!row.enabled}>{row.name}</span>
+		{#if row.upgradeUntil}
+			<Tooltip text="Upgrades until this {row.group ? 'group' : 'quality'} is reached.">
+				<Badge
+					icon={TrendingUp}
+					iconColor="text-success-icon"><span class="sr-only">Upgrade until</span></Badge>
+			</Tooltip>
+		{/if}
+		{#if !row.enabled}
+			<Tooltip
+				text="This {row.group ? 'group' : 'quality'} is disabled, so its releases are not downloaded.">
+				<Badge
+					icon={CircleSlash}
+					iconColor="text-danger-icon"><span class="sr-only">Disabled</span></Badge>
+			</Tooltip>
+		{/if}
+	</span>
+{/snippet}
+
 <SEO
 	title={profile.name}
 	description={profile.description ?? undefined} />
@@ -432,6 +519,49 @@
 			This profile does not score any custom formats.
 		</p>
 	{/if}
+</section>
+
+<section aria-labelledby="qualities">
+	<h2
+		id="qualities"
+		class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
+		Qualities
+	</h2>
+	{#if enabledQualities.length === 1}
+		<div class="mt-4">
+			<Callout type="info">
+				Only one {onlyEnabledKind} is enabled, so quality order does not separate releases
+				here. This usually means custom formats are used to separate qualities instead; see
+				<a
+					href="#scoring"
+					class="text-link-text hover:underline">Scoring</a
+				>.
+			</Callout>
+		</div>
+	{/if}
+	<div class="mt-4">
+		<AdaptiveList
+			data={visibleQualities}
+			columns={qualityColumns}
+			footer={hiddenQualities > 0 ? qualityToggle : undefined}>
+			{#snippet cell(row, column)}
+				{#if column.key === 'position'}
+					<span class="text-sm text-text-muted tabular-nums">{row.position}</span>
+				{:else if column.key === 'name'}
+					{@render qualityName(row)}
+				{:else if column.key === 'items'}
+					{@render qualityItems(row)}
+				{/if}
+			{/snippet}
+			{#snippet card(row)}
+				<p class="flex items-center gap-2 text-sm">
+					<span class="text-text-muted tabular-nums">{row.position}.</span>
+					{@render qualityName(row)}
+				</p>
+				<div class="mt-2">{@render qualityItems(row)}</div>
+			{/snippet}
+		</AdaptiveList>
+	</div>
 </section>
 
 <h2

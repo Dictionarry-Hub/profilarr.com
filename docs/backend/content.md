@@ -33,6 +33,16 @@ custom format with its effective scores, with a `FilterInput` over `name`, `tag`
 score highest first by default, with missing scores last). This list is HTML only until quality
 profiles get a Markdown mirror.
 
+After Scoring, quality profile pages show a Qualities table in preference order, top first, as
+stored: position, name, and items (a group's members, or the quality itself for a single quality).
+Disabled entries have muted names and a disabled icon badge, and when upgrades are allowed the
+upgrade-until entry carries an icon badge whose tooltip says upgrades continue until that quality or
+group is reached. When only one entry is enabled, as in the Dictionarry profiles, an info callout
+explains that custom formats usually separate qualities instead, linking to Scoring. Disabled
+entries after the last enabled one are hidden behind a toggle, while disabled entries above it stay
+in place. Only the entries a profile lists are shown, even though Profilarr fills in unlisted
+qualities as disabled when it syncs.
+
 Every detail page ends with a History section: one row per commit that touched the entity (commit
 link, change title, date), expandable to the field-level diff and links to the other entities
 changed in the same commit. History is compiled from the PCD repo's op log by the pipeline (see

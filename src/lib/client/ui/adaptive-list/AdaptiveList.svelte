@@ -14,9 +14,20 @@
 		cell?: Snippet<[row: T, column: Column<T>]>;
 		card: Snippet<[row: T]>;
 		expanded?: Snippet<[row: T]>;
+		/** Full-width last row of the table, and below the cards. */
+		footer?: Snippet;
 	}
 
-	let { data, columns = [], view = 'adaptive', href, cell, card, expanded }: Props = $props();
+	let {
+		data,
+		columns = [],
+		view = 'adaptive',
+		href,
+		cell,
+		card,
+		expanded,
+		footer
+	}: Props = $props();
 </script>
 
 {#if view === 'adaptive'}
@@ -27,7 +38,8 @@
 			{columns}
 			{href}
 			{cell}
-			{expanded} />
+			{expanded}
+			{footer} />
 	</div>
 {/if}
 
@@ -52,3 +64,9 @@
 		{/if}
 	{/each}
 </div>
+
+{#if footer}
+	<div class="mt-3 {view === 'adaptive' ? 'lg:hidden' : ''}">
+		{@render footer()}
+	</div>
+{/if}

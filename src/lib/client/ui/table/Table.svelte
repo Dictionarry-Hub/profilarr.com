@@ -14,9 +14,11 @@
 		href?: (row: T) => string | undefined;
 		cell?: Snippet<[row: T, column: Column<T>]>;
 		expanded?: Snippet<[row: T]>;
+		/** Full-width last row, e.g. a show more button. */
+		footer?: Snippet;
 	}
 
-	let { data, columns, href, cell, expanded }: Props = $props();
+	let { data, columns, href, cell, expanded, footer }: Props = $props();
 
 	let sortKey = $state<string | null>(null);
 	let sortDir = $state<'asc' | 'desc'>('asc');
@@ -205,5 +207,16 @@
 				{/if}
 			{/each}
 		</tbody>
+		{#if footer}
+			<tfoot>
+				<tr class="border-t border-border-subtle">
+					<td
+						colspan={colCount}
+						class="p-1.5">
+						{@render footer()}
+					</td>
+				</tr>
+			</tfoot>
+		{/if}
 	</table>
 </div>
