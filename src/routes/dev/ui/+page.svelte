@@ -439,7 +439,8 @@
 					{#if groupedOpen}
 						<Dropdown
 							triggerEl={groupedTriggerEl}
-							minWidth="14rem">
+							minWidth="14rem"
+							ondismiss={() => (groupedOpen = false)}>
 							<DropdownHeader label="Actions" />
 							<DropdownItem
 								label="Save"

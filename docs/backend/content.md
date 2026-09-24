@@ -28,9 +28,10 @@ directly below the page header instead and omit it when the source entity has no
 Custom format pages also list the quality profiles that score them. References resolve shared and
 application-specific scoring into effective Radarr and Sonarr scores and appear in both HTML and
 Markdown representations. Quality profile pages resolve their own scoring the same way and list each
-custom format with its effective scores, sorted by the higher of the two, with a `FilterInput` over
-`name`, `tag`, `radarr`, and `sonarr`. This list is HTML only until quality profiles get a Markdown
-mirror.
+custom format with its effective scores, with a `FilterInput` over `name`, `tag`, `radarr`, and
+`sonarr` and a sort menu beside it (Radarr score, Sonarr score, or name, either direction; Radarr
+score highest first by default, with missing scores last). This list is HTML only until quality
+profiles get a Markdown mirror.
 
 Every detail page ends with a History section: one row per commit that touched the entity (commit
 link, change title, date), expandable to the field-level diff and links to the other entities

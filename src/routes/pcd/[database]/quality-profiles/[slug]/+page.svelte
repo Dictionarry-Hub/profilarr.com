@@ -1,14 +1,29 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { CopyPlus, Earth, PanelBottomOpen, Tags, TrendingUp } from '@lucide/svelte';
+	import {
+		ArrowDown01,
+		ArrowDown10,
+		ArrowDownAZ,
+		ArrowDownZA,
+		CopyPlus,
+		Earth,
+		PanelBottomOpen,
+		Tags,
+		TrendingUp
+	} from '@lucide/svelte';
+	import type { Component } from 'svelte';
 	import EntityHistory from '$lib/client/pcd/EntityHistory.svelte';
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Badge from '$lib/client/ui/badge/Badge.svelte';
+	import Button from '$lib/client/ui/button/Button.svelte';
+	import Dropdown from '$lib/client/ui/dropdown/Dropdown.svelte';
+	import DropdownHeader from '$lib/client/ui/dropdown/DropdownHeader.svelte';
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
 	import FilterInput from '$lib/client/ui/input/FilterInput.svelte';
 	import type { Column } from '$lib/client/ui/table/types';
 	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
+	import { clickOutside } from '$lib/client/utils/clickOutside';
 	import { matchesAll, type FilterField, type FilterRule } from '$lib/shared/utils/filter/rules';
 	import {
 		formatProfileScore,
@@ -36,19 +51,17 @@
 		}))
 	);
 	const scoreColumns: Column<ScoreRow>[] = [
-		{ key: 'name', header: 'Custom Format', sortable: true },
+		{ key: 'name', header: 'Custom Format' },
 		{ key: 'tags', header: 'Tags' },
 		{
 			key: 'radarrScore',
 			header: 'Score',
-			icon: { src: '/radarr.svg', alt: 'Radarr' },
-			sortable: true
+			icon: { src: '/radarr.svg', alt: 'Radarr' }
 		},
 		{
 			key: 'sonarrScore',
 			header: 'Score',
-			icon: { src: '/sonarr.svg', alt: 'Sonarr' },
-			sortable: true
+			icon: { src: '/sonarr.svg', alt: 'Sonarr' }
 		}
 	];
 
@@ -75,6 +88,77 @@
 	const filteredRows = $derived(
 		scoreRows.filter((row) => matchesAll(row, activeRules, scoreFields))
 	);
+
+	type SortKey = 'radarr' | 'sonarr' | 'name';
+	type SortDirection = 'asc' | 'desc';
+
+	interface SortOption {
+		key: SortKey;
+		label: string;
+		directions: {
+			direction: SortDirection;
+			label: string;
+			icon: Component<{ size?: number; class?: string }>;
+		}[];
+	}
+
+	const scoreDirections: SortOption['directions'] = [
+		{ direction: 'desc', label: 'Highest first', icon: ArrowDown10 },
+		{ direction: 'asc', label: 'Lowest first', icon: ArrowDown01 }
+	];
+
+	const sortOptions: SortOption[] = [
+		{ key: 'radarr', label: 'Radarr Score', directions: scoreDirections },
+		{ key: 'sonarr', label: 'Sonarr Score', directions: scoreDirections },
+		{
+			key: 'name',
+			label: 'Name',
+			directions: [
+				{ direction: 'asc', label: 'A to Z', icon: ArrowDownAZ },
+				{ direction: 'desc', label: 'Z to A', icon: ArrowDownZA }
+			]
+		}
+	];
+
+	let sort = $state<{ key: SortKey; direction: SortDirection }>({
+		key: 'radarr',
+		direction: 'desc'
+	});
+	let sortOpen = $state(false);
+	let sortEl: HTMLDivElement | undefined = $state();
+
+	const sortOption = $derived(sortOptions.find((option) => option.key === sort.key)!);
+	const sortDirection = $derived(
+		sortOption.directions.find((entry) => entry.direction === sort.direction)!
+	);
+
+	const sortSummary = $derived(
+		`Sorted by ${sortOption.label}, ${sortDirection.label.toLowerCase()}`
+	);
+
+	// Rows missing the sorted score go last in either direction; ties fall back to name.
+	const sortedRows = $derived.by((): ScoreRow[] => {
+		const { key, direction } = sort;
+		const factor = direction === 'asc' ? 1 : -1;
+		return [...filteredRows].sort((a, b) => {
+			if (key === 'name') return a.name.localeCompare(b.name) * factor;
+			const av = key === 'radarr' ? a.radarrScore : a.sonarrScore;
+			const bv = key === 'radarr' ? b.radarrScore : b.sonarrScore;
+			if (av === bv) return a.name.localeCompare(b.name);
+			if (av === null) return 1;
+			if (bv === null) return -1;
+			return (av - bv) * factor;
+		});
+	});
+
+	function isSorted(key: SortKey, direction: SortDirection): boolean {
+		return sort.key === key && sort.direction === direction;
+	}
+
+	function selectSort(key: SortKey, direction: SortDirection) {
+		sort = { key, direction };
+		sortOpen = false;
+	}
 
 	function scoreHref(row: ScoreRow): string | undefined {
 		return row.slug ? `/pcd/${page.params.database}/custom-formats/${row.slug}` : undefined;
@@ -151,7 +235,7 @@
 {#snippet scoreResults()}
 	{#if filteredRows.length > 0}
 		<ul class="p-2">
-			{#each filteredRows as row (row.name)}
+			{#each sortedRows as row (row.name)}
 				<li>
 					<a
 						href={scoreHref(row)}
@@ -174,6 +258,53 @@
 			No custom formats match these filters.
 		</p>
 	{/if}
+{/snippet}
+
+{#snippet sortMenu()}
+	<div
+		bind:this={sortEl}
+		class="ml-2 flex"
+		use:clickOutside={() => (sortOpen = false)}>
+		<Button
+			type="button"
+			icon={sortDirection.icon}
+			aria-label={sortSummary}
+			aria-expanded={sortOpen}
+			class="size-8.5 shrink-0"
+			onclick={() => (sortOpen = !sortOpen)} />
+		{#if sortOpen}
+			<Dropdown
+				triggerEl={sortEl}
+				position="right"
+				placement="bottom"
+				ondismiss={() => (sortOpen = false)}>
+				<DropdownHeader label={sortSummary} />
+				{#each sortOptions as option (option.key)}
+					<div
+						class="flex items-center justify-between gap-4 border-b border-border-subtle px-3 py-1.5 text-sm last:border-b-0">
+						<span>{option.label}</span>
+						<div class="flex gap-1">
+							{#each option.directions as entry (entry.direction)}
+								<Tooltip text={entry.label}>
+									<Button
+										type="button"
+										size="sm"
+										icon={entry.icon}
+										iconClass={isSorted(option.key, entry.direction)
+											? 'text-accent-text'
+											: 'text-text-muted'}
+										aria-label="{option.label}, {entry.label.toLowerCase()}"
+										aria-pressed={isSorted(option.key, entry.direction)}
+										class="size-7"
+										onclick={() => selectSort(option.key, entry.direction)} />
+								</Tooltip>
+							{/each}
+						</div>
+					</div>
+				{/each}
+			</Dropdown>
+		{/if}
+	</div>
 {/snippet}
 
 <SEO
@@ -258,12 +389,13 @@
 			placeholder="Filter by name or tag, or type a rule like radarr.gt.0"
 			mode="responsive"
 			shortcut="/"
+			append={sortMenu}
 			results={scoreResults}
 			class="mt-4" />
 		{#if filteredRows.length > 0}
 			<div class="mt-4">
 				<AdaptiveList
-					data={filteredRows}
+					data={sortedRows}
 					columns={scoreColumns}
 					href={scoreHref}>
 					{#snippet cell(row, column)}

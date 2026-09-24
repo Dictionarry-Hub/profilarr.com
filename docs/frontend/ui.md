@@ -44,11 +44,14 @@ Renders `<title>`, Open Graph, Twitter Card, description, and theme-color meta t
 `src/lib/client/ui/button/Button.svelte`
 
 Standard button component. Extends `HTMLButtonAttributes` so all native button props are supported.
+`rounded` squares one side so the button can sit flush against another control, such as a
+`SearchInput` with the opposite `rounded` value.
 
 | Prop           | Type                                                        | Required | Default     |
 | -------------- | ----------------------------------------------------------- | -------- | ----------- |
 | `variant`      | `'accent' \| 'default' \| 'danger' \| 'outline' \| 'ghost'` | no       | `'default'` |
 | `size`         | `'sm' \| 'md' \| 'lg'`                                      | no       | `'md'`      |
+| `rounded`      | `'all' \| 'left' \| 'right'`                                | no       | `'all'`     |
 | `icon`         | `Component`                                                 | no       |             |
 | `iconPosition` | `'left' \| 'right'`                                         | no       | `'left'`    |
 | `iconClass`    | `string`                                                    | no       | `''`        |
@@ -398,6 +401,9 @@ keyboard navigation over their results.
 `leading` renders inside the field before the text, in the inline field, the popup trigger, and the
 popup (used for filter badges; the field wraps onto more lines as it fills). `error` shows a message
 under the field, and incrementing `shakes` shakes the visible field, skipped under reduced motion.
+`append` renders once, flush against the right of the field in every mode and stretched to its
+height; pair it with `rounded="left"` for a flush join, or give it a margin to sit apart (the
+quality profile sort button does).
 
 `shortcut` is a single key, optionally prefixed with `mod+` for Ctrl or Cmd (`'/'`, `'mod+k'`).
 Pressing it focuses the inline field when visible and opens the popup otherwise; a `mod+` shortcut
@@ -416,6 +422,7 @@ Inputs use a 16px font on small screens so iOS does not zoom on focus.
 | `rounded`          | `'all' \| 'left' \| 'right'`          | no       | `'all'`       |
 | `open`             | `boolean` (bindable)                  | no       | `false`       |
 | `leading`          | `Snippet` (inside the field)          | no       |               |
+| `append`           | `Snippet` (right of the field)        | no       |               |
 | `error`            | `string`                              | no       |               |
 | `shakes`           | `number`                              | no       | `0`           |
 | `clearable`        | `boolean`                             | no       | `false`       |
@@ -423,7 +430,7 @@ Inputs use a 16px font on small screens so iOS does not zoom on focus.
 | `results`          | `Snippet` (popup body)                | no       |               |
 | `footer`           | `Snippet` (under the popup body)      | no       |               |
 | `onkeydown`        | `(event: KeyboardEvent) => void`      | no       |               |
-| `class`            | `string` (applied to the field)       | no       | `''`          |
+| `class`            | `string` (applied to the wrapper)     | no       | `''`          |
 
 ```svelte
 <SearchInput
@@ -474,6 +481,7 @@ Consumers filter rows with the bindable `active` (committed rules plus debounced
 | `shortcut`    | `string`                              | no       |               |
 | `rounded`     | `'all' \| 'left' \| 'right'`          | no       | `'all'`       |
 | `results`     | `Snippet` (popup body)                | no       |               |
+| `append`      | `Snippet` (passed to `SearchInput`)   | no       |               |
 | `class`       | `string` (applied to the wrapper)     | no       | `''`          |
 
 ### Nav
@@ -570,6 +578,11 @@ and diffs); the panel is hidden below 1280px for the prose column and below 1600
 where the pair would not fit beside the sidebar.
 
 ### Dropdown
+
+`Dropdown` (`src/lib/client/ui/dropdown/Dropdown.svelte`) is the portaled, fixed-position menu panel
+under every dropdown. Its position is computed once when it opens, so it requires an `ondismiss`
+callback and fires it on any scroll outside the panel or any zoom (window resize, or visual viewport
+resize for pinch zoom); consumers close the menu there.
 
 #### `DropdownSelect`
 

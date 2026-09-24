@@ -107,7 +107,8 @@
 		{#if menuOpen}
 			<Dropdown
 				{triggerEl}
-				width={triggerEl ? `${triggerEl.offsetWidth}px` : undefined}>
+				width={triggerEl ? `${triggerEl.offsetWidth}px` : undefined}
+				ondismiss={() => (menuOpen = false)}>
 				{#if header}
 					<DropdownHeader label={header} />
 				{/if}

@@ -141,7 +141,8 @@
 		<Dropdown
 			{triggerEl}
 			position="right"
-			minWidth="15rem">
+			minWidth="15rem"
+			ondismiss={() => (open = false)}>
 			{#if viewSwitcher}
 				<DropdownHeader label="Page view" />
 				<DropdownItem

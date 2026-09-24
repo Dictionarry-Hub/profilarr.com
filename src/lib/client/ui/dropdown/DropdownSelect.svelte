@@ -98,7 +98,8 @@
 				{placement}
 				{minWidth}
 				{triggerEl}
-				onplacementchange={(p) => (resolvedPlacement = p)}>
+				onplacementchange={(p) => (resolvedPlacement = p)}
+				ondismiss={() => (open = false)}>
 				{#if header}
 					<DropdownHeader label={header} />
 				{/if}

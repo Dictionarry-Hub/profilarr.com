@@ -9,6 +9,8 @@
 		triggerEl?: HTMLElement;
 		children: Snippet;
 		onplacementchange?: (placement: 'bottom' | 'top') => void;
+		/** Close the dropdown: fired on page scroll or zoom, since it does not follow its trigger. */
+		ondismiss: () => void;
 	}
 
 	let {
@@ -18,7 +20,8 @@
 		placement = 'auto',
 		triggerEl,
 		children,
-		onplacementchange
+		onplacementchange,
+		ondismiss
 	}: Props = $props();
 
 	const GAP = 8;
@@ -60,6 +63,26 @@
 		if (triggerEl && dropdownEl) {
 			updatePosition();
 		}
+	});
+
+	// Position is computed once, so any scroll outside the dropdown or any
+	// zoom (window resize, or visual viewport resize for pinch) dismisses it.
+	$effect(() => {
+		function onScroll(event: Event) {
+			if (event.target instanceof Node && dropdownEl?.contains(event.target)) return;
+			ondismiss();
+		}
+		function onResize() {
+			ondismiss();
+		}
+		window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+		window.addEventListener('resize', onResize);
+		window.visualViewport?.addEventListener('resize', onResize);
+		return () => {
+			window.removeEventListener('scroll', onScroll, { capture: true });
+			window.removeEventListener('resize', onResize);
+			window.visualViewport?.removeEventListener('resize', onResize);
+		};
 	});
 
 	function portal(node: HTMLElement) {

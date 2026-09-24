@@ -5,6 +5,8 @@
 	interface Props extends HTMLButtonAttributes {
 		variant?: 'accent' | 'default' | 'danger' | 'ghost' | 'outline';
 		size?: 'sm' | 'md' | 'lg';
+		/** Squares one side so the button can sit flush against another control. */
+		rounded?: 'all' | 'left' | 'right';
 		icon?: Component<{ size?: number; class?: string }>;
 		iconPosition?: 'left' | 'right';
 		iconClass?: string;
@@ -14,6 +16,7 @@
 	let {
 		variant = 'default',
 		size = 'md',
+		rounded = 'all',
 		icon,
 		iconPosition = 'left',
 		iconClass = '',
@@ -49,16 +52,34 @@
 	const isIconOnly = $derived(icon && !children);
 
 	const sizeClasses: Record<NonNullable<Props['size']>, string> = {
-		sm: 'gap-1.5 px-2 py-0.5 text-sm rounded-control-sm',
-		md: 'gap-2 px-3 py-1.5 text-sm rounded-control',
-		lg: 'gap-2 px-4 py-2 text-base rounded-control'
+		sm: 'gap-1.5 px-2 py-0.5 text-sm',
+		md: 'gap-2 px-3 py-1.5 text-sm',
+		lg: 'gap-2 px-4 py-2 text-base'
 	};
 
 	const iconOnlySizeClasses: Record<NonNullable<Props['size']>, string> = {
-		sm: 'p-1 text-sm rounded-control-sm',
-		md: 'p-1.5 text-sm rounded-control',
-		lg: 'p-2 text-base rounded-control'
+		sm: 'p-1 text-sm',
+		md: 'p-1.5 text-sm',
+		lg: 'p-2 text-base'
 	};
+
+	const radiusClasses: Record<
+		NonNullable<Props['size']>,
+		Record<NonNullable<Props['rounded']>, string>
+	> = {
+		sm: {
+			all: 'rounded-control-sm',
+			left: 'rounded-l-control-sm',
+			right: 'rounded-r-control-sm'
+		},
+		md: { all: 'rounded-control', left: 'rounded-l-control', right: 'rounded-r-control' },
+		lg: { all: 'rounded-control', left: 'rounded-l-control', right: 'rounded-r-control' }
+	};
+
+	const shapeClass = $derived.by(() => {
+		const padding = isIconOnly ? iconOnlySizeClasses[size!] : sizeClasses[size!];
+		return `${padding} ${radiusClasses[size!][rounded!]}`;
+	});
 
 	const iconSizes: Record<NonNullable<Props['size']>, number> = {
 		sm: 14,
@@ -70,7 +91,7 @@
 <button
 	class="inline-flex cursor-pointer items-center justify-center font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 {variantClasses[
 		variant!
-	]} {isIconOnly ? iconOnlySizeClasses[size!] : sizeClasses[size!]} {className ?? ''}"
+	]} {shapeClass} {className ?? ''}"
 	{...rest}>
 	{#if icon && iconPosition === 'left'}
 		{@const Icon = icon}

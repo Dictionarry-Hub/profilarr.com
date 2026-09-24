@@ -25,6 +25,8 @@
 		open?: boolean;
 		/** Rendered inside the field before the text, e.g. filter badges. */
 		leading?: Snippet;
+		/** Rendered flush against the right of the field; pair with rounded="left". */
+		append?: Snippet;
 		/** Message shown under the field. */
 		error?: string;
 		/** Increment to shake the visible field, e.g. to reject input. */
@@ -52,6 +54,7 @@
 		rounded = 'all',
 		open = $bindable(false),
 		leading,
+		append,
 		error,
 		shakes = 0,
 		clearable = false,
@@ -67,6 +70,11 @@
 		left: 'rounded-l-control',
 		right: 'rounded-r-control'
 	};
+
+	// Responsive mode renders both and lets the breakpoint pick one.
+	const inlineDisplay = $derived(mode === 'responsive' ? 'hidden lg:flex' : 'flex');
+	const triggerDisplay = $derived(mode === 'responsive' ? 'flex lg:hidden' : 'flex');
+	const radius = $derived(roundedClasses[rounded]);
 
 	const boxClass =
 		'flex-wrap items-center gap-2 border border-border bg-surface px-3 py-1.5 text-sm shadow-control transition-colors';
@@ -182,7 +190,10 @@
 			class="-my-1 -mr-1.5 shrink-0"
 			onclick={clear} />
 	{:else if shortcutLabel}
-		<Tooltip text="Press {shortcutLabel} to search">
+		<!-- Negative margin like the clear button, so neither changes the field height (34px) -->
+		<Tooltip
+			text="Press {shortcutLabel} to search"
+			class="-my-1">
 			<Kbd variant="outline">{shortcutLabel}</Kbd>
 		</Tooltip>
 	{/if}
@@ -198,52 +209,58 @@
 	{/if}
 {/snippet}
 
-{#if mode !== 'popup'}
-	<div class="{mode === 'responsive' ? 'hidden lg:block' : ''} {className}">
-		<div
-			bind:this={inlineBox}
-			class="flex {boxClass} {roundedClasses[rounded]}">
-			<Search
-				size={14}
-				class="shrink-0 text-text-muted" />
-			{@render leading?.()}
-			<!-- 16px+ font below sm so iOS does not zoom the page on focus -->
-			<input
-				bind:this={inlineInput}
-				bind:value
-				type="text"
-				{placeholder}
-				aria-label={label ?? placeholder}
-				class="min-w-32 flex-1 bg-transparent text-base text-text outline-none placeholder:text-text-muted sm:text-sm"
-				onkeydown={onInlineKeydown} />
-			{@render trailing()}
-		</div>
-		{@render errorMessage()}
+<div class={className}>
+	<div class="flex items-stretch">
+		{#if mode !== 'popup'}
+			<div
+				bind:this={inlineBox}
+				class="{inlineDisplay} min-w-0 flex-1 {boxClass} {radius}">
+				<Search
+					size={14}
+					class="shrink-0 text-text-muted" />
+				{@render leading?.()}
+				<!-- 16px+ font below sm so iOS does not zoom the page on focus -->
+				<input
+					bind:this={inlineInput}
+					bind:value
+					type="text"
+					{placeholder}
+					aria-label={label ?? placeholder}
+					class="min-w-32 flex-1 bg-transparent text-base text-text outline-none placeholder:text-text-muted sm:text-sm"
+					onkeydown={onInlineKeydown} />
+				{@render trailing()}
+			</div>
+		{/if}
+		{#if mode !== 'inline'}
+			<!-- The trigger shows the current query, so a filter set in the popup stays visible. -->
+			<div
+				class="{triggerDisplay} min-w-0 flex-1 {boxClass} {radius} hover:bg-surface-hover">
+				<Search
+					size={14}
+					class="shrink-0 text-text-muted" />
+				{@render leading?.()}
+				<button
+					type="button"
+					aria-haspopup="dialog"
+					class="min-w-24 flex-1 cursor-pointer truncate text-left {value
+						? 'text-text'
+						: 'text-text-muted'}"
+					onclick={() => (open = true)}>
+					{value || placeholder}
+				</button>
+				{@render trailing()}
+			</div>
+		{/if}
+		{@render append?.()}
 	</div>
-{/if}
+	{#if mode !== 'popup'}
+		<div class={mode === 'responsive' ? 'hidden lg:block' : ''}>
+			{@render errorMessage()}
+		</div>
+	{/if}
+</div>
 
 {#if mode !== 'inline'}
-	<!-- The trigger shows the current query, so a filter set in the popup stays visible. -->
-	<div
-		class="{boxClass} {roundedClasses[rounded]} hover:bg-surface-hover {mode === 'responsive'
-			? 'flex lg:hidden'
-			: 'flex'} {className}">
-		<Search
-			size={14}
-			class="shrink-0 text-text-muted" />
-		{@render leading?.()}
-		<button
-			type="button"
-			aria-haspopup="dialog"
-			class="min-w-24 flex-1 cursor-pointer truncate text-left {value
-				? 'text-text'
-				: 'text-text-muted'}"
-			onclick={() => (open = true)}>
-			{value || placeholder}
-		</button>
-		{@render trailing()}
-	</div>
-
 	<Dialog
 		bind:open
 		ariaLabel={label ?? placeholder}

@@ -41,6 +41,8 @@
 		rounded?: 'all' | 'left' | 'right';
 		/** Popup body under the suggestions, e.g. the matching rows. */
 		results?: Snippet;
+		/** Rendered flush against the right of the field; pair with rounded="left". */
+		append?: Snippet;
 		class?: string;
 	}
 
@@ -55,6 +57,7 @@
 		shortcut,
 		rounded = 'all',
 		results,
+		append,
 		class: className = ''
 	}: Props = $props();
 
@@ -87,21 +90,6 @@
 	});
 	$effect(() => {
 		active = [...rules, ...plainTextRules(settled, fields)];
-	});
-
-	// The dropdown is fixed-positioned and does not follow the field, so a
-	// scroll or zoom hides it until the next keystroke.
-	$effect(() => {
-		if (!showDropdown) return;
-		const hide = () => (dismissedAt = value);
-		window.addEventListener('scroll', hide, { capture: true, passive: true });
-		window.addEventListener('resize', hide);
-		window.visualViewport?.addEventListener('resize', hide);
-		return () => {
-			window.removeEventListener('scroll', hide, { capture: true });
-			window.removeEventListener('resize', hide);
-			window.visualViewport?.removeEventListener('resize', hide);
-		};
 	});
 
 	// A half-typed rule highlights the first suggestion so Enter completes it;
@@ -252,6 +240,7 @@
 		{shortcut}
 		{rounded}
 		leading={rules.length > 0 ? badges : undefined}
+		{append}
 		{error}
 		{shakes}
 		clearable={rules.length > 0}
@@ -265,7 +254,8 @@
 	<Dropdown
 		triggerEl={wrapperEl}
 		placement="bottom"
-		width="{wrapperWidth}px">
+		width="{wrapperWidth}px"
+		ondismiss={() => (dismissedAt = value)}>
 		{@render suggestionList()}
 		<div class="border-t border-border">
 			{@render hints()}
