@@ -5,10 +5,11 @@
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Badge from '$lib/client/ui/badge/Badge.svelte';
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
-	import SearchInput from '$lib/client/ui/input/SearchInput.svelte';
+	import FilterInput from '$lib/client/ui/input/FilterInput.svelte';
 	import type { Column } from '$lib/client/ui/table/types';
 	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
+	import { matchesAll, type FilterField, type FilterRule } from '$lib/shared/utils/filter/rules';
 	import {
 		formatProfileScore,
 		type ProfileCustomFormatScore
@@ -51,17 +52,29 @@
 		}
 	];
 
-	let query = $state('');
+	const scoreFields = $derived<FilterField<ScoreRow>[]>([
+		{
+			key: 'name',
+			label: 'Name',
+			type: 'text',
+			value: (row) => row.name,
+			suggestions: scoreRows.map((row) => row.name)
+		},
+		{
+			key: 'tag',
+			label: 'Tag',
+			type: 'list',
+			value: (row) => row.tags,
+			suggestions: [...new Set(scoreRows.flatMap((row) => row.tags))].sort()
+		},
+		{ key: 'radarr', label: 'Radarr', type: 'number', value: (row) => row.radarrScore },
+		{ key: 'sonarr', label: 'Sonarr', type: 'number', value: (row) => row.sonarrScore }
+	]);
 
-	// Every word has to match the name or a tag, so extra words narrow the list.
-	const filteredRows = $derived.by((): ScoreRow[] => {
-		const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-		if (terms.length === 0) return scoreRows;
-		return scoreRows.filter((row) => {
-			const text = [row.name, ...row.tags].join(' ').toLowerCase();
-			return terms.every((term) => text.includes(term));
-		});
-	});
+	let activeRules = $state<FilterRule[]>([]);
+	const filteredRows = $derived(
+		scoreRows.filter((row) => matchesAll(row, activeRules, scoreFields))
+	);
 
 	function scoreHref(row: ScoreRow): string | undefined {
 		return row.slug ? `/pcd/${page.params.database}/custom-formats/${row.slug}` : undefined;
@@ -158,7 +171,7 @@
 		</ul>
 	{:else}
 		<p class="px-4 py-10 text-center text-sm text-text-muted">
-			No custom formats match "{query.trim()}".
+			No custom formats match these filters.
 		</p>
 	{/if}
 {/snippet}
@@ -239,13 +252,14 @@
 		</div>
 	</div>
 	{#if scoreRows.length > 0}
-		<SearchInput
-			bind:value={query}
-			placeholder="Filter by name or tag"
+		<FilterInput
+			fields={scoreFields}
+			bind:active={activeRules}
+			placeholder="Filter by name or tag, or type a rule like radarr.gt.0"
 			mode="responsive"
 			shortcut="/"
 			results={scoreResults}
-			class="mt-4 w-full" />
+			class="mt-4" />
 		{#if filteredRows.length > 0}
 			<div class="mt-4">
 				<AdaptiveList
@@ -274,7 +288,7 @@
 			</div>
 		{:else}
 			<p class="mt-4 text-sm text-text-muted italic">
-				No custom formats match "{query.trim()}".
+				No custom formats match these filters.
 			</p>
 		{/if}
 	{:else}

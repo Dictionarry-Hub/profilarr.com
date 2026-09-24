@@ -383,16 +383,21 @@ an empty search. Mounted once in the sidebar.
 `src/lib/client/ui/input/SearchInput.svelte`
 
 Search field: search icon, placeholder, control border and shadow, and a key hint on the right with
-a tooltip naming the shortcut. A clear button replaces the hint once the field has a value.
+a tooltip naming the shortcut. A clear button replaces the hint once the field has a value, or
+always when `clearable` is set; `onclear` runs after it empties the text.
 
 `mode` decides where typing happens. `inline` is a text field; Escape clears it. `popup` is a button
 that opens the field in a `Dialog` with the `results` snippet below it and the optional `footer`
 snippet under that; the button shows the current value, so a query typed in the popup stays visible
 after it closes. `popupPlaceholder` overrides the placeholder inside the popup, where there is room
 for more detail. `responsive` is inline at `lg` and up and a popup below, matching `AdaptiveList`'s
-table and card breakpoint. The value is shared between the field and the popup, and `onkeydown` runs
-for both inputs after the built-in handling, so consumers can add keyboard navigation over their
-results.
+table and card breakpoint. The value is shared between the field and the popup. `onkeydown` runs for
+both inputs before the built-in handling; calling `preventDefault()` skips it, so consumers can add
+keyboard navigation over their results.
+
+`leading` renders inside the field before the text, in the inline field, the popup trigger, and the
+popup (used for filter badges; the field wraps onto more lines as it fills). `error` shows a message
+under the field, and incrementing `shakes` shakes the visible field, skipped under reduced motion.
 
 `shortcut` is a single key, optionally prefixed with `mod+` for Ctrl or Cmd (`'/'`, `'mod+k'`).
 Pressing it focuses the inline field when visible and opens the popup otherwise; a `mod+` shortcut
@@ -410,6 +415,11 @@ Inputs use a 16px font on small screens so iOS does not zoom on focus.
 | `shortcut`         | `string`                              | no       |               |
 | `rounded`          | `'all' \| 'left' \| 'right'`          | no       | `'all'`       |
 | `open`             | `boolean` (bindable)                  | no       | `false`       |
+| `leading`          | `Snippet` (inside the field)          | no       |               |
+| `error`            | `string`                              | no       |               |
+| `shakes`           | `number`                              | no       | `0`           |
+| `clearable`        | `boolean`                             | no       | `false`       |
+| `onclear`          | `() => void`                          | no       |               |
 | `results`          | `Snippet` (popup body)                | no       |               |
 | `footer`           | `Snippet` (under the popup body)      | no       |               |
 | `onkeydown`        | `(event: KeyboardEvent) => void`      | no       |               |
@@ -418,11 +428,53 @@ Inputs use a 16px font on small screens so iOS does not zoom on focus.
 ```svelte
 <SearchInput
 	bind:value={query}
-	placeholder="Filter by name or tag"
+	placeholder="Search..."
 	mode="responsive"
 	shortcut="/"
 	results={matches} />
 ```
+
+#### `FilterInput`
+
+`src/lib/client/ui/input/FilterInput.svelte`
+
+Rule-based filter built on `SearchInput`. Rules use dot syntax, `field.operator.value`, parsed by
+`src/lib/shared/utils/filter/rules.ts`: `name.contains."1080p"`, `tag.is.Audio`, `radarr.gt.1000`.
+Text fields take `contains` and `is`; list fields take `is` (any item) and `contains`; number fields
+take `gt`, `gte`, `lt`, `lte`, and `eq`. Quotes are needed only when a value has spaces. All rules
+AND.
+
+Rules filter only once committed: Enter turns each rule in the text into a badge in the field, and
+any invalid rule shakes the field and shows the reason. Words that do not start with a known field
+are plain words: they filter across every text and list field once typing pauses for `debounce`
+milliseconds, stay in the text when rules around them commit, and never become badges (Enter on
+plain words alone is rejected with an example rule). Clicking a badge inverts it, shown as a red
+badge; its × removes it, and Backspace on an empty field removes the last one. The clear button
+removes every rule.
+
+A suggestion list follows the text being typed: fields, then operators, then known values. Arrow
+keys move through it, Enter or Tab picks, and picking a value commits the rule. A half-typed rule
+highlights the first suggestion so Enter completes it; a complete rule highlights nothing so Enter
+commits it. Inline, suggestions open in a `Dropdown` under the field; Escape, scrolling, or zooming
+hides it until the next keystroke; in the popup they sit above the `results` snippet.
+
+Consumers filter rows with the bindable `active` (committed rules plus debounced plain words) and
+`matchesAll`. Each field declares its key, label, type, a `value` accessor, and optional
+`suggestions`.
+
+| Prop          | Type                                  | Required | Default       |
+| ------------- | ------------------------------------- | -------- | ------------- |
+| `fields`      | `FilterField<T>[]`                    | yes      |               |
+| `rules`       | `FilterRule[]` (bindable)             | no       | `[]`          |
+| `value`       | `string` (bindable)                   | no       | `''`          |
+| `active`      | `FilterRule[]` (bindable, output)     | no       | `[]`          |
+| `debounce`    | `number` (ms)                         | no       | `150`         |
+| `placeholder` | `string`                              | no       | `'Filter...'` |
+| `mode`        | `'inline' \| 'popup' \| 'responsive'` | no       | `'inline'`    |
+| `shortcut`    | `string`                              | no       |               |
+| `rounded`     | `'all' \| 'left' \| 'right'`          | no       | `'all'`       |
+| `results`     | `Snippet` (popup body)                | no       |               |
+| `class`       | `string` (applied to the wrapper)     | no       | `''`          |
 
 ### Nav
 
