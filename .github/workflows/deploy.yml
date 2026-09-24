@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+    push:
+        branches: [develop]
+    workflow_dispatch:
+    schedule:
+        # Daily at 7am Adelaide time (ACST), so PCD data changes go out without a code change.
+        - cron: '30 21 * * *'
+
+# One deploy at a time. A newer run waits rather than cancelling one mid-deploy.
+concurrency:
+    group: pages
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+env:
+    PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+    # Set the WIP_BANNER repository variable to false to hide the work-in-progress banner.
+    PUBLIC_WIP_BANNER: ${{ vars.WIP_BANNER }}
+
+jobs:
+    deploy:
+        name: Build and deploy
+        # The same code lives in Dictionarry-Hub/website, whose Pages site serves
+        # v1.dictionarry.dev. Only the profilarr.com repo deploys.
+        if: github.repository == 'Dictionarry-Hub/profilarr.com'
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - uses: actions/checkout@v7
+            - uses: pnpm/action-setup@v6
+              with:
+                  standalone: true
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm compile:api
+            # Production ships the Dictionarry database only.
+            - run: pnpm compile:pcd -- --only dictionarry
+            - run: pnpm build
+            - uses: actions/configure-pages@v6
+            - uses: actions/upload-pages-artifact@v5
+              with:
+                  path: build
+            - id: deployment
+              uses: actions/deploy-pages@v5

@@ -4,8 +4,10 @@
 	import { database } from '$lib/client/ui/database/database.svelte';
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
 
+	let { data } = $props();
+
 	onMount(() => {
-		database.init();
+		database.init(data.pcdDatabases);
 		goto(`/pcd/${database.current}/`, { replaceState: true });
 	});
 </script>

@@ -4,6 +4,7 @@ declare global {
 	interface ImportMetaEnv {
 		readonly PUBLIC_SEARCH_ELO_ENABLED?: string;
 		readonly PUBLIC_SITE_URL: string;
+		readonly PUBLIC_WIP_BANNER?: string;
 	}
 
 	interface ImportMeta {

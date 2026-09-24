@@ -18,7 +18,8 @@
 		FileText,
 		Settings,
 		Ruler,
-		Code
+		Code,
+		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
@@ -46,13 +47,19 @@
 		'dumpstarr': Flame
 	};
 
-	const databaseOptions = DATABASES.map((d) => ({
-		value: d.id,
-		label: d.name,
-		icon: databaseIcons[d.id]
-	}));
-
 	let { children, data } = $props();
+
+	// Build-time switch: set PUBLIC_WIP_BANNER=false to hide the banner.
+	const showWipBanner = import.meta.env.PUBLIC_WIP_BANNER !== 'false';
+
+	// Only databases this build compiled; production ships Dictionarry alone.
+	const databaseOptions = $derived(
+		DATABASES.filter((d) => data.pcdDatabases.includes(d.id)).map((d) => ({
+			value: d.id,
+			label: d.name,
+			icon: databaseIcons[d.id]
+		}))
+	);
 
 	let themeValue = $state(theme.current);
 	let databaseValue = $state(database.current);
@@ -107,12 +114,32 @@
 		mounted = true;
 		theme.init();
 		themeValue = theme.current;
-		database.init();
+		database.init(data.pcdDatabases);
 		databaseValue = database.current;
 	});
 </script>
 
-<div class="fixed top-0 left-0 flex h-screen w-80 flex-col bg-bg font-sans text-text">
+<!-- Work-in-progress notice while the v4 site is live at profilarr.com. Fixed to the top of
+     the viewport above the sidebar and content, which both start below it. -->
+{#if showWipBanner}
+	<div
+		role="note"
+		class="wip-banner fixed inset-x-0 top-0 z-40 flex h-(--banner-height) items-center justify-center gap-2 border-b border-border bg-bg px-6 text-sm text-text-soft">
+		<TriangleAlert
+			size={16}
+			class="shrink-0 text-warning-icon" />
+		<span class="truncate">
+			This site is still a work in progress. For the current docs, head to
+			<a
+				href="https://dictionarry.dev"
+				class="text-link-text hover:underline">dictionarry.dev</a
+			>.
+		</span>
+	</div>
+{/if}
+
+<div
+	class="fixed top-(--banner-height) left-0 flex h-[calc(100vh-var(--banner-height))] w-80 flex-col bg-bg font-sans text-text">
 	<!-- Navbar: logo and theme switcher only -->
 	<div class="flex items-center justify-between border-r border-b border-border px-6 py-4">
 		<div class="flex items-center gap-2">
@@ -304,7 +331,7 @@
 	</div>
 </div>
 
-<main class="min-h-screen bg-bg pl-80 font-sans text-text">
+<main class="min-h-screen bg-bg pt-(--banner-height) pl-80 font-sans text-text">
 	<div
 		id="top"
 		class="content-area mx-auto px-6 py-10 {wideContent
@@ -329,6 +356,17 @@
 </main>
 
 <style>
+	/* Height of the work-in-progress banner, zero when it is switched off.
+	   Anchor jumps land below it. */
+	:global(:root) {
+		--banner-height: 0px;
+		scroll-padding-top: var(--banner-height);
+	}
+
+	:global(:root:has(.wip-banner)) {
+		--banner-height: 2.25rem;
+	}
+
 	.toc-float {
 		display: none;
 		position: absolute;
@@ -339,8 +377,8 @@
 
 	.toc-sticky {
 		position: fixed;
-		top: 2rem;
-		max-height: calc(100vh - 4rem);
+		top: calc(var(--banner-height) + 2rem);
+		max-height: calc(100vh - var(--banner-height) - 4rem);
 		overflow-y: auto;
 	}
 

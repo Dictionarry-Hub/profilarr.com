@@ -25,12 +25,15 @@ function set(id: DatabaseId) {
 	localStorage.setItem(STORAGE_KEY, id);
 }
 
-function init() {
-	const stored = localStorage.getItem(STORAGE_KEY) as DatabaseId | null;
-	if (stored && isValidId(stored)) {
+// `available` is the set of databases this build compiled. A stored choice
+// outside it (e.g. from a build with more databases) falls back to the first
+// available one.
+function init(available: readonly string[]) {
+	const stored = localStorage.getItem(STORAGE_KEY);
+	if (stored && isValidId(stored) && available.includes(stored)) {
 		current = stored;
 	} else {
-		current = DEFAULT;
+		current = DATABASES.find((entry) => available.includes(entry.id))?.id ?? DEFAULT;
 	}
 }
 

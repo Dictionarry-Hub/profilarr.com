@@ -39,6 +39,18 @@ live in `tests/` at the repository root. PR titles are validated against convent
 
 ## Deployment
 
+The site is deployed from `Dictionarry-Hub/profilarr.com` to GitHub Pages at
+`https://profilarr.com`. `.github/workflows/deploy.yml` runs on every push to `develop`, on demand,
+and daily at 21:30 UTC (7am Adelaide) so PCD data changes go out without a code change. Each run
+compiles the API reference and only the Dictionarry PCD database
+(`pnpm compile:pcd -- --only dictionarry`), builds, and publishes `build/`. Runs never overlap: a
+newer run waits for the current deploy.
+
+The job only runs in that repository. `Dictionarry-Hub/website` has the same code, but its Pages
+site serves `v1.dictionarry.dev` from the `v3` branch. GitHub disables scheduled workflows in public
+repositories after 60 days without activity, so a quiet stretch can stop the daily run until it is
+re-enabled.
+
 The site is built with `pnpm build`, which runs adapter-static and outputs plain HTML, CSS, and JS
 to `build/`. Production builds require `PUBLIC_SITE_URL`; CI maps it from the `SITE_URL` GitHub
 Actions variable. Deployment workflows must use the same mapping so generated links and canonical
@@ -50,3 +62,8 @@ copying files.
 Search Elo ranking is controlled by the optional build-time `PUBLIC_SEARCH_ELO_ENABLED` variable. It
 defaults to `false`; set it to `true` to blend Elo ratings into search results. The same variable
 works in development and requires a development-server restart when changed.
+
+The work-in-progress banner at the top of every page is controlled by the optional build-time
+`PUBLIC_WIP_BANNER` variable. It shows unless the variable is `false`; the sidebar, content, and
+anchor offsets collapse to the top when it is hidden. Like the Elo switch, it needs a
+development-server restart when changed.
