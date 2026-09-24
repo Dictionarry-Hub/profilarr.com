@@ -40,7 +40,7 @@
 		{#if href?.(row)}
 			<a
 				href={href!(row)!}
-				class="block">
+				class="group/row block">
 				<Card class="h-full transition-colors hover:bg-surface-hover">
 					{@render card(row)}
 				</Card>

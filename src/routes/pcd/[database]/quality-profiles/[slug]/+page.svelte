@@ -52,7 +52,6 @@
 	);
 	const scoreColumns: Column<ScoreRow>[] = [
 		{ key: 'name', header: 'Custom Format' },
-		{ key: 'tags', header: 'Tags' },
 		{
 			key: 'radarrScore',
 			header: 'Score',
@@ -62,7 +61,8 @@
 			key: 'sonarrScore',
 			header: 'Score',
 			icon: { src: '/sonarr.svg', alt: 'Sonarr' }
-		}
+		},
+		{ key: 'tags', header: 'Tags' }
 	];
 
 	const scoreFields = $derived<FilterField<ScoreRow>[]>([
@@ -164,17 +164,20 @@
 		return row.slug ? `/pcd/${page.params.database}/custom-formats/${row.slug}` : undefined;
 	}
 
-	function scoreClass(score: number): string {
-		if (score > 0) return 'text-success-text';
-		if (score < 0) return 'text-danger-text';
-		return 'text-text-muted';
+	function scoreColor(score: number): 'success' | 'danger' | 'neutral' {
+		if (score > 0) return 'success';
+		if (score < 0) return 'danger';
+		return 'neutral';
 	}
+
+	// Row links underline the name on hover, like text links elsewhere.
+	const linkName = 'group-hover/row:text-link-text group-hover/row:underline underline-offset-2';
 </script>
 
 {#snippet scoreValue(score: number)}
-	<span class="text-sm font-medium tabular-nums {scoreClass(score)}">
-		{formatProfileScore(score)}
-	</span>
+	<Badge
+		color={scoreColor(score)}
+		class="tabular-nums">{formatProfileScore(score)}</Badge>
 {/snippet}
 
 {#snippet scoreCell(score: number | null)}
@@ -225,9 +228,7 @@
 {#snippet tagList(tags: string[])}
 	<div class="flex flex-wrap gap-1">
 		{#each tags as tag (tag)}
-			<Badge
-				size="sm"
-				pill>{tag}</Badge>
+			<Badge size="sm">{tag}</Badge>
 		{/each}
 	</div>
 {/snippet}
@@ -239,9 +240,12 @@
 				<li>
 					<a
 						href={scoreHref(row)}
-						class="flex items-center justify-between gap-3 rounded-control px-3 py-2 transition-colors hover:bg-surface-hover">
+						class="group/row flex items-center justify-between gap-3 rounded-control px-3 py-2 transition-colors hover:bg-surface-hover">
 						<span class="min-w-0">
-							<span class="block truncate text-sm font-medium">{row.name}</span>
+							<span
+								class="block truncate text-sm font-medium {row.slug ? linkName : ''}">
+								{row.name}
+							</span>
 							{#if row.tags.length > 0}
 								<span class="block truncate text-xs text-text-muted">
 									{row.tags.join(', ')}
@@ -400,7 +404,7 @@
 					href={scoreHref}>
 					{#snippet cell(row, column)}
 						{#if column.key === 'name'}
-							<span class="font-medium">{row.name}</span>
+							<span class="font-medium {row.slug ? linkName : ''}">{row.name}</span>
 						{:else if column.key === 'tags'}
 							{@render tagList(row.tags)}
 						{:else if column.key === 'radarrScore'}
@@ -410,11 +414,11 @@
 						{/if}
 					{/snippet}
 					{#snippet card(row)}
-						<p class="text-sm font-medium">{row.name}</p>
+						<p class="text-sm font-medium {row.slug ? linkName : ''}">{row.name}</p>
+						<div class="mt-2">{@render scoreList(row)}</div>
 						{#if row.tags.length > 0}
 							<div class="mt-2">{@render tagList(row.tags)}</div>
 						{/if}
-						<div class="mt-2">{@render scoreList(row)}</div>
 					{/snippet}
 				</AdaptiveList>
 			</div>

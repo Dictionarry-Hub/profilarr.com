@@ -158,7 +158,7 @@
 			{#each sorted as row, idx (idx)}
 				<tr
 					class="border-b border-border-subtle last:border-b-0 {isInteractive(row, idx)
-						? 'cursor-pointer transition-colors hover:bg-surface-hover'
+						? 'group/row cursor-pointer transition-colors hover:bg-surface-hover'
 						: ''}"
 					onclick={() => rowClick(row, idx)}>
 					{#each columns as col (col.key)}

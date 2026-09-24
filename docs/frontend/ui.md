@@ -164,6 +164,9 @@ optional `{ src, alt }` image rendered before the header text. Without `cell`, t
 a row, both the table row and the card become links. `expanded` only reaches the table: cards never
 expand, so a card should carry its own summary of whatever the expanded row shows. A row that has
 expanded content and no `href` toggles open on click anywhere in the row, not only on its chevron.
+Interactive table rows and linked cards carry `group/row`, so cell content can react to hovering the
+whole row (`group-hover/row:underline`); quality profile scoring uses it to underline custom format
+names like links.
 
 ```svelte
 <script lang="ts">
