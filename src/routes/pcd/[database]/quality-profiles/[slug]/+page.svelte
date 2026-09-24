@@ -34,23 +34,14 @@
 	{/snippet}
 </PageHeader>
 
-<!-- The rest of the profile page is not built yet. -->
-<section aria-labelledby="description">
-	<h2
-		id="description"
-		class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
-		Description
-	</h2>
-	{#if descriptionHtml}
-		<div class="prose mt-2">
-			<!-- eslint-disable-next-line svelte/no-at-html-tags -- markdown parsed at build time -->
-			{@html descriptionHtml}
-		</div>
-	{:else}
-		<p class="mt-2 text-sm text-text-muted italic">{profile.noDescriptionMessage}</p>
-	{/if}
-</section>
+{#if descriptionHtml}
+	<div class="prose *:last:mb-0">
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- markdown parsed at build time -->
+		{@html descriptionHtml}
+	</div>
+{/if}
 
+<!-- The rest of the profile page is not built yet. -->
 <section aria-labelledby="scoring">
 	<div
 		class="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-muted pb-2">
