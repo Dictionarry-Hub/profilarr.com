@@ -5,6 +5,7 @@ import type {
 	MediaSettings,
 	NamingConfig,
 	QualityDefinitionConfig,
+	QualityProfile,
 	RegularExpression
 } from '$lib/types/pcd';
 import { slugify } from '$lib/shared/utils/slug';
@@ -12,7 +13,9 @@ import { sortConditions } from '$lib/shared/utils/pcd/conditions';
 import {
 	customFormatProfileReferences,
 	formatProfileScore,
+	profileCustomFormatScores,
 	regularExpressionReferences,
+	sortProfileScores,
 	type QualityProfileReference,
 	type RegularExpressionReference
 } from '$lib/shared/utils/pcd/references';
@@ -120,6 +123,157 @@ export function customFormatToMarkdown(
 		qualityProfileReferencesSection(data.id, references),
 		historySection(history)
 	]);
+}
+
+export function qualityProfileToMarkdown(
+	data: CompiledDatabase,
+	profile: QualityProfile,
+	history: EntityHistoryItem[] = []
+): string {
+	const slug = slugify(profile.name);
+	const language = profile.languages[0]?.name;
+	const context = [
+		`A quality profile from the ${data.name} PCD database.`,
+		language ? `Language: ${language}.` : '',
+		profile.tags.length > 0 ? `Tags: ${profile.tags.join(', ')}.` : '',
+		`Web version: ${SITE_URL}/pcd/${data.id}/quality-profiles/${slug}`
+	]
+		.filter(Boolean)
+		.join(' ');
+
+	return join([
+		`# ${profile.name}`,
+		context,
+		profile.description ? join(['## Description', profile.description]) : '',
+		'## Scoring',
+		scoringSettingsTable(profile),
+		'### Custom Formats',
+		profileScoresSection(data, profile),
+		'## Qualities',
+		qualitiesSection(profile),
+		historySection(history)
+	]);
+}
+
+// The page explains these settings in tooltips; text needs the explanation inline.
+function scoringSettingsTable(profile: QualityProfile): string {
+	const min = profile.minimumCustomFormatScore.toLocaleString('en-US');
+	const until = profile.upgradeUntilScore.toLocaleString('en-US');
+	const increment = profile.upgradeScoreIncrement.toLocaleString('en-US');
+	const rows: [string, string, string][] = [
+		[
+			'Upgrades Allowed',
+			profile.upgradesAllowed ? 'Yes' : 'No',
+			profile.upgradesAllowed
+				? 'Existing files are replaced when a better release appears.'
+				: 'Existing files are never replaced by upgrades.'
+		],
+		[
+			'Minimum Custom Format Score',
+			min,
+			`A release must score at least ${min} to be downloaded.`
+		]
+	];
+	if (profile.upgradesAllowed) {
+		rows.push(
+			[
+				'Upgrade Until Score',
+				until,
+				`Upgrades stop once the cutoff quality and a score of ${until} are reached.`
+			],
+			[
+				'Upgrade Score Increment',
+				increment,
+				`An upgrade must score at least ${increment} higher than the existing release.`
+			]
+		);
+	}
+	return [
+		'| Setting | Value | Meaning |',
+		'| ------- | ----- | ------- |',
+		...rows.map(([setting, value, meaning]) => `| ${setting} | ${value} | ${meaning} |`)
+	].join('\n');
+}
+
+// Same order as the page's default sort: Radarr score highest first.
+function profileScoresSection(data: CompiledDatabase, profile: QualityProfile): string {
+	const entries = sortProfileScores(profileCustomFormatScores(data, profile), 'radarr', 'desc');
+	if (entries.length === 0) return 'This profile does not score any custom formats.';
+
+	const score = (value: number | null) => (value === null ? '-' : formatProfileScore(value));
+	const rows = entries.map((entry) => {
+		const name = cell(entry.name);
+		const link = entry.slug
+			? `[${name}](${SITE_URL}/pcd/${data.id}/custom-formats/${entry.slug})`
+			: name;
+		const tags = cell(entry.tags.join(', '));
+		return `| ${link} | ${score(entry.scores.radarr)} | ${score(entry.scores.sonarr)} | ${tags} |`;
+	});
+
+	return join([
+		'Scores are per app. A dash means that app does not score the format.',
+		[
+			'| Custom Format | Radarr | Sonarr | Tags |',
+			'| ------------- | ------ | ------ | ---- |',
+			...rows
+		].join('\n')
+	]);
+}
+
+// Mirrors the page: entries through the last enabled one form the table; the
+// disabled tail the page hides becomes one line.
+function qualitiesSection(profile: QualityProfile): string {
+	if (profile.qualities.length === 0) return 'This profile lists no qualities.';
+
+	const entries = profile.qualities.map((entry, i) => ({
+		position: i + 1,
+		name: entry.group?.name ?? entry.quality ?? '',
+		items: entry.group?.members ?? (entry.quality ? [entry.quality] : []),
+		group: entry.group !== null,
+		enabled: entry.enabled,
+		upgradeUntil: entry.upgradeUntil && profile.upgradesAllowed
+	}));
+	const lastEnabled = entries.findLastIndex((entry) => entry.enabled);
+	const enabled = entries.filter((entry) => entry.enabled);
+
+	const intro = [
+		'Releases are preferred from top to bottom. Items in the same row rank equally.',
+		profile.upgradesAllowed ? 'Upgrades stop at the upgrade-until entry.' : '',
+		'Disabled entries are never downloaded.'
+	]
+		.filter(Boolean)
+		.join(' ');
+
+	const kind = enabled[0]?.group ? 'quality group' : 'quality';
+	const single =
+		enabled.length === 1
+			? `Only one ${kind} is enabled, so quality order does not separate releases here. This usually means custom formats are used to separate qualities instead; see Scoring.`
+			: '';
+
+	const rows = entries.slice(0, lastEnabled + 1).map((entry) => {
+		const items = cell(entry.items.join(', '));
+		const status = entry.enabled ? 'Enabled' : 'Disabled';
+		const until = entry.upgradeUntil ? ', upgrade until' : '';
+		return `| ${entry.position} | ${cell(entry.name)} | ${items} | ${status}${until} |`;
+	});
+	const header = ['| Position | Name | Items | Status |', '| -------- | ---- | ----- | ------ |'];
+	const table = rows.length > 0 ? [...header, ...rows].join('\n') : 'No qualities are enabled.';
+
+	const tail = entries
+		.slice(lastEnabled + 1)
+		.map((entry) => (entry.group ? `${entry.name} (${entry.items.join(', ')})` : entry.name));
+
+	return join([
+		intro,
+		single,
+		table,
+		tail.length > 0 ? `Also listed, disabled: ${tail.join(', ')}` : ''
+	]);
+}
+
+/** Escapes pipes so a value cannot break out of its table cell. */
+function cell(value: string): string {
+	return value.replace(/\|/g, '\\|');
 }
 
 export function delayProfileToMarkdown(

@@ -7,10 +7,12 @@ import type {
 	MediaSettings,
 	NamingConfig,
 	QualityDefinitionConfig,
+	QualityProfile,
 	RegularExpression
 } from '$lib/types/pcd';
 import { SITE_URL } from '$lib/shared/utils/llm/site.js';
 import { sortConditions } from '$lib/shared/utils/pcd/conditions';
+import { profileCustomFormatScores } from '$lib/shared/utils/pcd/references';
 import { slugify } from '$lib/shared/utils/slug';
 import { stringifyYaml } from './stringify.js';
 
@@ -43,6 +45,50 @@ export function customFormatToYaml(data: CompiledDatabase, format: CustomFormat)
 	};
 
 	return stringifyYaml(document);
+}
+
+// Scores are effective per app (the `all` fallback applied), in name order so
+// a score change does not reshuffle the list. Positions are stored, 0-based.
+export function qualityProfileToYaml(data: CompiledDatabase, profile: QualityProfile): string {
+	const customFormats = profileCustomFormatScores(data, profile)
+		.sort((a, b) => a.name.localeCompare(b.name))
+		.map((entry) => ({
+			name: entry.name,
+			...(entry.slug
+				? { url: `${SITE_URL}/pcd/${data.id}/custom-formats/${entry.slug}` }
+				: {}),
+			radarr: entry.scores.radarr,
+			sonarr: entry.scores.sonarr
+		}));
+
+	return stringifyYaml({
+		schema_version: data.schemaVersion,
+		database: {
+			id: data.id,
+			name: data.name,
+			version: data.version
+		},
+		entity_type: 'quality_profile',
+		name: profile.name,
+		description: profile.description,
+		tags: profile.tags,
+		language: profile.languages[0]?.name ?? null,
+		scoring: {
+			upgrades_allowed: profile.upgradesAllowed,
+			minimum_custom_format_score: profile.minimumCustomFormatScore,
+			upgrade_until_score: profile.upgradeUntilScore,
+			upgrade_score_increment: profile.upgradeScoreIncrement,
+			custom_formats: customFormats
+		},
+		qualities: profile.qualities.map((entry) => ({
+			position: entry.position,
+			name: entry.group?.name ?? entry.quality,
+			type: entry.group ? 'quality_group' : 'single_quality',
+			items: entry.group?.members ?? (entry.quality ? [entry.quality] : []),
+			enabled: entry.enabled,
+			upgrade_until: entry.upgradeUntil
+		}))
+	});
 }
 
 export function regularExpressionToYaml(data: CompiledDatabase, regex: RegularExpression): string {

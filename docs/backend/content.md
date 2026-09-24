@@ -30,8 +30,8 @@ application-specific scoring into effective Radarr and Sonarr scores and appear 
 Markdown representations. Quality profile pages resolve their own scoring the same way and list each
 custom format with its effective scores, with a `FilterInput` over `name`, `tag`, `radarr`, and
 `sonarr` and a sort menu beside it (Radarr score, Sonarr score, or name, either direction; Radarr
-score highest first by default, with missing scores last). This list is HTML only until quality
-profiles get a Markdown mirror.
+score highest first by default, with missing scores last). It appears in both HTML and Markdown
+representations.
 
 After Scoring, quality profile pages show a Qualities table in preference order, top first, as
 stored: position, name, and items (a group's members, or the quality itself for a single quality).

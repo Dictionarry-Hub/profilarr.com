@@ -16,6 +16,7 @@
 	} from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import EntityHistory from '$lib/client/pcd/EntityHistory.svelte';
+	import EntityView from '$lib/client/pcd/EntityView.svelte';
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Badge from '$lib/client/ui/badge/Badge.svelte';
 	import Button from '$lib/client/ui/button/Button.svelte';
@@ -23,6 +24,8 @@
 	import Dropdown from '$lib/client/ui/dropdown/Dropdown.svelte';
 	import DropdownHeader from '$lib/client/ui/dropdown/DropdownHeader.svelte';
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
+	import PageActionsMenu from '$lib/client/ui/page-actions/PageActionsMenu.svelte';
+	import type { PageFormatAction } from '$lib/client/ui/page-actions/types';
 	import FilterInput from '$lib/client/ui/input/FilterInput.svelte';
 	import type { Column } from '$lib/client/ui/table/types';
 	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
@@ -31,12 +34,33 @@
 	import { matchesAll, type FilterField, type FilterRule } from '$lib/shared/utils/filter/rules';
 	import {
 		formatProfileScore,
-		type ProfileCustomFormatScore
+		sortProfileScores,
+		type ProfileCustomFormatScore,
+		type ProfileScoreSortKey,
+		type SortDirection
 	} from '$lib/shared/utils/pcd/references';
 
 	let { data } = $props();
 	const profile = $derived(data.profile);
 	const descriptionHtml = $derived(data.descriptionHtml);
+
+	const formatActions = $derived.by((): PageFormatAction[] => {
+		const yamlPath = `${page.url.pathname}.yaml`;
+		return [
+			{
+				kind: 'copy',
+				label: 'Copy as YAML',
+				successLabel: 'YAML copied',
+				url: yamlPath
+			},
+			{
+				kind: 'download',
+				label: 'Download as YAML',
+				url: yamlPath,
+				filename: `${page.params.slug}.yaml`
+			}
+		];
+	});
 
 	const minScore = $derived(profile.minimumCustomFormatScore.toLocaleString('en-US'));
 	const upgradeUntilScore = $derived(profile.upgradeUntilScore.toLocaleString('en-US'));
@@ -129,11 +153,8 @@
 		scoreRows.filter((row) => matchesAll(row, activeRules, scoreFields))
 	);
 
-	type SortKey = 'radarr' | 'sonarr' | 'name';
-	type SortDirection = 'asc' | 'desc';
-
 	interface SortOption {
-		key: SortKey;
+		key: ProfileScoreSortKey;
 		label: string;
 		directions: {
 			direction: SortDirection;
@@ -160,7 +181,7 @@
 		}
 	];
 
-	let sort = $state<{ key: SortKey; direction: SortDirection }>({
+	let sort = $state<{ key: ProfileScoreSortKey; direction: SortDirection }>({
 		key: 'radarr',
 		direction: 'desc'
 	});
@@ -176,26 +197,13 @@
 		`Sorted by ${sortOption.label}, ${sortDirection.label.toLowerCase()}`
 	);
 
-	// Rows missing the sorted score go last in either direction; ties fall back to name.
-	const sortedRows = $derived.by((): ScoreRow[] => {
-		const { key, direction } = sort;
-		const factor = direction === 'asc' ? 1 : -1;
-		return [...filteredRows].sort((a, b) => {
-			if (key === 'name') return a.name.localeCompare(b.name) * factor;
-			const av = key === 'radarr' ? a.radarrScore : a.sonarrScore;
-			const bv = key === 'radarr' ? b.radarrScore : b.sonarrScore;
-			if (av === bv) return a.name.localeCompare(b.name);
-			if (av === null) return 1;
-			if (bv === null) return -1;
-			return (av - bv) * factor;
-		});
-	});
+	const sortedRows = $derived(sortProfileScores(filteredRows, sort.key, sort.direction));
 
-	function isSorted(key: SortKey, direction: SortDirection): boolean {
+	function isSorted(key: ProfileScoreSortKey, direction: SortDirection): boolean {
 		return sort.key === key && sort.direction === direction;
 	}
 
-	function selectSort(key: SortKey, direction: SortDirection) {
+	function selectSort(key: ProfileScoreSortKey, direction: SortDirection) {
 		sort = { key, direction };
 		sortOpen = false;
 	}
@@ -402,171 +410,188 @@
 	title={profile.name}
 	description={profile.description ?? undefined} />
 
-<PageHeader title={profile.name}>
+<!-- Passed as badges, not tags, so the language leads the row. -->
+{#snippet headerBadges()}
+	{#each profile.languages as language (language.name)}
+		<Badge
+			icon={Earth}
+			iconColor="text-info-icon">{language.name}</Badge>
+	{/each}
+	{#each profile.tags as tag (tag)}
+		<Badge>{tag}</Badge>
+	{/each}
+{/snippet}
+
+<PageHeader
+	title={profile.name}
+	badges={profile.languages.length + profile.tags.length > 0 ? headerBadges : undefined}>
 	{#snippet actions()}
-		<div class="flex flex-wrap justify-end gap-2">
-			{#each profile.languages as language (language.name)}
-				<Badge
-					icon={Earth}
-					iconColor="text-info-icon">{language.name}</Badge>
-			{/each}
-			{#each profile.tags as tag (tag)}
-				<Badge>{tag}</Badge>
-			{/each}
-		</div>
+		<PageActionsMenu
+			{formatActions}
+			artifactPath="{page.url.pathname}.md"
+			pagePath={page.url.pathname}
+			viewSwitcher />
 	{/snippet}
 </PageHeader>
 
-{#if descriptionHtml}
-	<div class="prose *:last:mb-0">
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -- markdown parsed at build time -->
-		{@html descriptionHtml}
-	</div>
-{/if}
+<EntityView yamlPath="{page.url.pathname}.yaml">
+	{#snippet rich()}
+		{#if descriptionHtml}
+			<div class="prose *:last:mb-0">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- markdown parsed at build time -->
+				{@html descriptionHtml}
+			</div>
+		{/if}
 
-<!-- The rest of the profile page is not built yet. -->
-<section aria-labelledby="scoring">
-	<div
-		class="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-muted pb-2">
-		<h2
-			id="scoring"
-			class="text-xl font-bold">
-			Scoring
-		</h2>
-		<div class="flex flex-wrap gap-2">
-			<Tooltip
-				text="A release must have a custom format score of at least {minScore} to be downloaded.">
-				<Badge
-					icon={PanelBottomOpen}
-					iconColor="text-info-icon">
-					Min: {minScore}
-				</Badge>
-			</Tooltip>
-			{#if profile.upgradesAllowed}
-				<Tooltip
-					text="Upgrades stop once the cutoff quality and a score of {upgradeUntilScore} are reached.">
-					<Badge
-						icon={TrendingUp}
-						iconColor="text-success-icon">
-						Until: {upgradeUntilScore}
-					</Badge>
-				</Tooltip>
-				<Tooltip
-					text="An upgrade must score at least {scoreIncrement} higher than the existing release.">
-					<Badge
-						icon={CopyPlus}
-						iconColor="text-warning-icon">
-						Increment: {scoreIncrement}
-					</Badge>
-				</Tooltip>
-			{/if}
-			{#if scoreRows.length > 0}
-				<Badge
-					icon={Tags}
-					iconColor="text-accent-text">
-					{#if filteredRows.length === scoreRows.length}
-						{scoreRows.length} custom formats
-					{:else}
-						{filteredRows.length} of {scoreRows.length} custom formats
+		<section aria-labelledby="scoring">
+			<div
+				class="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border-muted pb-2">
+				<h2
+					id="scoring"
+					class="text-xl font-bold">
+					Scoring
+				</h2>
+				<div class="flex flex-wrap gap-2">
+					<Tooltip
+						text="A release must have a custom format score of at least {minScore} to be downloaded.">
+						<Badge
+							icon={PanelBottomOpen}
+							iconColor="text-info-icon">
+							Min: {minScore}
+						</Badge>
+					</Tooltip>
+					{#if profile.upgradesAllowed}
+						<Tooltip
+							text="Upgrades stop once the cutoff quality and a score of {upgradeUntilScore} are reached.">
+							<Badge
+								icon={TrendingUp}
+								iconColor="text-success-icon">
+								Until: {upgradeUntilScore}
+							</Badge>
+						</Tooltip>
+						<Tooltip
+							text="An upgrade must score at least {scoreIncrement} higher than the existing release.">
+							<Badge
+								icon={CopyPlus}
+								iconColor="text-warning-icon">
+								Increment: {scoreIncrement}
+							</Badge>
+						</Tooltip>
 					{/if}
-				</Badge>
+					{#if scoreRows.length > 0}
+						<Badge
+							icon={Tags}
+							iconColor="text-accent-text">
+							{#if filteredRows.length === scoreRows.length}
+								{scoreRows.length} custom formats
+							{:else}
+								{filteredRows.length} of {scoreRows.length} custom formats
+							{/if}
+						</Badge>
+					{/if}
+				</div>
+			</div>
+			{#if scoreRows.length > 0}
+				<FilterInput
+					fields={scoreFields}
+					bind:active={activeRules}
+					placeholder="Filter by name or tag, or type a rule like radarr.gt.0"
+					mode="responsive"
+					shortcut="/"
+					append={sortMenu}
+					results={scoreResults}
+					class="mt-4" />
+				{#if filteredRows.length > 0}
+					<div class="mt-4">
+						<AdaptiveList
+							data={sortedRows}
+							columns={scoreColumns}
+							href={scoreHref}>
+							{#snippet cell(row, column)}
+								{#if column.key === 'name'}
+									<span class="font-medium {row.slug ? linkName : ''}">
+										{row.name}
+									</span>
+								{:else if column.key === 'tags'}
+									{@render tagList(row.tags)}
+								{:else if column.key === 'radarrScore'}
+									{@render scoreCell(row.radarrScore)}
+								{:else if column.key === 'sonarrScore'}
+									{@render scoreCell(row.sonarrScore)}
+								{/if}
+							{/snippet}
+							{#snippet card(row)}
+								<p class="text-sm font-medium {row.slug ? linkName : ''}">
+									{row.name}
+								</p>
+								<div class="mt-2">{@render scoreList(row)}</div>
+								{#if row.tags.length > 0}
+									<div class="mt-2">{@render tagList(row.tags)}</div>
+								{/if}
+							{/snippet}
+						</AdaptiveList>
+					</div>
+				{:else}
+					<p class="mt-4 text-sm text-text-muted italic">
+						No custom formats match these filters.
+					</p>
+				{/if}
+			{:else}
+				<p class="mt-4 text-sm text-text-muted italic">
+					This profile does not score any custom formats.
+				</p>
 			{/if}
-		</div>
-	</div>
-	{#if scoreRows.length > 0}
-		<FilterInput
-			fields={scoreFields}
-			bind:active={activeRules}
-			placeholder="Filter by name or tag, or type a rule like radarr.gt.0"
-			mode="responsive"
-			shortcut="/"
-			append={sortMenu}
-			results={scoreResults}
-			class="mt-4" />
-		{#if filteredRows.length > 0}
+		</section>
+
+		<section aria-labelledby="qualities">
+			<h2
+				id="qualities"
+				class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
+				Qualities
+			</h2>
+			{#if enabledQualities.length === 1}
+				<div class="mt-4">
+					<Callout type="info">
+						Only one {onlyEnabledKind} is enabled, so quality order does not separate
+						releases here. This usually means custom formats are used to separate
+						qualities instead; see
+						<a
+							href="#scoring"
+							class="text-link-text hover:underline">Scoring</a
+						>.
+					</Callout>
+				</div>
+			{/if}
 			<div class="mt-4">
 				<AdaptiveList
-					data={sortedRows}
-					columns={scoreColumns}
-					href={scoreHref}>
+					data={visibleQualities}
+					columns={qualityColumns}
+					footer={hiddenQualities > 0 ? qualityToggle : undefined}>
 					{#snippet cell(row, column)}
-						{#if column.key === 'name'}
-							<span class="font-medium {row.slug ? linkName : ''}">{row.name}</span>
-						{:else if column.key === 'tags'}
-							{@render tagList(row.tags)}
-						{:else if column.key === 'radarrScore'}
-							{@render scoreCell(row.radarrScore)}
-						{:else if column.key === 'sonarrScore'}
-							{@render scoreCell(row.sonarrScore)}
+						{#if column.key === 'position'}
+							<span class="text-sm text-text-muted tabular-nums">{row.position}</span>
+						{:else if column.key === 'name'}
+							{@render qualityName(row)}
+						{:else if column.key === 'items'}
+							{@render qualityItems(row)}
 						{/if}
 					{/snippet}
 					{#snippet card(row)}
-						<p class="text-sm font-medium {row.slug ? linkName : ''}">{row.name}</p>
-						<div class="mt-2">{@render scoreList(row)}</div>
-						{#if row.tags.length > 0}
-							<div class="mt-2">{@render tagList(row.tags)}</div>
-						{/if}
+						<p class="flex items-center gap-2 text-sm">
+							<span class="text-text-muted tabular-nums">{row.position}.</span>
+							{@render qualityName(row)}
+						</p>
+						<div class="mt-2">{@render qualityItems(row)}</div>
 					{/snippet}
 				</AdaptiveList>
 			</div>
-		{:else}
-			<p class="mt-4 text-sm text-text-muted italic">
-				No custom formats match these filters.
-			</p>
-		{/if}
-	{:else}
-		<p class="mt-4 text-sm text-text-muted italic">
-			This profile does not score any custom formats.
-		</p>
-	{/if}
-</section>
+		</section>
 
-<section aria-labelledby="qualities">
-	<h2
-		id="qualities"
-		class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
-		Qualities
-	</h2>
-	{#if enabledQualities.length === 1}
-		<div class="mt-4">
-			<Callout type="info">
-				Only one {onlyEnabledKind} is enabled, so quality order does not separate releases
-				here. This usually means custom formats are used to separate qualities instead; see
-				<a
-					href="#scoring"
-					class="text-link-text hover:underline">Scoring</a
-				>.
-			</Callout>
-		</div>
-	{/if}
-	<div class="mt-4">
-		<AdaptiveList
-			data={visibleQualities}
-			columns={qualityColumns}
-			footer={hiddenQualities > 0 ? qualityToggle : undefined}>
-			{#snippet cell(row, column)}
-				{#if column.key === 'position'}
-					<span class="text-sm text-text-muted tabular-nums">{row.position}</span>
-				{:else if column.key === 'name'}
-					{@render qualityName(row)}
-				{:else if column.key === 'items'}
-					{@render qualityItems(row)}
-				{/if}
-			{/snippet}
-			{#snippet card(row)}
-				<p class="flex items-center gap-2 text-sm">
-					<span class="text-text-muted tabular-nums">{row.position}.</span>
-					{@render qualityName(row)}
-				</p>
-				<div class="mt-2">{@render qualityItems(row)}</div>
-			{/snippet}
-		</AdaptiveList>
-	</div>
-</section>
-
-<h2
-	id="history"
-	class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
-	History
-</h2>
-<EntityHistory history={data.history} />
+		<h2
+			id="history"
+			class="mt-8 border-b border-border-muted pb-2 text-xl font-bold">
+			History
+		</h2>
+		<EntityHistory history={data.history} />
+	{/snippet}
+</EntityView>

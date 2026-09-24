@@ -10,6 +10,7 @@ export { wikiToMarkdown, wikiIndexToMarkdown, type WikiMeta, type WikiIndexEntry
 export {
 	customFormatToMarkdown,
 	regexToMarkdown,
+	qualityProfileToMarkdown,
 	delayProfileToMarkdown,
 	namingConfigToMarkdown,
 	mediaSettingsToMarkdown,

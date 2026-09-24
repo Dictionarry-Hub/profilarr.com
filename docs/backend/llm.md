@@ -162,6 +162,7 @@ mdsvex, so the serializers at `src/lib/shared/utils/llm/pcd.ts` are API-style: t
 | ------------------- | --------------------------------------------------------- | ------------------------------ |
 | Custom format       | `/pcd/{database}/custom-formats/{slug}.md`                | `customFormatToMarkdown`       |
 | Regular expression  | `/pcd/{database}/regular-expressions/{slug}.md`           | `regexToMarkdown`              |
+| Quality profile     | `/pcd/{database}/quality-profiles/{slug}.md`              | `qualityProfileToMarkdown`     |
 | Delay profile       | `/pcd/{database}/delay-profiles/{slug}.md`                | `delayProfileToMarkdown`       |
 | Naming config       | `/pcd/{database}/naming/{arrType}/{slug}.md`              | `namingConfigToMarkdown`       |
 | Media settings      | `/pcd/{database}/media-settings/{arrType}/{slug}.md`      | `mediaSettingsToMarkdown`      |
@@ -189,6 +190,14 @@ entity pages and the serializers, so page and artifact cannot drift apart.
   null; the joke placeholder the HTML page shows never ships in artifacts); `## References` linking
   the custom formats whose conditions use the regex at their expected `.md` URLs
   (`/pcd/{database}/custom-formats/{slug}.md`).
+- **Quality profile**: the context line carries the language and tags; `## Description` when
+  present; `## Scoring` with a `| Setting | Value | Meaning |` table (the meanings stand in for the
+  page's tooltips; Upgrade Until Score and Upgrade Score Increment are omitted when upgrades are
+  off), then `### Custom Formats` with every scored format in the page's default order (Radarr score
+  highest first, missing scores last), signed effective scores per app, tags, and links to the HTML
+  pages; `## Qualities` with an explanatory intro, the single-enabled-entry note when it applies, a
+  table through the last enabled entry (position, name, items, status), and the disabled tail the
+  page hides as one "Also listed, disabled" line.
 - **Delay profile**: `## Configuration` with protocol, delays, and bypass settings. Delay values use
   the page's human formatting (`No delay`, `2h 30m`); protocol-irrelevant delays are omitted, as on
   the page.
@@ -272,7 +281,7 @@ component):
   Artifacts); the home page and any future docs sections follow the same pattern. Landing each
   removes its entries from the rule's `PENDING` list (see Enforcement).
 - **PCD entity mirrors.** Custom formats, regular expressions, delay profiles, naming configs, media
-  settings, and quality definitions are done (see PCD Entity Artifacts); quality profiles and the
+  settings, quality definitions, and quality profiles are done (see PCD Entity Artifacts); the
   entity list pages follow the same serializer-per-entity pattern in
   `src/lib/shared/utils/llm/pcd.ts`.
 - **`/llms.txt`.** An index of all artifacts, per the [llms.txt](https://llmstxt.org/) convention.

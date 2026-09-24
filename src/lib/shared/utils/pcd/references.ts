@@ -104,6 +104,30 @@ export function profileCustomFormatScores(
 		.sort((a, b) => bestScore(b) - bestScore(a) || a.name.localeCompare(b.name));
 }
 
+export type ProfileScoreSortKey = 'radarr' | 'sonarr' | 'name';
+export type SortDirection = 'asc' | 'desc';
+
+/**
+ * Sorts profile scores for display. Entries missing the sorted score go last
+ * in either direction; ties fall back to name order.
+ */
+export function sortProfileScores<T extends ProfileCustomFormatScore>(
+	entries: T[],
+	key: ProfileScoreSortKey,
+	direction: SortDirection
+): T[] {
+	const factor = direction === 'asc' ? 1 : -1;
+	return [...entries].sort((a, b) => {
+		if (key === 'name') return a.name.localeCompare(b.name) * factor;
+		const av = a.scores[key];
+		const bv = b.scores[key];
+		if (av === bv) return a.name.localeCompare(b.name);
+		if (av === null) return 1;
+		if (bv === null) return -1;
+		return (av - bv) * factor;
+	});
+}
+
 function bestScore(entry: ProfileCustomFormatScore): number {
 	return Math.max(entry.scores.radarr ?? -Infinity, entry.scores.sonarr ?? -Infinity);
 }

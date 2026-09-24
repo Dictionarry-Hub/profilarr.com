@@ -5,5 +5,6 @@ export {
 	mediaSettingsToYaml,
 	namingConfigToYaml,
 	qualityDefinitionsToYaml,
+	qualityProfileToYaml,
 	regularExpressionToYaml
 } from './pcd.js';

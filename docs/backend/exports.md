@@ -33,6 +33,22 @@ their regular-expression name and include the absolute HTML URL when the referen
 The matching value on the HTML entity page links to the same regex. The regex pattern is not
 embedded.
 
+## Quality Profiles
+
+Quality profiles are available at `/pcd/{database}/quality-profiles/{slug}.yaml`. The artifact
+contains the database and schema versions, entity metadata with the language name only, a `scoring`
+mapping, and `qualities`.
+
+`scoring` holds the four upgrade settings under their PCD column names, always present even when
+upgrades are off, and `custom_formats`: every scored custom format with its effective `radarr` and
+`sonarr` scores (the `all` fallback applied, `null` when that app does not score it) and the
+absolute HTML URL when the format resolves. Entries are in name order, so a score change does not
+reorder the list. Custom format tags stay out; they belong to the custom format.
+
+`qualities` lists every entry, including the disabled tail the page hides, with the stored 0-based
+`position`, `type` (`single_quality` or `quality_group`), `items` (a group's members, or the quality
+itself), and the stored `enabled` and `upgrade_until` flags.
+
 ## Page Actions Menu
 
 `PageActionsMenu` combines page views, machine-readable formats, and AI actions in one dropdown.
@@ -48,6 +64,6 @@ actions will use separate JSON artifact routes through the same menu.
 ## Enforcement
 
 The `require-yaml-artifact` custom lint rule checks build output for missing artifacts. Entity types
-opt in through `tooling/lint/yaml-artifacts.json`; custom formats are currently required. For each
-supported PCD detail page, the rule requires a sibling `.yaml` file. Index pages and entity types
-without YAML serializers are ignored.
+opt in through `tooling/lint/yaml-artifacts.json`, which currently requires every PCD detail type.
+For each supported PCD detail page, the rule requires a sibling `.yaml` file. Index pages and entity
+types without YAML serializers are ignored.
