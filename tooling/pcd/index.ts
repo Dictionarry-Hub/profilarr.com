@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -92,22 +92,51 @@ async function inParallel<T, R>(
 	return results;
 }
 
+// `--only a,b` restricts the run to those database ids.
+function onlyDatabases(config: PcdConfig): DatabaseEntry[] {
+	const index = process.argv.indexOf('--only');
+	if (index === -1) return config.databases;
+
+	const ids = (process.argv[index + 1] ?? '')
+		.split(',')
+		.map((id) => id.trim())
+		.filter(Boolean);
+	if (ids.length === 0) throw new Error('--only needs a comma-separated list of database ids');
+
+	const unknown = ids.filter((id) => !config.databases.some((entry) => entry.id === id));
+	if (unknown.length > 0) {
+		throw new Error(`Unknown database ids for --only: ${unknown.join(', ')}`);
+	}
+
+	return config.databases.filter((entry) => ids.includes(entry.id));
+}
+
 // Usage:
-//   pnpm compile:pcd                 compile entities and per-entity history
-//   pnpm compile:pcd -- --no-history compile entities only
+//   pnpm compile:pcd                         compile entities and per-entity history
+//   pnpm compile:pcd -- --no-history         compile entities only
+//   pnpm compile:pcd -- --only dictionarry   compile only these database ids
 async function main(): Promise<void> {
 	const withHistory = !process.argv.includes('--no-history');
 	const config: PcdConfig = JSON.parse(readFileSync(join(__dirname, 'config.json'), 'utf-8'));
+	const databases = onlyDatabases(config);
 
 	mkdirSync(outputDir, { recursive: true });
 
-	const parallelism = Math.min(availableParallelism(), config.databases.length);
+	// Output from an earlier run of a database left out of this one would
+	// still be picked up by the site's globs, so remove it.
+	for (const entry of config.databases) {
+		if (databases.includes(entry)) continue;
+		rmSync(join(outputDir, `${entry.id}.json`), { force: true });
+		rmSync(join(outputDir, 'history', `${entry.id}.json`), { force: true });
+	}
+
+	const parallelism = Math.min(availableParallelism(), databases.length);
 	console.log(
-		`Compiling ${config.databases.length} PCD databases${withHistory ? ' with history' : ''} (${parallelism} at a time)...\n`
+		`Compiling ${databases.length} PCD databases${withHistory ? ' with history' : ''} (${parallelism} at a time)...\n`
 	);
 
 	const start = performance.now();
-	const results = await inParallel(config.databases, parallelism, async (entry) => {
+	const results = await inParallel(databases, parallelism, async (entry) => {
 		const result = await compileInWorker(entry, { outputDir, withHistory });
 		const history =
 			result.historyEntries === null ? '' : `, ${result.historyEntries} history entries`;

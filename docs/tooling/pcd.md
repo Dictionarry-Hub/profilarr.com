@@ -53,8 +53,9 @@ Each entry has:
 ## Pipeline Flow
 
 ```
-pnpm compile:pcd [-- --no-history]
-  1. Read config.json
+pnpm compile:pcd [-- --no-history] [--only id,id]
+  1. Read config.json (restricted to the `--only` ids when given, removing earlier output of the
+     databases left out)
   2. For each database, in its own worker thread (as many at once as there are cores):
      a. Clone the repo at its branch (blobless clone, full commit history)
      b. Read pcd.json manifest from the checkout
