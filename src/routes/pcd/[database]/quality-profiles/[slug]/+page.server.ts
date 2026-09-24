@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { marked } from 'marked';
+import { profileCustomFormatScores } from '$lib/shared/utils/pcd/references';
 import { pcdNamedEntityEntries } from '$lib/shared/utils/pcd/prerender.js';
 import { entityHistory } from '$lib/shared/utils/pcd/history-data';
 import { slugify } from '$lib/shared/utils/slug';
@@ -29,6 +30,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	return {
 		profile,
 		descriptionHtml,
+		scores: profileCustomFormatScores(data, profile),
 		history: entityHistory(data, 'quality_profile', profile.name)
 	};
 };

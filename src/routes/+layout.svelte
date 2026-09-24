@@ -27,7 +27,6 @@
 	import NavGroupSelect from '$lib/client/ui/nav/NavGroupSelect.svelte';
 	import NavItem from '$lib/client/ui/nav/NavItem.svelte';
 	import SearchPalette from '$lib/client/ui/search/SearchPalette.svelte';
-	import SearchTrigger from '$lib/client/ui/search/SearchTrigger.svelte';
 	import TableOfContents from '$lib/client/ui/toc/TableOfContents.svelte';
 	import { slugify } from '$lib/shared/utils/slug';
 	import { loadPcdNav } from '$lib/client/pcd/nav';
@@ -57,7 +56,6 @@
 
 	let themeValue = $state(theme.current);
 	let databaseValue = $state(database.current);
-	let searchOpen = $state(false);
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
@@ -138,7 +136,7 @@
 	<!-- Page nav -->
 	<div class="flex-1 overflow-y-auto border-r border-border px-4 py-4">
 		<div class="mb-4">
-			<SearchTrigger onclick={() => (searchOpen = true)} />
+			<SearchPalette database={databaseValue} />
 		</div>
 
 		<!-- PCD reference: the whole subtree is scoped to one database, so the
@@ -305,10 +303,6 @@
 		{/if}
 	</div>
 </div>
-
-<SearchPalette
-	bind:open={searchOpen}
-	database={databaseValue} />
 
 <main class="min-h-screen bg-bg pl-80 font-sans text-text">
 	<div

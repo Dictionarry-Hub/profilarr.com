@@ -1,5 +1,5 @@
 import { slugify } from '$lib/shared/utils/slug';
-import type { CompiledDatabase, ProfileScore } from '$lib/types/pcd';
+import type { CompiledDatabase, ProfileScore, QualityProfile } from '$lib/types/pcd';
 
 export type RegularExpressionReference = {
 	name: string;
@@ -11,6 +11,17 @@ export type RegularExpressionReference = {
 export type QualityProfileReference = {
 	name: string;
 	slug: string;
+	scores: {
+		radarr: number | null;
+		sonarr: number | null;
+	};
+	[key: string]: unknown;
+};
+
+export type ProfileCustomFormatScore = {
+	name: string;
+	slug: string | null;
+	tags: string[];
 	scores: {
 		radarr: number | null;
 		sonarr: number | null;
@@ -63,6 +74,38 @@ export function customFormatProfileReferences(
 			];
 		})
 		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function profileCustomFormatScores(
+	data: CompiledDatabase,
+	profile: QualityProfile
+): ProfileCustomFormatScore[] {
+	const names = [...new Set(profile.scoring.map((entry) => entry.customFormatName))];
+
+	return names
+		.flatMap((name) => {
+			const scoring = profile.scoring.filter((entry) => entry.customFormatName === name);
+			const fallback = scoreFor(scoring, 'all');
+			const radarr = scoreFor(scoring, 'radarr') ?? fallback;
+			const sonarr = scoreFor(scoring, 'sonarr') ?? fallback;
+
+			if (radarr === null && sonarr === null) return [];
+
+			const format = data.customFormats.find((entry) => entry.name === name);
+			return [
+				{
+					name,
+					slug: format ? slugify(format.name) : null,
+					tags: format?.tags ?? [],
+					scores: { radarr, sonarr }
+				}
+			];
+		})
+		.sort((a, b) => bestScore(b) - bestScore(a) || a.name.localeCompare(b.name));
+}
+
+function bestScore(entry: ProfileCustomFormatScore): number {
+	return Math.max(entry.scores.radarr ?? -Infinity, entry.scores.sonarr ?? -Infinity);
 }
 
 function scoreFor(scoring: ProfileScore[], arrType: string): number | null {

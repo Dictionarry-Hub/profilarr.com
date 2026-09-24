@@ -3,6 +3,7 @@ import { customFormatToMarkdown } from '$lib/shared/utils/llm/pcd';
 import {
 	customFormatProfileReferences,
 	formatProfileScore,
+	profileCustomFormatScores,
 	regularExpressionReferences
 } from '$lib/shared/utils/pcd/references';
 import type { CompiledDatabase, CustomFormat, ProfileScore, QualityProfile } from '$lib/types/pcd';
@@ -120,6 +121,50 @@ describe('customFormatProfileReferences', () => {
 		expect(formatProfileScore(3000)).toBe('+3,000');
 		expect(formatProfileScore(-1000)).toBe('-1,000');
 		expect(formatProfileScore(0)).toBe('0');
+	});
+});
+
+describe('profileCustomFormatScores', () => {
+	it('resolves fallbacks and orders by the best score', () => {
+		const tagged = { ...customFormat('Tagged'), tags: ['Audio'] };
+		const profile = qualityProfile('Profile', [
+			score('Low', 'all', -50),
+			score('Tagged', 'all', 10),
+			score('Tagged', 'sonarr', 30),
+			score('Radarr Only', 'radarr', 20),
+			score('Missing', 'all', 0)
+		]);
+		const data = database({
+			customFormats: [customFormat('Low'), tagged, customFormat('Radarr Only')],
+			qualityProfiles: [profile]
+		});
+
+		expect(profileCustomFormatScores(data, profile)).toEqual([
+			{
+				name: 'Tagged',
+				slug: 'tagged',
+				tags: ['Audio'],
+				scores: { radarr: 10, sonarr: 30 }
+			},
+			{
+				name: 'Radarr Only',
+				slug: 'radarr-only',
+				tags: [],
+				scores: { radarr: 20, sonarr: null }
+			},
+			{
+				name: 'Missing',
+				slug: null,
+				tags: [],
+				scores: { radarr: 0, sonarr: 0 }
+			},
+			{
+				name: 'Low',
+				slug: 'low',
+				tags: [],
+				scores: { radarr: -50, sonarr: -50 }
+			}
+		]);
 	});
 });
 

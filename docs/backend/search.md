@@ -253,10 +253,10 @@ benefit.
 
 ## UI
 
-A command palette modal (`SearchPalette` in `src/lib/client/ui/search/`, on the `Dialog` primitive),
-opened with Ctrl+K / Cmd+K or the sidebar trigger. Results render as a flat ranked list with type
-badges, exactly the order the scorer returns: the ranking is the product, and the UI does not
-regroup it. Result counts are constants, never responsive.
+A command palette modal (`SearchPalette` in `src/lib/client/ui/search/`, built on `SearchInput` in
+popup mode), opened with Ctrl+K / Cmd+K or the sidebar search field. Results render as a flat ranked
+list with type badges, exactly the order the scorer returns: the ranking is the product, and the UI
+does not regroup it. Result counts are constants, never responsive.
 
 Click events record a fixed-length top prefix of the results as `shown` (`SHOWN_RECORD_LIMIT`), not
 the full scrollable list: Elo battles stay identical-sized and viewport-independent, and results

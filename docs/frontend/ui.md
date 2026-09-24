@@ -363,30 +363,66 @@ for two seconds; failures use the same pattern with the danger state.
 
 `src/lib/client/ui/search/SearchPalette.svelte`
 
-The command palette: a modal search box over the client-side scorer (see
-[backend/search.md](../backend/search.md)). Composes `Dialog` (input row as `header`, keyboard hints
-as `footer`), lazy-loads the core and active-database index files on first open, and renders a flat
-ranked list with type `Badge`s, exactly the order the scorer returns. Empty query shows the global
-most-popular entries. Arrow keys, Enter, and Escape navigate; clicks and Enter record a click event
-(a no-op until the Elo store ships) and `goto` the result. Toggled globally by Ctrl+K / Cmd+K via
-`svelte:window`. Mounted once in the root layout.
+The site search: the sidebar search field and its command palette over the client-side scorer (see
+[backend/search.md](../backend/search.md)). Renders `SearchInput` in `popup` mode with the `mod+k`
+shortcut, so Ctrl+K / Cmd+K opens and closes it. The popup lazy-loads the core and active-database
+index files on first open and renders a flat ranked list with type `Badge`s, exactly the order the
+scorer returns. Empty query shows the global most-popular entries. Arrow keys and Enter navigate
+through `SearchInput`'s `onkeydown`; clicks and Enter record a click event (a no-op until the Elo
+store ships) and `goto` the result. The query resets on close, so the sidebar field always reads as
+an empty search. Mounted once in the sidebar.
 
-| Prop       | Type                 | Required | Default |
-| ---------- | -------------------- | -------- | ------- |
-| `open`     | `boolean` (bindable) | no       | `false` |
-| `database` | `string`             | yes      |         |
+| Prop       | Type     | Required | Default |
+| ---------- | -------- | -------- | ------- |
+| `database` | `string` | yes      |         |
 
-#### `SearchTrigger`
+### Input
 
-`src/lib/client/ui/search/SearchTrigger.svelte`
+#### `SearchInput`
 
-A button dressed as an input: the sidebar search affordance. Search icon, "Search..." placeholder,
-and a platform-aware kbd hint (⌘K on Apple platforms, Ctrl K elsewhere, resolved client-side).
+`src/lib/client/ui/input/SearchInput.svelte`
 
-| Prop      | Type         | Required | Default |
-| --------- | ------------ | -------- | ------- |
-| `onclick` | `() => void` | no       |         |
-| `class`   | `string`     | no       | `''`    |
+Search field: search icon, placeholder, control border and shadow, and a key hint on the right with
+a tooltip naming the shortcut. A clear button replaces the hint once the field has a value.
+
+`mode` decides where typing happens. `inline` is a text field; Escape clears it. `popup` is a button
+that opens the field in a `Dialog` with the `results` snippet below it and the optional `footer`
+snippet under that; the button shows the current value, so a query typed in the popup stays visible
+after it closes. `popupPlaceholder` overrides the placeholder inside the popup, where there is room
+for more detail. `responsive` is inline at `lg` and up and a popup below, matching `AdaptiveList`'s
+table and card breakpoint. The value is shared between the field and the popup, and `onkeydown` runs
+for both inputs after the built-in handling, so consumers can add keyboard navigation over their
+results.
+
+`shortcut` is a single key, optionally prefixed with `mod+` for Ctrl or Cmd (`'/'`, `'mod+k'`).
+Pressing it focuses the inline field when visible and opens the popup otherwise; a `mod+` shortcut
+also closes an open popup. Plain-key shortcuts are ignored while another field has focus. `rounded`
+squares one side (`left` rounds only the left corners) so a control can sit flush against the field.
+Inputs use a 16px font on small screens so iOS does not zoom on focus.
+
+| Prop               | Type                                  | Required | Default       |
+| ------------------ | ------------------------------------- | -------- | ------------- |
+| `value`            | `string` (bindable)                   | yes      |               |
+| `placeholder`      | `string`                              | no       | `'Search...'` |
+| `popupPlaceholder` | `string`                              | no       | `placeholder` |
+| `label`            | `string` (aria-label)                 | no       | `placeholder` |
+| `mode`             | `'inline' \| 'popup' \| 'responsive'` | no       | `'inline'`    |
+| `shortcut`         | `string`                              | no       |               |
+| `rounded`          | `'all' \| 'left' \| 'right'`          | no       | `'all'`       |
+| `open`             | `boolean` (bindable)                  | no       | `false`       |
+| `results`          | `Snippet` (popup body)                | no       |               |
+| `footer`           | `Snippet` (under the popup body)      | no       |               |
+| `onkeydown`        | `(event: KeyboardEvent) => void`      | no       |               |
+| `class`            | `string` (applied to the field)       | no       | `''`          |
+
+```svelte
+<SearchInput
+	bind:value={query}
+	placeholder="Filter by name or tag"
+	mode="responsive"
+	shortcut="/"
+	results={matches} />
+```
 
 ### Nav
 

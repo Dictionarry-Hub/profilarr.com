@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Search } from '@lucide/svelte';
 	import Badge from '$lib/client/ui/badge/Badge.svelte';
-	import Dialog from '$lib/client/ui/dialog/Dialog.svelte';
+	import SearchInput from '$lib/client/ui/input/SearchInput.svelte';
 	import Kbd from '$lib/client/ui/kbd/Kbd.svelte';
 	import { popular, search, type SearchResult } from '$lib/client/search';
 	import { SEARCH } from '$lib/client/search/constants';
@@ -15,13 +14,11 @@
 	import type { SearchEntryType } from '$lib/shared/utils/search/types';
 
 	interface Props {
-		/** Bindable. Also toggled globally by Ctrl+K / Cmd+K. */
-		open?: boolean;
 		/** Active database id; scopes which index is loaded. */
 		database: string;
 	}
 
-	let { open = $bindable(false), database }: Props = $props();
+	let { database }: Props = $props();
 
 	const POPULAR_LIMIT = 8;
 
@@ -41,6 +38,7 @@
 		'quality-definitions': { label: 'Quality', color: 'neutral' }
 	};
 
+	let open = $state(false);
 	let query = $state('');
 	let selected = $state(0);
 	let loaded = $state<LoadedSearch | null>(null);
@@ -81,12 +79,18 @@
 		};
 	});
 
-	// Fresh slate every open.
+	// Fresh slate on close, so the trigger always reads as an empty search.
 	$effect(() => {
-		if (open) {
+		if (!open) {
 			query = '';
 			selected = 0;
 		}
+	});
+
+	// A new query starts selection back at the top.
+	$effect(() => {
+		void query;
+		selected = 0;
 	});
 
 	// Keep the selected row in view while arrowing through a long list.
@@ -124,38 +128,9 @@
 			activate(results[selected]);
 		}
 	}
-
-	function onWindowKeydown(event: KeyboardEvent) {
-		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-			event.preventDefault();
-			open = !open;
-		}
-	}
 </script>
 
-<svelte:window onkeydown={onWindowKeydown} />
-
-<Dialog
-	bind:open
-	ariaLabel="Search"
-	class="mt-[12svh] mb-auto max-h-[60svh] w-full max-w-xl">
-	{#snippet header()}
-		<div class="flex items-center gap-3 px-4 py-3">
-			<Search
-				size={18}
-				class="shrink-0 text-text-muted" />
-			<!-- 16px+ font so iOS does not zoom the dialog on focus -->
-			<input
-				type="text"
-				placeholder="Search the docs, PCD entities, dev logs..."
-				aria-label="Search"
-				class="w-full bg-transparent text-base text-text outline-none placeholder:text-text-muted"
-				bind:value={query}
-				oninput={() => (selected = 0)}
-				onkeydown={onInputKeydown} />
-		</div>
-	{/snippet}
-
+{#snippet resultList()}
 	<div bind:this={listEl}>
 		{#if loadFailed}
 			<p class="px-4 py-10 text-center text-sm text-text-muted">
@@ -212,12 +187,23 @@
 			</ul>
 		{/if}
 	</div>
+{/snippet}
 
-	{#snippet footer()}
-		<div class="flex items-center gap-4 px-4 py-2 text-xs text-text-muted">
-			<span class="flex items-center gap-1.5"><Kbd>↑↓</Kbd> navigate</span>
-			<span class="flex items-center gap-1.5"><Kbd>↵</Kbd> open</span>
-			<span class="flex items-center gap-1.5"><Kbd>esc</Kbd> close</span>
-		</div>
-	{/snippet}
-</Dialog>
+{#snippet hints()}
+	<div class="flex items-center gap-4 px-4 py-2 text-xs text-text-muted">
+		<span class="flex items-center gap-1.5"><Kbd>↑↓</Kbd> navigate</span>
+		<span class="flex items-center gap-1.5"><Kbd>↵</Kbd> open</span>
+		<span class="flex items-center gap-1.5"><Kbd>esc</Kbd> close</span>
+	</div>
+{/snippet}
+
+<SearchInput
+	bind:value={query}
+	bind:open
+	mode="popup"
+	shortcut="mod+k"
+	label="Search"
+	popupPlaceholder="Search the docs, PCD entities, dev logs..."
+	onkeydown={onInputKeydown}
+	results={resultList}
+	footer={hints} />
