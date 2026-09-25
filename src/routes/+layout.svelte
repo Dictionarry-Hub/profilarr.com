@@ -6,6 +6,7 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
+		Database,
 		Library,
 		BookText,
 		Wrench,
@@ -67,7 +68,6 @@
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
-	const currentDatabase = $derived(databaseOptions.find((d) => d.value === databaseValue));
 
 	// Sidebar entity names arrive after mount, one request per database. The
 	// prerendered HTML has the seven group links but no entity names.
@@ -184,12 +184,12 @@
 			<SearchPalette database={databaseValue} />
 		</div>
 
-		<!-- PCD reference: the whole subtree is scoped to one database, so the
-		     database name is its root. -->
+		<!-- PCD reference: the whole subtree is scoped to one database, chosen
+		     in the navbar switcher. -->
 		{#if hasPcd}
 			<NavGroupLabel
-				label={currentDatabase?.label ?? databaseValue}
-				icon={currentDatabase?.icon}>
+				label="Database Browser"
+				icon={Database}>
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
