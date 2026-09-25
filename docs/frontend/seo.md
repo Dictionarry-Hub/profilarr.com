@@ -72,11 +72,16 @@ require the variable and reject values that are not plain HTTP or HTTPS origins.
 | `title`       | `string` | yes      |                              |
 | `description` | `string` | no       | Site-wide default            |
 | `image`       | `string` | no       | GitHub-hosted `icon.png` URL |
+| `markdown`    | `string` | no       |                              |
 
 `app.html` contains only structural head elements (charset, viewport, favicon links, manifest).
 Social and SEO meta tags live exclusively in the `SEO` component to avoid duplicates.
 
 The `og:image` and `twitter:image` must be absolute URLs.
+
+`markdown` is the site-relative path of the page's Markdown version (for example `/api/v1.md`). When
+set, the component adds `<link rel="alternate" type="text/markdown">` pointing at it; see
+[backend/llm.md](../backend/llm.md#discovery).
 
 For mdsvex content, frontmatter provides the title and description. The layout component should
 handle rendering the `SEO` component automatically so content authors only write frontmatter.

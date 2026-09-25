@@ -44,7 +44,8 @@
 
 <SEO
 	title={regex.name}
-	description={regex.description ?? undefined} />
+	description={regex.description ?? undefined}
+	markdown="{page.url.pathname}.md" />
 
 <PageHeader
 	title={regex.name}

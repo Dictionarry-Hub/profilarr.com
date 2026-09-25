@@ -38,7 +38,8 @@
 
 <SEO
 	{title}
-	description={blurb} />
+	description={blurb}
+	markdown="{page.url.pathname}.md" />
 
 <article>
 	<PageHeader

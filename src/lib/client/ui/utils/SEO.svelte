@@ -12,9 +12,16 @@
 		title: string;
 		description?: string;
 		image?: string;
+		/** Site-relative path of the page's Markdown version, advertised as an alternate. */
+		markdown?: string;
 	}
 
-	let { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE }: Props = $props();
+	let {
+		title,
+		description = DEFAULT_DESCRIPTION,
+		image = DEFAULT_IMAGE,
+		markdown
+	}: Props = $props();
 	const canonicalUrl = $derived(`${SITE_URL}${page.url.pathname}`);
 </script>
 
@@ -23,6 +30,12 @@
 	<link
 		rel="canonical"
 		href={canonicalUrl} />
+	{#if markdown}
+		<link
+			rel="alternate"
+			type="text/markdown"
+			href="{SITE_URL}{markdown}" />
+	{/if}
 	<meta
 		name="description"
 		content={description} />

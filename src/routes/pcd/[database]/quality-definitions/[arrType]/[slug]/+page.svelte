@@ -78,7 +78,9 @@
 	});
 </script>
 
-<SEO title={config.name} />
+<SEO
+	title={config.name}
+	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={config.name}>
 	{#snippet actions()}
