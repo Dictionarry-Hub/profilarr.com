@@ -35,6 +35,8 @@
 		'name': SITE_NAME,
 		'url': `${SITE_URL}/`
 	}).replace(/</g, '\\u003c');
+	// eslint-disable-next-line no-useless-escape -- a literal closing tag would end this script block
+	const websiteJsonLdTag = `<script type="application/ld+json">${websiteJsonLd}<\/script>`;
 </script>
 
 <svelte:head>
@@ -83,6 +85,6 @@
 		content={image} />
 	{#if page.url.pathname === '/'}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -- static JSON built above -->
-		{@html `<script type="application/ld+json">${websiteJsonLd}</script>`}
+		{@html websiteJsonLdTag}
 	{/if}
 </svelte:head>
