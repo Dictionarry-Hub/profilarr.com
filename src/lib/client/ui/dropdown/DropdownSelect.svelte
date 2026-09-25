@@ -23,6 +23,8 @@
 		placement?: 'auto' | 'bottom' | 'top';
 		disabled?: boolean;
 		iconOnly?: boolean;
+		variant?: 'accent' | 'default' | 'danger' | 'outline' | 'ghost';
+		size?: 'sm' | 'md' | 'lg';
 		onchange?: (value: string) => void;
 	}
 
@@ -37,6 +39,8 @@
 		placement = 'auto',
 		disabled = false,
 		iconOnly = false,
+		variant = 'default',
+		size = 'md',
 		onchange
 	}: Props = $props();
 
@@ -69,6 +73,8 @@
 		{#if iconOnly && currentEmoji}
 			<Button
 				type="button"
+				{variant}
+				{size}
 				{disabled}
 				class="size-7 p-0"
 				aria-label={currentLabel}
@@ -78,12 +84,16 @@
 		{:else if iconOnly && currentIcon}
 			<Button
 				type="button"
+				{variant}
+				{size}
 				icon={currentIcon}
 				{disabled}
 				onclick={() => !disabled && (open = !open)} />
 		{:else}
 			<Button
 				type="button"
+				{variant}
+				{size}
 				icon={chevronIcon}
 				iconPosition="right"
 				{disabled}

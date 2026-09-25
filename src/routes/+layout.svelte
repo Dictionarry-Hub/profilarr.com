@@ -25,7 +25,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import NavGroup from '$lib/client/ui/nav/NavGroup.svelte';
-	import NavGroupSelect from '$lib/client/ui/nav/NavGroupSelect.svelte';
+	import NavGroupLabel from '$lib/client/ui/nav/NavGroupLabel.svelte';
 	import NavItem from '$lib/client/ui/nav/NavItem.svelte';
 	import SearchPalette from '$lib/client/ui/search/SearchPalette.svelte';
 	import TableOfContents from '$lib/client/ui/toc/TableOfContents.svelte';
@@ -66,6 +66,7 @@
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
+	const currentDatabase = $derived(databaseOptions.find((d) => d.value === databaseValue));
 
 	// Sidebar entity names arrive after mount, one request per database. The
 	// prerendered HTML has the seven group links but no entity names.
@@ -140,7 +141,8 @@
 
 <div
 	class="fixed top-(--banner-height) left-0 flex h-[calc(100vh-var(--banner-height))] w-80 flex-col bg-bg font-sans text-text">
-	<!-- Navbar: logo and theme switcher only -->
+	<!-- Navbar: logo, database switcher, and theme switcher. The database switcher only shows
+	     when the build compiled more than one database; production ships Dictionarry alone. -->
 	<div class="flex items-center justify-between border-r border-b border-border px-6 py-4">
 		<div class="flex items-center gap-2">
 			<img
@@ -152,13 +154,28 @@
 				<span class="font-mono text-sm text-text-muted">/docs</span>
 			</span>
 		</div>
-		<DropdownSelect
-			bind:value={themeValue}
-			options={themeOptions}
-			header="Theme"
-			position="middle"
-			iconOnly
-			onchange={(v) => theme.set(v as typeof theme.current)} />
+		<div class="flex items-center gap-2">
+			{#if databaseOptions.length > 1}
+				<DropdownSelect
+					bind:value={databaseValue}
+					options={databaseOptions}
+					header="Database"
+					position="middle"
+					iconOnly
+					variant="ghost"
+					size="lg"
+					onchange={onDatabaseChange} />
+			{/if}
+			<DropdownSelect
+				bind:value={themeValue}
+				options={themeOptions}
+				header="Theme"
+				position="middle"
+				iconOnly
+				variant="ghost"
+				size="lg"
+				onchange={(v) => theme.set(v as typeof theme.current)} />
+		</div>
 	</div>
 	<!-- Page nav -->
 	<div class="flex-1 overflow-y-auto border-r border-border px-4 py-4">
@@ -167,13 +184,11 @@
 		</div>
 
 		<!-- PCD reference: the whole subtree is scoped to one database, so the
-		     database picker is its root. -->
+		     database name is its root. -->
 		{#if hasPcd}
-			<NavGroupSelect
-				bind:value={databaseValue}
-				options={databaseOptions}
-				header="Database"
-				onchange={onDatabaseChange}>
+			<NavGroupLabel
+				label={currentDatabase?.label ?? databaseValue}
+				icon={currentDatabase?.icon}>
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
@@ -273,7 +288,7 @@
 							)}" />
 					{/each}
 				</NavGroup>
-			</NavGroupSelect>
+			</NavGroupLabel>
 		{/if}
 
 		{#if data.devLogs.length > 0}

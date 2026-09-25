@@ -135,7 +135,10 @@ All outputs are gitignored. The build command is `pnpm compile:pcd && pnpm build
 ## Database Selection
 
 The active database is determined by the URL when on PCD routes. A database selector dropdown in the
-navbar lets users switch databases, which navigates to the equivalent page for the new database.
+navbar, next to the theme switcher, lets users switch databases, which navigates to the equivalent
+page for the new database. It only renders when the build compiled more than one database, so
+production builds (Dictionarry only) never show it. The sidebar labels the PCD subtree with the
+active database but does not switch it.
 
 On non-PCD pages, the selector updates a localStorage preference. Visiting `/pcd/` redirects to
 `/pcd/{preference}/` based on the stored value (defaulting to the first database in the config).

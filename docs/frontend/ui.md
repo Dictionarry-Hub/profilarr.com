@@ -510,7 +510,7 @@ connector line and a slide transition.
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside
-`NavGroupSelect` pass `class="mb-1"` for tighter spacing.
+`NavGroupLabel` pass `class="mb-1"` for tighter spacing.
 
 #### `NavItem`
 
@@ -532,36 +532,32 @@ Child navigation link, used inside NavGroup.
 Active state derived from current pathname. If `activePattern` is provided, uses string includes or
 regex test. Otherwise exact or prefix match against `href`.
 
-#### `NavGroupSelect`
+#### `NavGroupLabel`
 
-`src/lib/client/ui/nav/NavGroupSelect.svelte`
+`src/lib/client/ui/nav/NavGroupLabel.svelte`
 
-NavGroup's split-header language with the link side replaced by a select trigger: the left side
-opens a dropdown to pick a context value, the right chevron collapses the children the context
-scopes. The select affordance is deliberately quiet: no glyph, just a hover tooltip (and matching
-`aria-label`). Used for the sidebar database picker, which roots the PCD subtree.
+NavGroup's split-header language with the link side replaced by a plain label: the left side names a
+context, the right chevron collapses the children the context scopes. Only the chevron is
+interactive. Used for the sidebar's PCD subtree, labelled with the active database; switching
+happens in the navbar database switcher (see
+[backend/content.md](../backend/content.md#database-selection)).
 
-| Prop       | Type                                                                   | Required | Default           |
-| ---------- | ---------------------------------------------------------------------- | -------- | ----------------- |
-| `value`    | `string` (bindable)                                                    | yes      |                   |
-| `options`  | `{ value: string; label: string; icon?: Component; emoji?: string }[]` | yes      |                   |
-| `header`   | `string`                                                               | no       |                   |
-| `tooltip`  | `string`                                                               | no       | `Click to switch` |
-| `open`     | `boolean`                                                              | no       | `true`            |
-| `onchange` | `(value: string) => void`                                              | no       |                   |
+| Prop    | Type        | Required | Default |
+| ------- | ----------- | -------- | ------- |
+| `label` | `string`    | yes      |         |
+| `icon`  | `Component` | no       |         |
+| `open`  | `boolean`   | no       | `true`  |
 
 ```svelte
-<NavGroupSelect
-	bind:value={databaseValue}
-	options={databaseOptions}
-	header="Database"
-	onchange={onDatabaseChange}>
+<NavGroupLabel
+	label={currentDatabase.label}
+	icon={currentDatabase.icon}>
 	<NavGroup
 		label="Quality Profiles"
 		href="/pcd/{databaseValue}/quality-profiles">
 		<!-- ... -->
 	</NavGroup>
-</NavGroupSelect>
+</NavGroupLabel>
 ```
 
 ### Toc
@@ -607,6 +603,8 @@ Select control backed by a dropdown menu. Wraps `Dropdown`, `DropdownHeader`, an
 | `placement`   | `'auto' \| 'bottom' \| 'top'`                                          | no       | `'auto'`      |
 | `disabled`    | `boolean`                                                              | no       | `false`       |
 | `iconOnly`    | `boolean`                                                              | no       | `false`       |
+| `variant`     | `'accent' \| 'default' \| 'danger' \| 'outline' \| 'ghost'`            | no       | `'default'`   |
+| `size`        | `'sm' \| 'md' \| 'lg'`                                                 | no       | `'md'`        |
 | `onchange`    | `(value: string) => void`                                              | no       |               |
 
 `header` renders a `DropdownHeader` at the top of the menu (e.g. "Theme", "Database"). `iconOnly`
