@@ -83,7 +83,9 @@
 	});
 </script>
 
-<SEO title={naming.name} />
+<SEO
+	title={naming.name}
+	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={naming.name}>
 	{#snippet actions()}

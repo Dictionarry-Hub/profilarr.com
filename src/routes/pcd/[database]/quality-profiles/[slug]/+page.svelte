@@ -414,7 +414,8 @@
 
 <SEO
 	title={profile.name}
-	description={profile.description ?? undefined} />
+	description={profile.description ?? undefined}
+	markdown="{page.url.pathname}.md" />
 
 <!-- Passed as badges, not tags, so the language leads the row. -->
 {#snippet headerBadges()}

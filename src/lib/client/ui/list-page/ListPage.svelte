@@ -70,7 +70,8 @@
 
 <SEO
 	{title}
-	description={seoDescription} />
+	description={seoDescription}
+	markdown={artifactPath} />
 
 <PageHeader {title}>
 	{#snippet actions()}

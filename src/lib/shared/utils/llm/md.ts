@@ -6,6 +6,11 @@ export function join(blocks: (string | null)[]): string {
 		.join('\n\n');
 }
 
+/** Closing line of every Markdown artifact, so a reader of one page can find the rest. */
+export function withIndexFooter(markdown: string, siteUrl: string): string {
+	return `${markdown.trimEnd()}\n\n---\n\nIndex of this site's Markdown pages: ${siteUrl}/llms.txt\n`;
+}
+
 export function fence(language: string, code: string): string {
 	return `\`\`\`${language}\n${code.trim()}\n\`\`\``;
 }

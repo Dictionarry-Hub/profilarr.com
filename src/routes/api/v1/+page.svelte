@@ -27,7 +27,8 @@
 
 <SEO
 	title="API Reference v{spec.version}"
-	description="Profilarr API reference documentation for v{spec.version}." />
+	description="Profilarr API reference documentation for v{spec.version}."
+	markdown="/api/v1.md" />
 
 <PageHeader title="API Reference">
 	{#snippet actions()}

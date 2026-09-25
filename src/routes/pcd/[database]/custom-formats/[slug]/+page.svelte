@@ -250,7 +250,8 @@
 
 <SEO
 	title={format.name}
-	description={format.description ?? undefined} />
+	description={format.description ?? undefined}
+	markdown="{page.url.pathname}.md" />
 
 {#snippet renameBadge()}
 	<Badge

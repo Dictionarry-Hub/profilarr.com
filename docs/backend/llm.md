@@ -219,6 +219,25 @@ Only detail pages have mirrors. The entity list pages do not, so `/pcd/*` stays 
 `pending` list and the detail artifacts are guaranteed by their own build instead: entries derive
 from the same compiled data the pages render, and a missing entity throws during prerender.
 
+## Discovery
+
+Three pieces let a reader find the Markdown artifacts without a copy button.
+
+- **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention (`src/routes/llms.txt/`,
+  serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an H1, a blockquote summary of
+  Profilarr and the site, then sections linking the API reference, every dev log and wiki article
+  with its blurb, and, per compiled PCD database, every quality profile with its tags plus counts of
+  the other entity types. It points to `/sitemap.xml` for the full entity list rather than listing
+  hundreds of entities, since the PCD list pages are not all built. Served as plain text so the
+  footer hook skips it.
+- **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
+  lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
+  `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
+  bakes the footer into the prerendered files.
+- **Alternate link.** Pages with a Markdown version pass its path to the `SEO` component's
+  `markdown` prop, which renders `<link rel="alternate" type="text/markdown">` in the head, so tools
+  that fetch the HTML learn the Markdown version exists.
+
 ## Copy Buttons and the AI Menu
 
 On `/api/v1`:
@@ -284,9 +303,6 @@ component):
   settings, quality definitions, and quality profiles are done (see PCD Entity Artifacts); the
   entity list pages follow the same serializer-per-entity pattern in
   `src/lib/shared/utils/llm/pcd.ts`.
-- **`/llms.txt`.** An index of all artifacts, per the [llms.txt](https://llmstxt.org/) convention.
-  Cheap once artifacts exist, but low priority: log studies show almost no organic consumption, and
-  copy affordances are what readers actually use.
 
 ## Prior Art
 
