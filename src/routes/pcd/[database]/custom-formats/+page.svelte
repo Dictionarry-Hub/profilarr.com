@@ -2,6 +2,6 @@
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
 </script>
 
-<SEO title="Custom Formats - Dictionarry" />
+<SEO title="Custom Formats" />
 
 <p>Custom Formats</p>
