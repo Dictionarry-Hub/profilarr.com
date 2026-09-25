@@ -540,7 +540,8 @@ NavGroup's split-header language with the link side replaced by a plain label: t
 context, the right chevron collapses the children the context scopes. Only the chevron is
 interactive. Used for the sidebar's PCD subtree, labelled with the active database; switching
 happens in the navbar database switcher (see
-[backend/content.md](../backend/content.md#database-selection)).
+[backend/content.md](../backend/content.md#database-selection)). Also groups Dev Logs and Wiki under
+an Articles section.
 
 | Prop    | Type        | Required | Default |
 | ------- | ----------- | -------- | ------- |
