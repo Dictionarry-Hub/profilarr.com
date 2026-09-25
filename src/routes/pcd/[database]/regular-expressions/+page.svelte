@@ -2,6 +2,6 @@
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
 </script>
 
-<SEO title="Regular Expressions - Dictionarry" />
+<SEO title="Regular Expressions" />
 
 <p>Regular Expressions</p>

@@ -79,6 +79,15 @@ Social and SEO meta tags live exclusively in the `SEO` component to avoid duplic
 
 The `og:image` and `twitter:image` must be absolute URLs.
 
+Pages pass a bare `title`. The component renders the document `<title>` as `{title} - Profilarr`, so
+searches for "profilarr" plus a topic match every page; the home page passes `Profilarr` itself and
+gets it unsuffixed. Open Graph and Twitter titles stay bare, since `og:site_name` carries
+"Profilarr" separately. The default description is Profilarr's own: "Configuration management
+platform for Radarr and Sonarr."
+
+The home page also gets `WebSite` structured data (JSON-LD naming the site "Profilarr" at the site
+origin), which Google uses for the site name shown above search results.
+
 `markdown` is the site-relative path of the page's Markdown version (for example `/api/v1.md`). When
 set, the component adds `<link rel="alternate" type="text/markdown">` pointing at it; see
 [backend/llm.md](../backend/llm.md#discovery).
