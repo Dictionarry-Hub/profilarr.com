@@ -25,6 +25,7 @@
 		Rocket,
 		SquareTerminal,
 		Hammer,
+		Send,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -60,7 +61,8 @@
 		'introduction': Info,
 		'quick-start': Rocket,
 		'installation': SquareTerminal,
-		'build': Hammer
+		'build': Hammer,
+		'deploy': Send
 	};
 
 	let { children, data } = $props();
