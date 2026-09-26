@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Logs
+slug: logs
+blurb: Finding out what Profilarr did and why something failed.
+parent: monitoring
+order: 3
+---
+
+TODO: Reading Profilarr's logs. Covers the log viewer and its filters, downloading entries, the logging settings (level, retention, and file and console output) under Settings > General, and that the viewer only shows file logs, so it stays empty when file logging is off. Also points out that the Logs tab on an Arr instance shows that Arr's own logs, not Profilarr's.

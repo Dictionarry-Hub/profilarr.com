@@ -6,4 +6,4 @@ blurb: A first Profilarr setup from start to finish.
 order: 2
 ---
 
-TODO: A first setup from start to finish. Walks through installing Profilarr, logging in, checking the Dictionarry database that is linked on first start, adding a Radarr or Sonarr instance, and running a first sync, with links to the detailed pages for each step. Ends by pointing to the guided tours under Settings > Onboarding for a walkthrough inside the app.
+TODO: A first setup from start to finish. Walks through installing Profilarr, logging in, checking the Dictionarry database that is linked on first start, adding a Radarr or Sonarr instance, and running a first sync, with links to the detailed pages for each step. Ends by pointing to the guided tours under Settings > Onboarding for a walkthrough inside the app, and mentions the interface preferences under Settings > General, such as fonts and alert position.

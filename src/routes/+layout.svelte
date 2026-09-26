@@ -25,6 +25,7 @@
 		Hammer,
 		Send,
 		FlaskConical,
+		Activity,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -61,7 +62,8 @@
 		'installation': SquareTerminal,
 		'build': Hammer,
 		'deploy': Send,
-		'test': FlaskConical
+		'test': FlaskConical,
+		'monitoring': Activity
 	};
 
 	let { children, data } = $props();
