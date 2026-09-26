@@ -511,9 +511,9 @@ connector line and a slide transition.
 
 `open` defaults to `'auto'`: the group is open while the current page is inside it (its `href`, a
 path under it, or one of `childHrefs`) and closed otherwise. A chevron toggle overrides that until
-the next navigation. `childHrefs` is for groups whose child pages don't share the `href` prefix,
-such as docs pages with flat URLs. A boolean `open` fixes the starting state instead, and a toggle
-then sticks. Every group in the sidebar uses `'auto'`.
+the next navigation, and clicking the header link clears it. `childHrefs` is for groups whose child
+pages don't share the `href` prefix, such as docs pages with flat URLs. A boolean `open` fixes the
+starting state instead, and a toggle then sticks. Every group in the sidebar uses `'auto'`.
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside

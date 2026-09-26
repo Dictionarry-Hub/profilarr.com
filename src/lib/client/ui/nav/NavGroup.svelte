@@ -59,6 +59,12 @@
 	function toggleOpen() {
 		toggled = { open: !isOpen, path: page.url.pathname };
 	}
+
+	// Clicking the header link drops any manual toggle, so a group you closed
+	// by hand opens again even when you are already on its page.
+	function clearToggle() {
+		toggled = null;
+	}
 </script>
 
 <div class={className ?? 'mb-4'}>
@@ -69,6 +75,7 @@
 		<!-- Link side -->
 		<a
 			{href}
+			onclick={clearToggle}
 			class="flex flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold transition-colors
 				{hasItems ? 'rounded-l-control' : 'rounded-control'}
 				{isActive ? 'text-text' : 'text-text-soft group-hover/header:bg-surface-hover'}">
