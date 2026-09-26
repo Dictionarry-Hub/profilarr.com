@@ -23,7 +23,7 @@
 
 <div class="prose">
 	{#if data.aboutHtml}
-		<!-- ABOUT.md from the database repo, rendered at build time. -->
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -- ABOUT.md parsed at build time -->
 		{@html data.aboutHtml}
 	{:else}
 		<p>{data.description}</p>
