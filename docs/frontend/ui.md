@@ -541,7 +541,7 @@ context, the right chevron collapses the children the context scopes. Only the c
 interactive. Used for the sidebar's PCD subtree under a Database Browser section; switching the
 database happens in the navbar database switcher (see
 [backend/content.md](../backend/content.md#database-selection)). Also groups Dev Logs and Wiki under
-an Articles section.
+an Articles section, and the API Reference under a Docs section.
 
 | Prop    | Type        | Required | Default |
 | ------- | ----------- | -------- | ------- |

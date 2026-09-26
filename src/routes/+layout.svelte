@@ -184,6 +184,16 @@
 			<SearchPalette database={databaseValue} />
 		</div>
 
+		<NavGroupLabel
+			label="Docs"
+			icon={BookText}>
+			<NavGroup
+				label="API Reference"
+				href="/api/v1"
+				icon={Code}
+				class="mb-1" />
+		</NavGroupLabel>
+
 		<!-- PCD reference: the whole subtree is scoped to one database, chosen
 		     in the navbar switcher. -->
 		{#if hasPcd}
@@ -328,11 +338,6 @@
 				{/if}
 			</NavGroupLabel>
 		{/if}
-
-		<NavGroup
-			label="API Reference"
-			href="/api/v1"
-			icon={Code} />
 
 		{#if import.meta.env.DEV}
 			<NavGroup
