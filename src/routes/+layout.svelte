@@ -6,7 +6,7 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
-		Database,
+		Landmark,
 		Library,
 		BookText,
 		Wrench,
@@ -189,7 +189,7 @@
 		{#if hasPcd}
 			<NavGroupLabel
 				label="Database Browser"
-				icon={Database}>
+				icon={Landmark}>
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"

@@ -552,7 +552,7 @@ an Articles section.
 ```svelte
 <NavGroupLabel
 	label="Database Browser"
-	icon={Database}>
+	icon={Landmark}>
 	<NavGroup
 		label="Quality Profiles"
 		href="/pcd/{databaseValue}/quality-profiles">
