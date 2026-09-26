@@ -499,14 +499,21 @@ Collapsible navigation section with a split header. The left side is a link, the
 chevron toggle. Both highlight on hover of either via group hover. Children render with a vertical
 connector line and a slide transition.
 
-| Prop    | Type                                                | Required | Default |
-| ------- | --------------------------------------------------- | -------- | ------- |
-| `label` | `string`                                            | yes      |         |
-| `href`  | `string`                                            | yes      |         |
-| `icon`  | `Component`                                         | no       |         |
-| `badge` | `number`                                            | no       | `0`     |
-| `open`  | `boolean`                                           | no       | `true`  |
-| `class` | `string` (replaces the default `mb-4` root spacing) | no       |         |
+| Prop         | Type                                                | Required | Default  |
+| ------------ | --------------------------------------------------- | -------- | -------- |
+| `label`      | `string`                                            | yes      |          |
+| `href`       | `string`                                            | yes      |          |
+| `icon`       | `Component`                                         | no       |          |
+| `badge`      | `number`                                            | no       | `0`      |
+| `open`       | `boolean \| 'auto'`                                 | no       | `'auto'` |
+| `childHrefs` | `string[]`                                          | no       | `[]`     |
+| `class`      | `string` (replaces the default `mb-4` root spacing) | no       |          |
+
+`open` defaults to `'auto'`: the group is open while the current page is inside it (its `href`, a
+path under it, or one of `childHrefs`) and closed otherwise. A chevron toggle overrides that until
+the next navigation. `childHrefs` is for groups whose child pages don't share the `href` prefix,
+such as docs pages with flat URLs. A boolean `open` fixes the starting state instead, and a toggle
+then sticks. Every group in the sidebar uses `'auto'`.
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside

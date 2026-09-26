@@ -220,6 +220,7 @@
 						label={doc.title}
 						href={doc.href}
 						icon={docIcons[doc.slug]}
+						childHrefs={doc.children.map((child) => child.href)}
 						class="mb-1">
 						{#each doc.children as child (child.href)}
 							<NavItem
@@ -252,7 +253,6 @@
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
 					icon={SlidersHorizontal}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.qualityProfiles ?? [] as name (name)}
 						<NavItem
@@ -265,7 +265,6 @@
 					label="Custom Formats"
 					href="/pcd/{databaseValue}/custom-formats"
 					icon={Tags}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.customFormats ?? [] as name (name)}
 						<NavItem
@@ -278,7 +277,6 @@
 					label="Regular Expressions"
 					href="/pcd/{databaseValue}/regular-expressions"
 					icon={Regex}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.regularExpressions ?? [] as name (name)}
 						<NavItem
@@ -291,7 +289,6 @@
 					label="Delay Profiles"
 					href="/pcd/{databaseValue}/delay-profiles"
 					icon={Clock}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.delayProfiles ?? [] as name (name)}
 						<NavItem
@@ -304,7 +301,6 @@
 					label="Naming"
 					href="/pcd/{databaseValue}/naming"
 					icon={FileText}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.naming ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -320,7 +316,6 @@
 					label="Media Settings"
 					href="/pcd/{databaseValue}/media-settings"
 					icon={Settings}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.mediaSettings ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -336,7 +331,6 @@
 					label="Quality Definitions"
 					href="/pcd/{databaseValue}/quality-definitions"
 					icon={Ruler}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.qualityDefinitions ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -360,7 +354,6 @@
 						label="Dev Logs"
 						href="/dev-logs"
 						icon={Rss}
-						open={false}
 						class="mb-1">
 						{#each data.devLogs as log (log.href)}
 							<NavItem
@@ -375,7 +368,6 @@
 						label="Wiki"
 						href="/wiki"
 						icon={BookText}
-						open={false}
 						class="mb-1">
 						{#each data.wiki as article (article.href)}
 							<NavItem
