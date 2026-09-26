@@ -26,6 +26,10 @@
 		Send,
 		FlaskConical,
 		Activity,
+		CircleQuestionMark,
+		Users,
+		GitPullRequest,
+		Heart,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -63,7 +67,11 @@
 		'build': Hammer,
 		'deploy': Send,
 		'test': FlaskConical,
-		'monitoring': Activity
+		'monitoring': Activity,
+		'faq': CircleQuestionMark,
+		'community': Users,
+		'contributing': GitPullRequest,
+		'sponsor': Heart
 	};
 
 	let { children, data } = $props();
