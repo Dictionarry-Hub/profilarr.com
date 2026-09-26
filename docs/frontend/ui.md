@@ -538,9 +538,10 @@ regex test. Otherwise exact or prefix match against `href`.
 
 NavGroup's split-header language with the link side replaced by a plain label: the left side names a
 context, the right chevron collapses the children the context scopes. Only the chevron is
-interactive. Used for the sidebar's PCD subtree, labelled with the active database; switching
-happens in the navbar database switcher (see
-[backend/content.md](../backend/content.md#database-selection)).
+interactive. Used for the sidebar's PCD subtree under a Database Browser section; switching the
+database happens in the navbar database switcher (see
+[backend/content.md](../backend/content.md#database-selection)). Also groups Dev Logs and Wiki under
+an Articles section, and the API Reference under a Docs section.
 
 | Prop    | Type        | Required | Default |
 | ------- | ----------- | -------- | ------- |
@@ -550,8 +551,8 @@ happens in the navbar database switcher (see
 
 ```svelte
 <NavGroupLabel
-	label={currentDatabase.label}
-	icon={currentDatabase.icon}>
+	label="Database Browser"
+	icon={Landmark}>
 	<NavGroup
 		label="Quality Profiles"
 		href="/pcd/{databaseValue}/quality-profiles">

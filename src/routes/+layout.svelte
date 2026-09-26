@@ -5,8 +5,10 @@
 	import { database, DATABASES } from '$lib/client/ui/database/database.svelte';
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
-		NotebookPen,
+		Rss,
+		Landmark,
 		Library,
+		BookText,
 		Wrench,
 		BookOpen,
 		Trash2,
@@ -66,7 +68,6 @@
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
-	const currentDatabase = $derived(databaseOptions.find((d) => d.value === databaseValue));
 
 	// Sidebar entity names arrive after mount, one request per database. The
 	// prerendered HTML has the seven group links but no entity names.
@@ -183,12 +184,22 @@
 			<SearchPalette database={databaseValue} />
 		</div>
 
-		<!-- PCD reference: the whole subtree is scoped to one database, so the
-		     database name is its root. -->
+		<NavGroupLabel
+			label="Docs"
+			icon={BookText}>
+			<NavGroup
+				label="API Reference"
+				href="/api/v1"
+				icon={Code}
+				class="mb-1" />
+		</NavGroupLabel>
+
+		<!-- PCD reference: the whole subtree is scoped to one database, chosen
+		     in the navbar switcher. -->
 		{#if hasPcd}
 			<NavGroupLabel
-				label={currentDatabase?.label ?? databaseValue}
-				icon={currentDatabase?.icon}>
+				label="Database Browser"
+				icon={Landmark}>
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
@@ -291,38 +302,42 @@
 			</NavGroupLabel>
 		{/if}
 
-		{#if data.devLogs.length > 0}
-			<NavGroup
-				label="Dev Logs"
-				href="/dev-logs"
-				icon={NotebookPen}
-				open={false}>
-				{#each data.devLogs as log (log.href)}
-					<NavItem
-						label={log.title}
-						href={log.href} />
-				{/each}
-			</NavGroup>
-		{/if}
+		<!-- Authored articles: dev logs and wiki share one section. -->
+		{#if data.devLogs.length > 0 || data.wiki.length > 0}
+			<NavGroupLabel
+				label="Articles"
+				icon={Library}>
+				{#if data.devLogs.length > 0}
+					<NavGroup
+						label="Dev Logs"
+						href="/dev-logs"
+						icon={Rss}
+						open={false}
+						class="mb-1">
+						{#each data.devLogs as log (log.href)}
+							<NavItem
+								label={log.title}
+								href={log.href} />
+						{/each}
+					</NavGroup>
+				{/if}
 
-		{#if data.wiki.length > 0}
-			<NavGroup
-				label="Wiki"
-				href="/wiki"
-				icon={Library}
-				open={false}>
-				{#each data.wiki as article (article.href)}
-					<NavItem
-						label={article.title}
-						href={article.href} />
-				{/each}
-			</NavGroup>
+				{#if data.wiki.length > 0}
+					<NavGroup
+						label="Wiki"
+						href="/wiki"
+						icon={BookText}
+						open={false}
+						class="mb-1">
+						{#each data.wiki as article (article.href)}
+							<NavItem
+								label={article.title}
+								href={article.href} />
+						{/each}
+					</NavGroup>
+				{/if}
+			</NavGroupLabel>
 		{/if}
-
-		<NavGroup
-			label="API Reference"
-			href="/api/v1"
-			icon={Code} />
 
 		{#if import.meta.env.DEV}
 			<NavGroup
