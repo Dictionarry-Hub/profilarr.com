@@ -34,8 +34,10 @@ Every pull request targeting `develop` runs these checks:
 The four jobs run in parallel and share nothing. Type Check and Build + Lint each compile the API
 and PCD data themselves because compiling is cheaper than a job's setup. Build and Lint are one job
 because the custom lint rules read the prerendered HTML in `build/`, and moving that output between
-jobs as an artifact cost more than lint itself. All four must pass before a PR can be merged. Tests
-live in `tests/` at the repository root. PR titles are validated against conventional commit format.
+jobs as an artifact cost more than lint itself. All four must pass, on a branch that is up to date
+with `develop`, before a PR can be merged. CI does not run again on the merge itself: the squash
+commit holds the tree the checks passed on, and the deploy workflow builds it again. Tests live in
+`tests/` at the repository root. PR titles are validated against conventional commit format.
 
 ## Deployment
 
