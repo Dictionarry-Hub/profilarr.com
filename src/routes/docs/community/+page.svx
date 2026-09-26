@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Community
+slug: community
+blurb: Where to get help and talk with other Profilarr users.
+order: 9
+---
+
+TODO: Where to find other Profilarr users and get help. Covers the Discord server, GitHub issues for bug reports and feature requests (including the Report a Bug and Request a Feature links in the app's help button), and what to include when asking for help.

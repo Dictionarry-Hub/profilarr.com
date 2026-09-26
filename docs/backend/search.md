@@ -65,19 +65,19 @@ Every builder also appends its type words to keywords ("quality profile", "regex
 "naming", ...). Users search by kind, and the kind rarely appears in entity names or descriptions:
 without this, "1080p profile" cannot find quality profiles.
 
-| Type                   | Blurb                                                                                               | Keywords            |
-| ---------------------- | --------------------------------------------------------------------------------------------------- | ------------------- |
-| Dev log                | Frontmatter blurb, passed through                                                                   | Tags                |
-| Wiki article           | Frontmatter blurb, passed through                                                                   | Tags                |
-| Profilarr doc (future) | Frontmatter description; fallback decided when the layer exists                                     |                     |
-| API endpoint           | Method plus path ("GET /api/v1/databases"); title from the operation summary                        | Tag name            |
-| Quality profile        | Description, truncated. Fallback: upgrade-target sentence ("Upgrades until Bluray-1080p"). No stats | Tags, quality names |
-| Custom format          | Description. Fallback: condition-type summary ("3 conditions: release title, resolution, source")   | Tags                |
-| Regex                  | Description. Fallback: truncated pattern                                                            | Tags                |
-| Delay profile          | Derived: protocol, delays, bypass ("Prefers usenet. 120 min torrent delay.")                        |                     |
-| Naming                 | Derived: "Radarr naming scheme, renaming enabled."                                                  | Arr type            |
-| Media settings         | Derived: propers/repacks behavior, MediaInfo on/off                                                 | Arr type            |
-| Quality definitions    | Derived: tier count and range ("12 quality tiers, SDTV to Remux-2160p.")                            | Arr type            |
+| Type                | Blurb                                                                                               | Keywords            |
+| ------------------- | --------------------------------------------------------------------------------------------------- | ------------------- |
+| Dev log             | Frontmatter blurb, passed through                                                                   | Tags                |
+| Wiki article        | Frontmatter blurb, passed through                                                                   | Tags                |
+| Profilarr doc       | Frontmatter blurb, passed through                                                                   |                     |
+| API endpoint        | Method plus path ("GET /api/v1/databases"); title from the operation summary                        | Tag name            |
+| Quality profile     | Description, truncated. Fallback: upgrade-target sentence ("Upgrades until Bluray-1080p"). No stats | Tags, quality names |
+| Custom format       | Description. Fallback: condition-type summary ("3 conditions: release title, resolution, source")   | Tags                |
+| Regex               | Description. Fallback: truncated pattern                                                            | Tags                |
+| Delay profile       | Derived: protocol, delays, bypass ("Prefers usenet. 120 min torrent delay.")                        |                     |
+| Naming              | Derived: "Radarr naming scheme, renaming enabled."                                                  | Arr type            |
+| Media settings      | Derived: propers/repacks behavior, MediaInfo on/off                                                 | Arr type            |
+| Quality definitions | Derived: tier count and range ("12 quality tiers, SDTV to Remux-2160p.")                            | Arr type            |
 
 The API reference is indexed per endpoint, one entry per operation, with URLs anchored into the
 single API reference page by operationId (`/api/v1#getDatabases`). The page already renders

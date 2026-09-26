@@ -25,15 +25,17 @@ without maintaining a parser.
 Named mdsvex layouts are registered in `svelte.config.js`. Articles select one via the `layout`
 frontmatter key:
 
-| Key        | Component                        | Used by       |
-| ---------- | -------------------------------- | ------------- |
-| `dev-logs` | `src/lib/layouts/Article.svelte` | Dev logs      |
-| `wiki`     | `src/lib/layouts/Article.svelte` | Wiki articles |
+| Key        | Component                        | Used by        |
+| ---------- | -------------------------------- | -------------- |
+| `docs`     | `src/lib/layouts/Article.svelte` | Profilarr docs |
+| `dev-logs` | `src/lib/layouts/Article.svelte` | Dev logs       |
+| `wiki`     | `src/lib/layouts/Article.svelte` | Wiki articles  |
 
-Both article layers share `Article.svelte`: same frontmatter, same page header, and AI menu. There
-is no fallback layout; all `.svx` files live under `dev-logs/` or `wiki/`. The table of contents is
-not part of the layout: the root layout mounts it globally beside any page that renders an
-`<article>` (see [ui.md](./ui.md)).
+All three layers share `Article.svelte`: same page header and AI menu. Docs pages leave out the
+author, date, and tags, which the layout treats as optional. There is no fallback layout; all `.svx`
+files live under `docs/`, `dev-logs/`, or `wiki/`. The table of contents is not part of the layout:
+the root layout mounts it globally beside any page that renders an `<article>` (see
+[ui.md](./ui.md)).
 
 ## Plugins
 
@@ -54,5 +56,5 @@ KaTeX rendering happens at build time; the KaTeX stylesheet is imported per-arti
 Markdown files use YAML frontmatter for metadata. Frontmatter values are used for SEO meta tags,
 search indexing, and content listing/sorting.
 
-The article frontmatter shared by dev logs and wiki articles is documented in
-[backend/content.md](../backend/content.md).
+The article frontmatter shared by dev logs and wiki articles, and the docs frontmatter, are
+documented in [backend/content.md](../backend/content.md).

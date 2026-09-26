@@ -128,15 +128,17 @@ Get a database by ID.
 - **Markdown descriptions, not HTML.** Serializers use the raw `description` fields from the parser,
   never the `descriptionHtml` variants.
 
-## Dev Log and Wiki Artifacts
+## Docs, Dev Log, and Wiki Artifacts
 
 The mdsvex content layers. The source `.svx` files are already markdown, so the serializers at
-`src/lib/shared/utils/llm/devlog.ts` and `src/lib/shared/utils/llm/wiki.ts` are thin. The shared
-stripping and date helpers (`articleBody`, `isoDate`) live in `md.ts`; each layer module owns only
-its formatting strings.
+`src/lib/shared/utils/llm/docs.ts`, `src/lib/shared/utils/llm/devlog.ts`, and
+`src/lib/shared/utils/llm/wiki.ts` are thin. The shared stripping and date helpers (`articleBody`,
+`isoDate`) live in `md.ts`; each layer module owns only its formatting strings.
 
 | Artifact      | URL                   | Content                                                  |
 | ------------- | --------------------- | -------------------------------------------------------- |
+| Docs root     | `/docs.md`            | Preamble from frontmatter, then the source body verbatim |
+| Docs page     | `/docs/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
 | Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
 | Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
 | Wiki index    | `/wiki.md`            | One line per article (title, date, blurb), newest first  |
@@ -144,7 +146,10 @@ its formatting strings.
 
 The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
-the web URL. The body ships nearly verbatim: frontmatter and `<script>` blocks are stripped, but
+the web URL. Docs pages have no author, date, or tags, so their context line names the docs and the
+web URL. The docs root page at `/docs` is the Introduction, not an index, so there is no docs index
+artifact; `llms.txt` lists the docs pages in reading order instead, with child pages indented under
+their parent. The body ships nearly verbatim: frontmatter and `<script>` blocks are stripped, but
 embedded Svelte components stay intact, the same approach Anthropic's docs use. Components often
 carry real content in their props (e.g. `CodeBlock` code), so stripping them would lose information;
 models read component tags fine.
@@ -225,11 +230,11 @@ Three pieces let a reader find the Markdown artifacts without a copy button.
 
 - **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention (`src/routes/llms.txt/`,
   serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an H1, a blockquote summary of
-  Profilarr and the site, then sections linking the API reference, every dev log and wiki article
-  with its blurb, and, per compiled PCD database, every quality profile with its tags plus counts of
-  the other entity types. It points to `/sitemap.xml` for the full entity list rather than listing
-  hundreds of entities, since the PCD list pages are not all built. Served as plain text so the
-  footer hook skips it.
+  Profilarr and the site, then sections linking every docs page in reading order, the API reference,
+  every dev log and wiki article with its blurb, and, per compiled PCD database, every quality
+  profile with its tags plus counts of the other entity types. It points to `/sitemap.xml` for the
+  full entity list rather than listing hundreds of entities, since the PCD list pages are not all
+  built. Served as plain text so the footer hook skips it.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
@@ -251,9 +256,9 @@ The fuller menu exists only at page level, never repeated per section. With seve
 on one page, every icon-only button's tooltip and aria-label state the copy scope ("Copy Databases
 as Markdown"), not just the format.
 
-Dev log and wiki pages get an `AiMenu` automatically: the shared `Article` layout renders one in its
-`PageHeader` actions, deriving the artifact path from the current pathname plus `.md` and using the
-default prompt.
+Docs, dev log, and wiki pages get an `AiMenu` automatically: the shared `Article` layout renders one
+in its `PageHeader` actions, deriving the artifact path from the current pathname plus `.md` and
+using the default prompt.
 
 ### Assistant deep links
 
@@ -296,9 +301,9 @@ and forgetting its markdown mirror. See [tooling/lint.md](../tooling/lint.md) fo
 Planned but not yet built. Each reuses the same three pieces (serializer, artifact route, copy
 component):
 
-- **Remaining mdsvex surfaces.** Dev logs and wiki articles are done (see Dev Log and Wiki
-  Artifacts); the home page and any future docs sections follow the same pattern. Landing each
-  removes its entries from the rule's `PENDING` list (see Enforcement).
+- **Remaining mdsvex surfaces.** Docs pages, dev logs, and wiki articles are done (see Docs, Dev
+  Log, and Wiki Artifacts); the home page follows the same pattern. Landing each removes its entries
+  from the rule's `PENDING` list (see Enforcement).
 - **PCD entity mirrors.** Custom formats, regular expressions, delay profiles, naming configs, media
   settings, quality definitions, and quality profiles are done (see PCD Entity Artifacts); the
   entity list pages follow the same serializer-per-entity pattern in

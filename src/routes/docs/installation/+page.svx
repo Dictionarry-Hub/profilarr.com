@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Installation
+slug: installation
+blurb: Every way to install Profilarr, what it needs to run, and how to configure it.
+order: 3
+---
+
+TODO: The ways to install Profilarr and where each one stands. Covers a table of installation methods (Docker today, with Windows, macOS, and Linux binaries planned), requirements, every environment variable with the Docker-only ones marked, outbound proxy settings, and links to the guides for each step.

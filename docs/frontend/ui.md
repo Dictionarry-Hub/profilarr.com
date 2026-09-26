@@ -499,14 +499,21 @@ Collapsible navigation section with a split header. The left side is a link, the
 chevron toggle. Both highlight on hover of either via group hover. Children render with a vertical
 connector line and a slide transition.
 
-| Prop    | Type                                                | Required | Default |
-| ------- | --------------------------------------------------- | -------- | ------- |
-| `label` | `string`                                            | yes      |         |
-| `href`  | `string`                                            | yes      |         |
-| `icon`  | `Component`                                         | no       |         |
-| `badge` | `number`                                            | no       | `0`     |
-| `open`  | `boolean`                                           | no       | `true`  |
-| `class` | `string` (replaces the default `mb-4` root spacing) | no       |         |
+| Prop         | Type                                                | Required | Default  |
+| ------------ | --------------------------------------------------- | -------- | -------- |
+| `label`      | `string`                                            | yes      |          |
+| `href`       | `string`                                            | yes      |          |
+| `icon`       | `Component`                                         | no       |          |
+| `badge`      | `number`                                            | no       | `0`      |
+| `open`       | `boolean \| 'auto'`                                 | no       | `'auto'` |
+| `childHrefs` | `string[]`                                          | no       | `[]`     |
+| `class`      | `string` (replaces the default `mb-4` root spacing) | no       |          |
+
+`open` defaults to `'auto'`: the group is open while the current page is inside it (its `href`, a
+path under it, or one of `childHrefs`) and closed otherwise. A chevron toggle overrides that until
+the next navigation, and clicking the header link clears it. `childHrefs` is for groups whose child
+pages don't share the `href` prefix, such as docs pages with flat URLs. A boolean `open` fixes the
+starting state instead, and a toggle then sticks. Every group in the sidebar uses `'auto'`.
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside
@@ -536,26 +543,38 @@ regex test. Otherwise exact or prefix match against `href`.
 
 `src/lib/client/ui/nav/NavGroupLabel.svelte`
 
-NavGroup's split-header language with the link side replaced by a plain label: the left side names a
-context, the right chevron collapses the children the context scopes. Only the chevron is
-interactive. Used for the sidebar's PCD subtree under a Database Browser section; switching the
-database happens in the navbar database switcher (see
-[backend/content.md](../backend/content.md#database-selection)). Also groups Dev Logs and Wiki under
-an Articles section, and the API Reference under a Docs section.
+NavGroup's split-header language for a sidebar section: the left side names the section, the right
+chevron collapses the children it scopes. With `href` the left side is a link to the section's own
+page and gets NavGroup's active treatment on that page; without it the left side is a plain label.
 
-| Prop    | Type        | Required | Default |
-| ------- | ----------- | -------- | ------- |
-| `label` | `string`    | yes      |         |
-| `icon`  | `Component` | no       |         |
-| `open`  | `boolean`   | no       | `true`  |
+| Prop           | Type                | Required | Default |
+| -------------- | ------------------- | -------- | ------- |
+| `label`        | `string`            | yes      |         |
+| `href`         | `string`            | no       |         |
+| `icon`         | `Component`         | no       |         |
+| `open`         | `boolean \| 'auto'` | no       | `true`  |
+| `sectionPaths` | `string[]`          | no       | `[]`    |
+
+`open` works as on NavGroup, except the default is `true`. In `'auto'` mode the section is inside
+when the current path is `href` or one of `sectionPaths`, or starts with one of them followed by
+`/`. `sectionPaths` is for sections whose pages live outside `href`.
+
+The sidebar has three sections. Docs links to `/docs` and stays open. The PCD subtree is labelled
+with the active database's name and icon, links to its landing page at `/pcd/{database}`, and uses
+`'auto'`; switching the database happens in the navbar database switcher (see
+[backend/content.md](../backend/content.md#database-selection)). Articles links to `/articles`, uses
+`'auto'`, and passes `/dev-logs` and `/wiki` as `sectionPaths`.
 
 ```svelte
 <NavGroupLabel
-	label="Database Browser"
-	icon={Landmark}>
+	label="Articles"
+	href="/articles"
+	icon={Library}
+	open="auto"
+	sectionPaths={['/dev-logs', '/wiki']}>
 	<NavGroup
-		label="Quality Profiles"
-		href="/pcd/{databaseValue}/quality-profiles">
+		label="Dev Logs"
+		href="/dev-logs">
 		<!-- ... -->
 	</NavGroup>
 </NavGroupLabel>

@@ -6,7 +6,6 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
-		Landmark,
 		Library,
 		BookText,
 		Wrench,
@@ -21,6 +20,16 @@
 		Settings,
 		Ruler,
 		Code,
+		Rocket,
+		SquareTerminal,
+		Hammer,
+		Send,
+		FlaskConical,
+		Activity,
+		CircleQuestionMark,
+		Users,
+		GitPullRequest,
+		Heart,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -31,6 +40,7 @@
 	import NavItem from '$lib/client/ui/nav/NavItem.svelte';
 	import SearchPalette from '$lib/client/ui/search/SearchPalette.svelte';
 	import TableOfContents from '$lib/client/ui/toc/TableOfContents.svelte';
+	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
 	import { slugify } from '$lib/shared/utils/slug';
 	import { loadPcdNav } from '$lib/client/pcd/nav';
 	import type { PcdNavDatabase } from '$lib/types/pcd';
@@ -47,6 +57,21 @@
 		'trash-french': Trash2,
 		'trash-german': Trash2,
 		'dumpstarr': Flame
+	};
+
+	// Sidebar icons for docs pages, keyed by slug. Pages without one render
+	// label only.
+	const docIcons: Record<string, typeof BookOpen> = {
+		'quick-start': Rocket,
+		'installation': SquareTerminal,
+		'build': Hammer,
+		'deploy': Send,
+		'test': FlaskConical,
+		'monitoring': Activity,
+		'faq': CircleQuestionMark,
+		'community': Users,
+		'contributing': GitPullRequest,
+		'sponsor': Heart
 	};
 
 	let { children, data } = $props();
@@ -68,6 +93,7 @@
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
+	const currentDatabase = $derived(databaseOptions.find((d) => d.value === databaseValue));
 
 	// Sidebar entity names arrive after mount, one request per database. The
 	// prerendered HTML has the seven group links but no entity names.
@@ -143,18 +169,27 @@
 <div
 	class="fixed top-(--banner-height) left-0 flex h-[calc(100vh-var(--banner-height))] w-80 flex-col bg-bg font-sans text-text">
 	<!-- Navbar: logo, database switcher, and theme switcher. The database switcher only shows
-	     when the build compiled more than one database; production ships Dictionarry alone. -->
+	     when the build compiled more than one database; production ships Dictionarry alone.
+	     The logo links home. The negative margin keeps it aligned while the padding gives the
+	     hover background room. -->
 	<div class="flex items-center justify-between border-r border-b border-border px-6 py-4">
-		<div class="flex items-center gap-2">
-			<img
-				src="/icon.png"
-				alt="profilarr"
-				class="size-5" />
-			<span class="flex items-baseline gap-1">
-				<span class="font-accent text-lg font-semibold">profilarr</span>
-				<span class="font-mono text-sm text-text-muted">/docs</span>
-			</span>
-		</div>
+		<Tooltip
+			text="Go back home"
+			position="bottom">
+			<a
+				href="/"
+				aria-label="Profilarr home"
+				class="-mx-2 -my-1 flex items-center gap-2 rounded-control px-2 py-1 transition-colors hover:bg-surface-hover">
+				<img
+					src="/icon.png"
+					alt=""
+					class="size-5" />
+				<span class="flex items-baseline gap-1">
+					<span class="font-accent text-lg font-semibold">profilarr</span>
+					<span class="font-mono text-sm text-text-muted">/docs</span>
+				</span>
+			</a>
+		</Tooltip>
 		<div class="flex items-center gap-2">
 			{#if databaseOptions.length > 1}
 				<DropdownSelect
@@ -186,7 +221,32 @@
 
 		<NavGroupLabel
 			label="Docs"
+			href="/docs"
 			icon={BookText}>
+			{#each data.docs as doc (doc.href)}
+				<!-- NavGroup shows a chevron whenever it has children, so pages
+				     without child pages render without the block. -->
+				{#if doc.children.length > 0}
+					<NavGroup
+						label={doc.title}
+						href={doc.href}
+						icon={docIcons[doc.slug]}
+						childHrefs={doc.children.map((child) => child.href)}
+						class="mb-1">
+						{#each doc.children as child (child.href)}
+							<NavItem
+								label={child.title}
+								href={child.href} />
+						{/each}
+					</NavGroup>
+				{:else}
+					<NavGroup
+						label={doc.title}
+						href={doc.href}
+						icon={docIcons[doc.slug]}
+						class="mb-1" />
+				{/if}
+			{/each}
 			<NavGroup
 				label="API Reference"
 				href="/api/v1"
@@ -195,16 +255,17 @@
 		</NavGroupLabel>
 
 		<!-- PCD reference: the whole subtree is scoped to one database, chosen
-		     in the navbar switcher. -->
+		     in the navbar switcher, so the database is its root and landing page. -->
 		{#if hasPcd}
 			<NavGroupLabel
-				label="Database Browser"
-				icon={Landmark}>
+				label={currentDatabase?.label ?? databaseValue}
+				href="/pcd/{databaseValue}"
+				icon={currentDatabase?.icon}
+				open="auto">
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
 					icon={SlidersHorizontal}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.qualityProfiles ?? [] as name (name)}
 						<NavItem
@@ -217,7 +278,6 @@
 					label="Custom Formats"
 					href="/pcd/{databaseValue}/custom-formats"
 					icon={Tags}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.customFormats ?? [] as name (name)}
 						<NavItem
@@ -230,7 +290,6 @@
 					label="Regular Expressions"
 					href="/pcd/{databaseValue}/regular-expressions"
 					icon={Regex}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.regularExpressions ?? [] as name (name)}
 						<NavItem
@@ -243,7 +302,6 @@
 					label="Delay Profiles"
 					href="/pcd/{databaseValue}/delay-profiles"
 					icon={Clock}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.delayProfiles ?? [] as name (name)}
 						<NavItem
@@ -256,7 +314,6 @@
 					label="Naming"
 					href="/pcd/{databaseValue}/naming"
 					icon={FileText}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.naming ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -272,7 +329,6 @@
 					label="Media Settings"
 					href="/pcd/{databaseValue}/media-settings"
 					icon={Settings}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.mediaSettings ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -288,7 +344,6 @@
 					label="Quality Definitions"
 					href="/pcd/{databaseValue}/quality-definitions"
 					icon={Ruler}
-					open={false}
 					class="mb-1">
 					{#each currentNav?.qualityDefinitions ?? [] as entry (`${entry.arrType}/${entry.name}`)}
 						<NavItem
@@ -306,13 +361,15 @@
 		{#if data.devLogs.length > 0 || data.wiki.length > 0}
 			<NavGroupLabel
 				label="Articles"
-				icon={Library}>
+				href="/articles"
+				icon={Library}
+				open="auto"
+				sectionPaths={['/dev-logs', '/wiki']}>
 				{#if data.devLogs.length > 0}
 					<NavGroup
 						label="Dev Logs"
 						href="/dev-logs"
 						icon={Rss}
-						open={false}
 						class="mb-1">
 						{#each data.devLogs as log (log.href)}
 							<NavItem
@@ -327,7 +384,6 @@
 						label="Wiki"
 						href="/wiki"
 						icon={BookText}
-						open={false}
 						class="mb-1">
 						{#each data.wiki as article (article.href)}
 							<NavItem

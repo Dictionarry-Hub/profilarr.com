@@ -66,7 +66,8 @@ pnpm compile:pcd [-- --no-history] [--only id,id]
      g. Map each base op file to the commit that added it (one git log)
      h. Replay base ops one file at a time, recording per-entity history
      i. Extract all entity data via SQL queries and assert it matches the replay
-     j. Write {id}.json and history/{id}.json to src/lib/data/pcd/
+     j. Read ABOUT.md if the repo has one
+     k. Write {id}.json and history/{id}.json to src/lib/data/pcd/
   3. Write index.json (nav-only data for sidebar)
   4. Clean up temp directories
 ```
@@ -159,7 +160,9 @@ scoring and quality lists). Results are shaped into the `CompiledDatabase` inter
 All output goes to `src/lib/data/pcd/` (gitignored).
 
 **Per-database JSON** (`{id}.json`): Full entity data typed as `CompiledDatabase`. One file per
-database. These are consumed by `+page.server.ts` load functions for entity detail pages.
+database. These are consumed by `+page.server.ts` load functions for entity detail pages. When the
+repo has an `ABOUT.md` at its root, its contents are stored as `about` for the database landing
+page.
 
 **Nav index** (`index.json`): Entity names only, keyed by database ID. Drives the prerender entries
 (`src/lib/shared/utils/pcd/prerender.ts`) and the per-database `/pcd/{database}/nav.json` endpoint

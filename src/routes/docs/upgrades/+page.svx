@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Upgrades
+slug: upgrades
+blurb: Automatically searching for better releases.
+parent: deploy
+order: 5
+---
+
+TODO: Searching for better releases automatically. Starts by answering whether Radarr and Sonarr already do this: they upgrade, but only when a better release appears in their RSS feeds, so items already in your library are never searched again automatically. Makes clear that Profilarr never searches or grabs anything itself: it tells the Arr which items to search for, and the Arr does the searching and grabbing. That's why Profilarr doesn't need your download client or access to your library files. Covers building filters from nested rules, choosing how items are selected, how many items each run searches, the tag-based cooldown that works through your library before repeating, dry runs and previews, the search limits for Radarr and Sonarr, and the fields that only exist for one of them.

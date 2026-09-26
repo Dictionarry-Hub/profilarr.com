@@ -1,4 +1,5 @@
 import type { PcdNavIndex } from '$lib/types/pcd';
+import { docPath, docSlugFromPath, docTree, type DocMeta } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
@@ -21,7 +22,25 @@ function articleNav(files: Record<string, { metadata: ArticleMeta }>, base: stri
 		.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 }
 
+// Docs follow reading order, not publish date, and nest one level under a
+// `parent` page. The root page is the Docs header's link, not an entry.
+function docsNav(files: Record<string, { metadata: DocMeta }>) {
+	const docs = Object.entries(files)
+		.map(([path, module]) => ({ ...module.metadata, slug: docSlugFromPath(path) }))
+		.filter((doc) => doc.slug !== '');
+
+	return docTree(docs).map((doc) => ({
+		title: doc.title,
+		slug: doc.slug,
+		href: docPath(doc.slug),
+		children: doc.children.map((child) => ({ title: child.title, href: docPath(child.slug) }))
+	}));
+}
+
 export async function load() {
+	const docFiles = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
+		eager: true
+	});
 	const devLogFiles = import.meta.glob<{ metadata: ArticleMeta }>(
 		'/src/routes/dev-logs/**/+page.svx',
 		{ eager: true }
@@ -30,6 +49,7 @@ export async function load() {
 		eager: true
 	});
 
+	const docs = docsNav(docFiles);
 	const devLogs = articleNav(devLogFiles, '/dev-logs');
 	const wiki = articleNav(wikiFiles, '/wiki');
 
@@ -41,5 +61,5 @@ export async function load() {
 	});
 	const pcdDatabases = Object.keys(Object.values(pcdNavFiles)[0]?.default ?? {});
 
-	return { devLogs, wiki, pcdDatabases };
+	return { docs, devLogs, wiki, pcdDatabases };
 }

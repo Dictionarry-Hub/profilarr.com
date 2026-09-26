@@ -1,0 +1,9 @@
+---
+layout: docs
+title: FAQ
+slug: faq
+blurb: Answers to common questions and problems.
+order: 8
+---
+
+TODO: Answers to common questions and problems. Covers things like the 403 error when logging in behind a reverse proxy without `ORIGIN`, test features disappearing when the parser service is down, cleanup deleting custom formats made by hand in Radarr or Sonarr, why Profilarr doesn't need your download client or access to your library, and why jobs can't be started from the Jobs page, with links to the pages that explain each one.

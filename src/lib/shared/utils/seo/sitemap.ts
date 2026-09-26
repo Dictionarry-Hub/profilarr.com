@@ -1,12 +1,14 @@
 // Sitemap generation. One entry per prerendered HTML page, with lastmod
 // where a real date exists: article publish dates and, for PCD entities,
 // the date of the last commit that touched them (from the history replay).
+// Docs pages carry no date, so they are listed without one.
 // Artifacts (.md, .yaml, .json) are alternate representations, not pages,
 // and are left out.
 
 import { pcdDatabaseEntries, pcdNavDatabase } from '../pcd/prerender.js';
 import { entityLastChanged } from '../pcd/history-data.js';
 import { slugify } from '../slug.js';
+import { docPath } from '../llm/docs.js';
 import type { SitemapEntry } from './xml.js';
 
 export { renderSitemap, type SitemapEntry } from './xml.js';
@@ -17,7 +19,7 @@ export interface ArticleLike {
 }
 
 // /pcd is a client-side redirect stub, not a page.
-export const STATIC_PAGES = ['/', '/dev-logs', '/wiki', '/api/v1'] as const;
+export const STATIC_PAGES = ['/', '/articles', '/dev-logs', '/wiki', '/api/v1'] as const;
 
 const NAMED_TYPES = [
 	['customFormats', 'custom-formats', 'custom_format'],
@@ -32,8 +34,16 @@ const ARR_TYPES = [
 	['qualityDefinitions', 'quality-definitions', 'quality_definitions']
 ] as const;
 
-export function sitemapEntries(devLogs: ArticleLike[], wiki: ArticleLike[]): SitemapEntry[] {
+export function sitemapEntries(
+	devLogs: ArticleLike[],
+	wiki: ArticleLike[],
+	docSlugs: string[]
+): SitemapEntry[] {
 	const entries: SitemapEntry[] = STATIC_PAGES.map((path) => ({ path }));
+
+	for (const slug of docSlugs) {
+		entries.push({ path: docPath(slug) });
+	}
 
 	for (const article of devLogs) {
 		entries.push({ path: `/dev-logs/${article.slug}`, lastmod: article.created });
@@ -45,6 +55,8 @@ export function sitemapEntries(devLogs: ArticleLike[], wiki: ArticleLike[]): Sit
 	for (const { database } of pcdDatabaseEntries()) {
 		const nav = pcdNavDatabase(database);
 		if (!nav) continue;
+
+		entries.push({ path: `/pcd/${database}` });
 
 		for (const [key, segment, entityType] of NAMED_TYPES) {
 			entries.push({ path: `/pcd/${database}/${segment}` });

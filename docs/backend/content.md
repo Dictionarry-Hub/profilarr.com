@@ -10,6 +10,33 @@ The site has four content layers:
 
 Setup guides and user-facing documentation. Written as mdsvex markdown. Authored by hand.
 
+Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
+reuses `src/lib/layouts/Article.svelte`. The Introduction is the root page at
+`src/routes/docs/+page.svx`, served at `/docs` with an empty slug. Docs follow reading order instead
+of publish date, so their frontmatter drops `author`, `created`, and `tags` and adds `order` and
+`parent`:
+
+| Field    | Notes                                                                           |
+| -------- | ------------------------------------------------------------------------------- |
+| `layout` | `docs`                                                                          |
+| `title`  | Display title and sidebar label                                                 |
+| `slug`   | Matches the route directory name (which is what routes derive); omitted on root |
+| `blurb`  | Short description; SEO meta, search blurb, artifact preamble                    |
+| `order`  | Position among its siblings, ascending; pages without one sort last by title    |
+| `parent` | Optional slug of the page it is listed under in the sidebar                     |
+
+The Docs section header links to the root page. Below it the sidebar lists the other top-level pages
+in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page
+with `parent` set is listed under that page instead, one level deep; `docTree` in
+`src/lib/shared/utils/llm/docs.ts` builds the nesting and fails the build on an unknown parent. URLs
+stay flat (`/docs/docker`, not `/docs/installation/docker`), so moving a page to another section
+does not change its URL. The sidebar nav, search index, sitemap, `llms.txt`, and the Markdown
+mirrors (`/docs.md` for the root, `/docs/<slug>.md` for the rest) all glob the same path, and
+`docSlugFromPath` and `docPath` in the same file map between source paths, slugs, and URLs. Titles
+repeat across sections (Build and Test both have a Custom Formats page), so search results and the
+document title put the parent's title in front of a child page's (`Test: Custom Formats`, built by
+`docFullTitle`); the sidebar and page heading keep the short title.
+
 ### PCD Entity Browser
 
 Browsable reference pages for PCD entities: quality profiles, custom formats, regular expressions,
@@ -75,6 +102,14 @@ Seven entity types are browsable:
 
 Arr-specific entities include the arr type in the URL: `/pcd/[database]/naming/[arrType]/[name]`.
 
+Each database also has a landing page at `/pcd/[database]`. It renders the repo's `ABOUT.md` when
+the database publishes one, falling back to the `pcd.json` description, and always lists the seven
+entity types with their counts. `ABOUT.md` is read by the pipeline (see
+[tooling/pcd.md](../tooling/pcd.md#output)) and rendered at build time by `renderAbout` in
+`src/lib/shared/utils/pcd/about.ts`, which points relative links and images at the repo on GitHub.
+Like entity descriptions, the markdown is trusted as-is, since only databases listed in the pipeline
+config are compiled.
+
 ### API Reference
 
 Auto-generated API documentation for the Profilarr REST API. The OpenAPI 3.1.0 spec is fetched at
@@ -90,7 +125,8 @@ details, see [tooling/api.md](../tooling/api.md).
 ### Dev Logs and Wiki Articles
 
 Site-specific content written as mdsvex markdown. Dev logs cover releases and development progress.
-Wiki articles cover broader topics.
+Wiki articles cover broader topics. The Articles section page at `/articles`
+(`src/routes/articles/+page.svelte`) introduces both and heads the sidebar section that groups them.
 
 Both layers share the same article frontmatter and render through the same mdsvex layout
 (`src/lib/layouts/Article.svelte`, registered as both the `dev-logs` and `wiki` layout keys):
@@ -137,11 +173,13 @@ All outputs are gitignored. The build command is `pnpm compile:pcd && pnpm build
 The active database is determined by the URL when on PCD routes. A database selector dropdown in the
 navbar, next to the theme switcher, lets users switch databases, which navigates to the equivalent
 page for the new database. It only renders when the build compiled more than one database, so
-production builds (Dictionarry only) never show it. The sidebar labels the PCD subtree Database
-Browser and does not switch the database.
+production builds (Dictionarry only) never show it. The sidebar labels the PCD subtree with the
+active database's name and icon and links it to the database landing page; it does not switch the
+database.
 
 On non-PCD pages, the selector updates a localStorage preference. Visiting `/pcd/` redirects to
-`/pcd/{preference}/` based on the stored value (defaulting to the first database in the config).
+`/pcd/{preference}/`, the landing page of the stored database (defaulting to the first database in
+the config).
 
 The database store lives at `src/lib/client/ui/database/database.svelte.ts` and follows the same
 pattern as the theme store.

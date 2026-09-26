@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Docker
+slug: docker
+blurb: Installing and updating Profilarr with Docker Compose.
+parent: installation
+order: 1
+---
+
+TODO: Running Profilarr with Docker. Covers the compose file, the optional parser service and when you need it, what the `/config` volume holds, file permissions with `PUID` and `PGID` or a non-root user, health checks, release channels, and how to update.

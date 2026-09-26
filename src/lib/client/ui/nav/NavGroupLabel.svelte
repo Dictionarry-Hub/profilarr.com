@@ -1,39 +1,82 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { slide } from 'svelte/transition';
 	import type { Component, Snippet } from 'svelte';
 
 	interface Props {
 		label: string;
+		/** Makes the label a link to the section's own page. */
+		href?: string;
 		icon?: Component<{ size?: number; class?: string }>;
-		open?: boolean;
+		/** `'auto'` opens the section while the current page is inside it. A
+		    boolean fixes the starting state instead. */
+		open?: boolean | 'auto';
+		/** Path prefixes that count as inside the section besides `href`. */
+		sectionPaths?: string[];
 		children?: Snippet;
 	}
 
-	let { label, icon, open = true, children }: Props = $props();
+	let { label, href, icon, open = true, sectionPaths = [], children }: Props = $props();
 
-	let toggled = $state<boolean | null>(null);
-	const isOpen = $derived(toggled ?? open);
+	const isActive = $derived(href !== undefined && page.url.pathname === href);
+
+	const isInside = $derived.by(() => {
+		const pathname = page.url.pathname;
+		const paths = href === undefined ? sectionPaths : [href, ...sectionPaths];
+		return paths.some((path) => pathname === path || pathname.startsWith(path + '/'));
+	});
+
+	// Same toggle rules as NavGroup: in auto mode a manual toggle lasts until
+	// the next navigation, and clicking the label link clears it.
+	let toggled = $state<{ open: boolean; path: string } | null>(null);
+	const isOpen = $derived.by(() => {
+		if (toggled && (open !== 'auto' || toggled.path === page.url.pathname)) {
+			return toggled.open;
+		}
+		return open === 'auto' ? isInside : open;
+	});
 
 	function toggleOpen() {
-		toggled = !isOpen;
+		toggled = { open: !isOpen, path: page.url.pathname };
+	}
+
+	function clearToggle() {
+		toggled = null;
 	}
 </script>
 
-<!-- NavGroup's split-header language, with the link side replaced by a
-     plain label: left names the context, right chevron collapses the
-     subtree it scopes. -->
+{#snippet labelContent()}
+	{#if icon}
+		{@const Icon = icon}
+		<Icon
+			size={16}
+			class="shrink-0" />
+	{/if}
+	<span class="flex-1 truncate">{label}</span>
+{/snippet}
+
+<!-- NavGroup's split-header language: left names the context, right chevron
+     collapses the subtree it scopes. The left side is a link when the section
+     has its own page, and a plain label otherwise. -->
 <div class="mb-4">
-	<div class="flex items-center rounded-control border border-transparent">
-		<div
-			class="flex min-w-0 flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold text-text-soft">
-			{#if icon}
-				{@const Icon = icon}
-				<Icon
-					size={16}
-					class="shrink-0" />
-			{/if}
-			<span class="flex-1 truncate">{label}</span>
-		</div>
+	<div
+		class="group/header flex items-center rounded-control border transition-colors
+			{isActive ? 'border-border bg-surface shadow-control' : 'border-transparent'}">
+		{#if href}
+			<a
+				{href}
+				onclick={clearToggle}
+				class="flex min-w-0 flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold transition-colors
+					{children ? 'rounded-l-control' : 'rounded-control'}
+					{isActive ? 'text-text' : 'text-text-soft group-hover/header:bg-surface-hover'}">
+				{@render labelContent()}
+			</a>
+		{:else}
+			<div
+				class="flex min-w-0 flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold text-text-soft">
+				{@render labelContent()}
+			</div>
+		{/if}
 
 		{#if children}
 			<button

@@ -8,17 +8,45 @@
 		href: string;
 		icon?: Component<{ size?: number; class?: string }>;
 		badge?: number;
-		open?: boolean;
+		/** `'auto'` opens the group while the current page is inside it. A
+		    boolean fixes the starting state instead. */
+		open?: boolean | 'auto';
+		/** Pages that count as inside the group without sharing its `href`
+		    prefix, such as docs pages with flat URLs. */
+		childHrefs?: string[];
 		class?: string;
 		children?: Snippet;
 	}
 
-	let { label, href, icon, badge = 0, open = true, class: className, children }: Props = $props();
-
-	let toggled = $state<boolean | null>(null);
-	const isOpen = $derived(toggled ?? open);
+	let {
+		label,
+		href,
+		icon,
+		badge = 0,
+		open = 'auto',
+		childHrefs = [],
+		class: className,
+		children
+	}: Props = $props();
 
 	const hasItems = $derived(!!children);
+
+	const isInside = $derived.by(() => {
+		const pathname = page.url.pathname;
+		return (
+			pathname === href || pathname.startsWith(href + '/') || childHrefs.includes(pathname)
+		);
+	});
+
+	// In auto mode a manual toggle lasts until the next navigation, so it is
+	// stored with the path it was made on. With a fixed `open` it sticks.
+	let toggled = $state<{ open: boolean; path: string } | null>(null);
+	const isOpen = $derived.by(() => {
+		if (toggled && (open !== 'auto' || toggled.path === page.url.pathname)) {
+			return toggled.open;
+		}
+		return open === 'auto' ? isInside : open;
+	});
 
 	const isActive = $derived.by(() => {
 		const pathname = page.url.pathname;
@@ -29,7 +57,13 @@
 	});
 
 	function toggleOpen() {
-		toggled = !isOpen;
+		toggled = { open: !isOpen, path: page.url.pathname };
+	}
+
+	// Clicking the header link drops any manual toggle, so a group you closed
+	// by hand opens again even when you are already on its page.
+	function clearToggle() {
+		toggled = null;
 	}
 </script>
 
@@ -41,6 +75,7 @@
 		<!-- Link side -->
 		<a
 			{href}
+			onclick={clearToggle}
 			class="flex flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold transition-colors
 				{hasItems ? 'rounded-l-control' : 'rounded-control'}
 				{isActive ? 'text-text' : 'text-text-soft group-hover/header:bg-surface-hover'}">

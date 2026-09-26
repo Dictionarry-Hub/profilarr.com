@@ -71,9 +71,9 @@ meta tags without rendering duplicates.
 
 #### `require-pcd-html` (category: `seo`)
 
-Every PCD section index and implemented entity route derived from the compiled navigation data must
-exist as HTML in `build/`. This catches dynamic routes that work in development but were not
-supplied to the static prerenderer. The rule requires `pnpm build` to run first.
+Every PCD landing page, section index, and implemented entity route derived from the compiled
+navigation data must exist as HTML in `build/`. This catches dynamic routes that work in development
+but were not supplied to the static prerenderer. The rule requires `pnpm build` to run first.
 
 #### `no-raw-ui` (category: `ui`)
 

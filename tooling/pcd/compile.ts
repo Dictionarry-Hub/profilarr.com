@@ -2,7 +2,7 @@
 // history, write outputs. Self-contained so it can run in a worker thread;
 // the entry point (index.ts) fans databases out and merges the nav data.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compileDatabase, createDatabase } from './build.js';
 import { extractDatabase } from './extract.js';
@@ -69,6 +69,12 @@ export function compileEntry(entry: DatabaseEntry, options: CompileOptions): Com
 		const db = compileDatabase(schemaOpsDir, baseOpsDir);
 		compiled = extractDatabase(db, entry, manifest, schemaVersion);
 		db.close();
+	}
+
+	// Optional landing page content for the database browser.
+	const aboutPath = join(repoPath, 'ABOUT.md');
+	if (existsSync(aboutPath)) {
+		compiled.about = readFileSync(aboutPath, 'utf-8');
 	}
 
 	mkdirSync(options.outputDir, { recursive: true });

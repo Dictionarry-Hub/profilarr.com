@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Sponsor
+slug: sponsor
+blurb: Ways to support Profilarr's development.
+order: 11
+---
+
+TODO: Supporting Profilarr's development. Covers the ways to help fund the project, such as GitHub Sponsors and Buy Me a Coffee, and points to Contributing for ways to help with code or databases.

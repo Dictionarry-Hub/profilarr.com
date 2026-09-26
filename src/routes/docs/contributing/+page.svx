@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Contributing
+slug: contributing
+blurb: Contributing to Profilarr, its databases, and these docs.
+order: 10
+---
+
+TODO: How to contribute to Profilarr and its databases. Covers opening an issue or asking on Discord before larger changes, setting up Profilarr for development (Deno, and the .NET SDK for the optional parser), contributing to a database through its repository, and contributing to this documentation site.
