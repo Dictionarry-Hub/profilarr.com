@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Delay Profiles
+slug: delay-profiles
+blurb: Editing delay profiles, from protocol preference to bypass rules.
+parent: build
+order: 7
+---
+
+TODO: Editing delay profiles. Covers the preferred protocol, usenet and torrent delays, the bypass options for the highest quality and for custom format scores, and how a synced delay profile replaces the default one in Radarr or Sonarr.

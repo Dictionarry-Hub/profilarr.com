@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Quality Profiles
+slug: quality-profiles
+blurb: Editing quality profiles, from custom format scores to the order of qualities.
+parent: build
+order: 5
+---
+
+TODO: Editing quality profiles. Covers the General tab (name, description, tags, and language, which only Radarr uses), scoring custom formats separately for Radarr and Sonarr along with the minimum and upgrade-until scores, and the Qualities tab: ordering qualities, grouping them, and choosing where upgrades stop.

@@ -24,6 +24,7 @@
 		Info,
 		Rocket,
 		SquareTerminal,
+		Hammer,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -58,7 +59,8 @@
 	const docIcons: Record<string, typeof BookOpen> = {
 		'introduction': Info,
 		'quick-start': Rocket,
-		'installation': SquareTerminal
+		'installation': SquareTerminal,
+		'build': Hammer
 	};
 
 	let { children, data } = $props();
