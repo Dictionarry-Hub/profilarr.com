@@ -20,6 +20,15 @@ describe('buildDocEntry', () => {
 		});
 	});
 
+	it('puts the parent title in front for child pages', () => {
+		const entry = buildDocEntry(
+			{ title: 'Custom Formats', slug: 'custom-format-testing', parent: 'test' },
+			'Test'
+		);
+
+		expect(entry.title).toBe('Test: Custom Formats');
+	});
+
 	it('tolerates a missing blurb', () => {
 		const entry = buildDocEntry({ title: 'Introduction', slug: 'introduction' });
 

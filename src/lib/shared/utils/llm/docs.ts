@@ -28,6 +28,12 @@ export function docPath(slug: string): string {
 	return slug === '' ? '/docs' : `/docs/${slug}`;
 }
 
+/** Title with its parent's in front ("Test: Custom Formats"), so child pages
+    that share a title stay distinct in search results and browser tabs. */
+export function docFullTitle(title: string, parentTitle?: string): string {
+	return parentTitle ? `${parentTitle}: ${title}` : title;
+}
+
 export function docToMarkdown(meta: DocMeta, source: string, slug: string): string {
 	return join([
 		`# ${meta.title}`,

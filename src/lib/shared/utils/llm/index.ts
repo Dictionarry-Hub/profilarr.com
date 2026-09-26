@@ -6,6 +6,7 @@ export {
 	docTree,
 	docSlugFromPath,
 	docPath,
+	docFullTitle,
 	type DocMeta,
 	type DocIndexEntry
 } from './docs.js';

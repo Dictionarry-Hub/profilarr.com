@@ -27,8 +27,13 @@ const wikiModules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/*
 });
 
 export const GET: RequestHandler = async () => {
-	const docs = Object.entries(docModules).map(([path, module]) =>
-		buildDocEntry({ ...module.metadata, slug: docSlugFromPath(path) })
+	const docMetas = Object.entries(docModules).map(([path, module]) => ({
+		...module.metadata,
+		slug: docSlugFromPath(path)
+	}));
+	const docTitles = new Map(docMetas.map((doc) => [doc.slug, doc.title]));
+	const docs = docMetas.map((doc) =>
+		buildDocEntry(doc, doc.parent ? docTitles.get(doc.parent) : undefined)
 	);
 
 	const devLogs = Object.entries(devLogModules).map(([path, module]) =>

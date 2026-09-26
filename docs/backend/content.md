@@ -32,7 +32,10 @@ with `parent` set is listed under that page instead, one level deep; `docTree` i
 stay flat (`/docs/docker`, not `/docs/installation/docker`), so moving a page to another section
 does not change its URL. The sidebar nav, search index, sitemap, `llms.txt`, and the Markdown
 mirrors (`/docs.md` for the root, `/docs/<slug>.md` for the rest) all glob the same path, and
-`docSlugFromPath` and `docPath` in the same file map between source paths, slugs, and URLs.
+`docSlugFromPath` and `docPath` in the same file map between source paths, slugs, and URLs. Titles
+repeat across sections (Build and Test both have a Custom Formats page), so search results and the
+document title put the parent's title in front of a child page's (`Test: Custom Formats`, built by
+`docFullTitle`); the sidebar and page heading keep the short title.
 
 ### PCD Entity Browser
 

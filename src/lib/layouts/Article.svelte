@@ -5,6 +5,7 @@
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
 	import Author from '$lib/client/ui/author/Author.svelte';
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
+	import { docFullTitle } from '$lib/shared/utils/llm/docs.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -13,10 +14,20 @@
 		author?: string | string[];
 		created?: string;
 		tags?: string[];
+		/** Docs only: slug of the page this one is listed under. */
+		parent?: string;
 		children: Snippet;
 	}
 
-	let { title, blurb, author, created, tags, children }: Props = $props();
+	let { title, blurb, author, created, tags, parent, children }: Props = $props();
+
+	// Docs child pages put their section in the document title, since titles
+	// repeat across sections. The sidebar data holds the top-level page titles.
+	const documentTitle = $derived.by(() => {
+		if (!parent) return title;
+		const docs = page.data.docs as { slug: string; title: string }[] | undefined;
+		return docFullTitle(title, docs?.find((doc) => doc.slug === parent)?.title);
+	});
 
 	function parseAuthor(value: string) {
 		try {
@@ -37,7 +48,7 @@
 </script>
 
 <SEO
-	{title}
+	title={documentTitle}
 	description={blurb}
 	markdown="{page.url.pathname}.md" />
 
