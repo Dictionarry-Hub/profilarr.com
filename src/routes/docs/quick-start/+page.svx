@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Quick Start
+slug: quick-start
+blurb: A first Profilarr setup from start to finish.
+order: 2
+---
+
+TODO: A first setup from start to finish. Walks through installing Profilarr, logging in, adding a Radarr or Sonarr instance, linking a database, and running a first sync, with links to the detailed pages for each step.

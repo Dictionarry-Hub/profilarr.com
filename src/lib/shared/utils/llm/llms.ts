@@ -1,6 +1,7 @@
 import type { CompiledDatabase } from '$lib/types/pcd';
 import { slugify } from '$lib/shared/utils/slug';
 import type { DevLogIndexEntry } from './devlog.js';
+import type { DocIndexEntry } from './docs.js';
 import { join } from './md.js';
 import { SITE_URL } from './site.js';
 import type { WikiIndexEntry } from './wiki.js';
@@ -10,6 +11,7 @@ import type { WikiIndexEntry } from './wiki.js';
 // docs/backend/llm.md.
 
 export interface LlmsInput {
+	docs: DocIndexEntry[];
 	devLogs: DevLogIndexEntry[];
 	wiki: WikiIndexEntry[];
 	databases: CompiledDatabase[];
@@ -68,10 +70,14 @@ export function llmsTxt(input: LlmsInput): string {
 	return join([
 		'# Profilarr',
 		'> Profilarr is a configuration management platform for Radarr and Sonarr: build, test, and' +
-			' deploy configurations across your media stack. This site hosts its API reference, dev' +
-			' logs, wiki, and a browser for Profilarr Compliant Databases (PCDs).',
+			' deploy configurations across your media stack. This site hosts its documentation, API' +
+			' reference, dev logs, wiki, and a browser for Profilarr Compliant Databases (PCDs).',
 		'Pages with a Markdown version serve it at the same URL with `.md` appended, and every' +
 			' Markdown page links back to this index.',
+		input.docs.length > 0 ? '## Docs' : null,
+		input.docs
+			.map((doc) => link(doc.title, `${SITE_URL}/docs/${doc.slug}.md`, doc.blurb))
+			.join('\n'),
 		'## API Reference',
 		link(
 			'Profilarr API v1',

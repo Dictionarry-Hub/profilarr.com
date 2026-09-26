@@ -39,6 +39,7 @@ const database: CompiledDatabase = {
 
 describe('llmsTxt', () => {
 	const text = llmsTxt({
+		docs: [{ title: 'Introduction', slug: 'introduction', blurb: 'What Profilarr is.' }],
 		devLogs: [{ title: 'Rebirth', slug: 'rebirth', blurb: 'Starting over.' }],
 		wiki: [{ title: 'Anatomy of a Profile', slug: 'anatomy-of-a-profile' }],
 		databases: [database]
@@ -50,6 +51,12 @@ describe('llmsTxt', () => {
 		).toBe(true);
 		expect(text).toContain('## API Reference');
 		expect(text).toContain('- [Profilarr API v1](https://profilarr.com/api/v1.md): ');
+	});
+
+	it('links docs pages in the order given', () => {
+		expect(text).toContain(
+			'## Docs\n\n- [Introduction](https://profilarr.com/docs/introduction.md): What Profilarr is.'
+		);
 	});
 
 	it('links articles with their blurbs when present', () => {

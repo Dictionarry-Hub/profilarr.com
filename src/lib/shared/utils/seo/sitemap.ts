@@ -1,6 +1,7 @@
 // Sitemap generation. One entry per prerendered HTML page, with lastmod
 // where a real date exists: article publish dates and, for PCD entities,
 // the date of the last commit that touched them (from the history replay).
+// Docs pages carry no date, so they are listed without one.
 // Artifacts (.md, .yaml, .json) are alternate representations, not pages,
 // and are left out.
 
@@ -32,8 +33,16 @@ const ARR_TYPES = [
 	['qualityDefinitions', 'quality-definitions', 'quality_definitions']
 ] as const;
 
-export function sitemapEntries(devLogs: ArticleLike[], wiki: ArticleLike[]): SitemapEntry[] {
+export function sitemapEntries(
+	devLogs: ArticleLike[],
+	wiki: ArticleLike[],
+	docSlugs: string[]
+): SitemapEntry[] {
 	const entries: SitemapEntry[] = STATIC_PAGES.map((path) => ({ path }));
+
+	for (const slug of docSlugs) {
+		entries.push({ path: `/docs/${slug}` });
+	}
 
 	for (const article of devLogs) {
 		entries.push({ path: `/dev-logs/${article.slug}`, lastmod: article.created });

@@ -21,6 +21,8 @@
 		Settings,
 		Ruler,
 		Code,
+		Info,
+		Rocket,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -47,6 +49,13 @@
 		'trash-french': Trash2,
 		'trash-german': Trash2,
 		'dumpstarr': Flame
+	};
+
+	// Sidebar icons for docs pages, keyed by slug. Pages without one render
+	// label only.
+	const docIcons: Record<string, typeof BookOpen> = {
+		'introduction': Info,
+		'quick-start': Rocket
 	};
 
 	let { children, data } = $props();
@@ -187,6 +196,13 @@
 		<NavGroupLabel
 			label="Docs"
 			icon={BookText}>
+			{#each data.docs as doc (doc.href)}
+				<NavGroup
+					label={doc.title}
+					href={doc.href}
+					icon={docIcons[doc.slug]}
+					class="mb-1" />
+			{/each}
 			<NavGroup
 				label="API Reference"
 				href="/api/v1"

@@ -35,6 +35,7 @@ const config = {
 			remarkPlugins: [remarkMath],
 			rehypePlugins: [rehypeKatexSvelte, rehypeSlug],
 			layout: {
+				'docs': resolve(__dirname, 'src/lib/layouts/Article.svelte'),
 				'dev-logs': resolve(__dirname, 'src/lib/layouts/Article.svelte'),
 				'wiki': resolve(__dirname, 'src/lib/layouts/Article.svelte')
 			}

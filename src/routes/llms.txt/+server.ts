@@ -1,12 +1,20 @@
 import type { RequestHandler } from './$types';
 import { llmsTxt } from '$lib/shared/utils/llm/llms.js';
-import type { DevLogMeta, WikiMeta } from '$lib/shared/utils/llm/index.js';
+import {
+	byDocOrder,
+	type DevLogMeta,
+	type DocMeta,
+	type WikiMeta
+} from '$lib/shared/utils/llm/index.js';
 import type { CompiledDatabase } from '$lib/types/pcd';
 
 // Plain text so the Markdown footer hook leaves it alone: this is the index
 // the footer points to.
 export const prerender = true;
 
+const docModules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
+	eager: true
+});
 const devLogModules = import.meta.glob<{ metadata: DevLogMeta }>(
 	'/src/routes/dev-logs/**/+page.svx',
 	{ eager: true }
@@ -29,6 +37,9 @@ function newestFirst<T extends { metadata: { created?: string } }>(
 
 export const GET: RequestHandler = () => {
 	const body = llmsTxt({
+		docs: Object.entries(docModules)
+			.map(([path, module]) => ({ ...module.metadata, slug: path.split('/').at(-2)! }))
+			.sort(byDocOrder),
 		devLogs: newestFirst(devLogModules),
 		wiki: newestFirst(wikiModules),
 		databases: Object.values(databases)

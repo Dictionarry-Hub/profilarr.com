@@ -4,6 +4,8 @@ import { renderSitemap, sitemapEntries, type ArticleLike } from '$lib/shared/uti
 
 export const prerender = true;
 
+const docModules = import.meta.glob('/src/routes/docs/**/+page.svx');
+
 const devLogModules = import.meta.glob<{ metadata: { created: string } }>(
 	'/src/routes/dev-logs/**/+page.svx',
 	{ eager: true }
@@ -24,7 +26,11 @@ function articles(modules: Record<string, { metadata: { created: string } }>): A
 export const GET: RequestHandler = () => {
 	const xml = renderSitemap(
 		SITE_URL,
-		sitemapEntries(articles(devLogModules), articles(wikiModules))
+		sitemapEntries(
+			articles(devLogModules),
+			articles(wikiModules),
+			Object.keys(docModules).map((path) => path.split('/').at(-2)!)
+		)
 	);
 	return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });
 };

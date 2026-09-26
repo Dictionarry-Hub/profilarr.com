@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Introduction
+slug: introduction
+blurb: What Profilarr is and where it fits alongside Radarr and Sonarr.
+order: 1
+---
+
+TODO: What Profilarr is and where it fits alongside Radarr and Sonarr. Covers the problem it solves, how databases, local tweaks, and sync fit together, the typical build, test, and deploy workflow, supported apps, and the project's history and license.

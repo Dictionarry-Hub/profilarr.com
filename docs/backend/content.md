@@ -10,6 +10,22 @@ The site has four content layers:
 
 Setup guides and user-facing documentation. Written as mdsvex markdown. Authored by hand.
 
+Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
+reuses `src/lib/layouts/Article.svelte`. Docs follow reading order instead of publish date, so their
+frontmatter drops `author`, `created`, and `tags` and adds `order`:
+
+| Field    | Notes                                                                    |
+| -------- | ------------------------------------------------------------------------ |
+| `layout` | `docs`                                                                   |
+| `title`  | Display title and sidebar label                                          |
+| `slug`   | Matches the route directory name (which is what routes derive)           |
+| `blurb`  | Short description; SEO meta, search blurb, artifact preamble             |
+| `order`  | Position in the sidebar, ascending; pages without one sort last by title |
+
+The sidebar's Docs section lists the pages in that order above the API Reference, with icons keyed
+by slug in `src/routes/+layout.svelte`. The sidebar nav, search index, sitemap, `llms.txt`, and the
+`/docs/<slug>.md` Markdown mirror all glob the same path. There is no `/docs` index page.
+
 ### PCD Entity Browser
 
 Browsable reference pages for PCD entities: quality profiles, custom formats, regular expressions,
