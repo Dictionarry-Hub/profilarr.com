@@ -11,6 +11,9 @@ export interface CompiledDatabase {
 	schemaVersion: string;
 	description: string;
 	arrTypes: string[];
+	/** Contents of the repo's ABOUT.md, when it publishes one. Rendered on
+	    the database landing page. */
+	about?: string;
 	customFormats: CustomFormat[];
 	qualityProfiles: QualityProfile[];
 	regularExpressions: RegularExpression[];

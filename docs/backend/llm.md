@@ -137,6 +137,7 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 
 | Artifact      | URL                   | Content                                                  |
 | ------------- | --------------------- | -------------------------------------------------------- |
+| Docs root     | `/docs.md`            | Preamble from frontmatter, then the source body verbatim |
 | Docs page     | `/docs/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
 | Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
 | Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
@@ -146,11 +147,12 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
 the web URL. Docs pages have no author, date, or tags, so their context line names the docs and the
-web URL. There is no docs index artifact because there is no `/docs` page; `llms.txt` lists the docs
-pages in reading order instead, with child pages indented under their parent. The body ships nearly
-verbatim: frontmatter and `<script>` blocks are stripped, but embedded Svelte components stay
-intact, the same approach Anthropic's docs use. Components often carry real content in their props
-(e.g. `CodeBlock` code), so stripping them would lose information; models read component tags fine.
+web URL. The docs root page at `/docs` is the Introduction, not an index, so there is no docs index
+artifact; `llms.txt` lists the docs pages in reading order instead, with child pages indented under
+their parent. The body ships nearly verbatim: frontmatter and `<script>` blocks are stripped, but
+embedded Svelte components stay intact, the same approach Anthropic's docs use. Components often
+carry real content in their props (e.g. `CodeBlock` code), so stripping them would lose information;
+models read component tags fine.
 
 Index links point at the `.md` artifacts, so each index doubles as a machine-readable directory of
 its layer.

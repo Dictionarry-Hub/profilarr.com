@@ -4,6 +4,8 @@ export {
 	docToMarkdown,
 	byDocOrder,
 	docTree,
+	docSlugFromPath,
+	docPath,
 	type DocMeta,
 	type DocIndexEntry
 } from './docs.js';

@@ -36,6 +36,7 @@ export function pcdArrEntityEntries(
 
 export function expectedPcdHtmlRoutes(): string[] {
 	const indexRoutes = pcdDatabaseEntries().flatMap(({ database }) => [
+		`/pcd/${database}`,
 		`/pcd/${database}/quality-profiles`,
 		`/pcd/${database}/custom-formats`,
 		`/pcd/${database}/regular-expressions`,

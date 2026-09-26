@@ -1,7 +1,7 @@
 import type { CompiledDatabase } from '$lib/types/pcd';
 import { slugify } from '$lib/shared/utils/slug';
 import type { DevLogIndexEntry } from './devlog.js';
-import { docTree, type DocIndexEntry } from './docs.js';
+import { docPath, docTree, type DocIndexEntry } from './docs.js';
 import { join } from './md.js';
 import { SITE_URL } from './site.js';
 import type { WikiIndexEntry } from './wiki.js';
@@ -22,7 +22,7 @@ function link(title: string, url: string, note?: string): string {
 }
 
 function docLink(doc: DocIndexEntry): string {
-	return link(doc.title, `${SITE_URL}/docs/${doc.slug}.md`, doc.blurb);
+	return link(doc.title, `${SITE_URL}${docPath(doc.slug)}.md`, doc.blurb);
 }
 
 // Child pages are indented under their parent, matching the sidebar.

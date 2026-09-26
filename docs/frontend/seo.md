@@ -99,12 +99,12 @@ handle rendering the `SEO` component automatically so content authors only write
 
 `/sitemap.xml` is a prerendered route (`src/routes/sitemap.xml/+server.ts`) listing every HTML page:
 the static pages, docs pages without `lastmod` since they carry no date, dev logs and wiki articles
-with their publish date as `lastmod`, and every PCD list and entity page. Entity pages take
-`lastmod` from the history replay, the date of the last commit that touched the entity, so crawlers
-re-fetch pages that actually changed. Artifact routes (`.md`, `.yaml`, `.json`) are alternate
-representations and are not listed. `robots.txt` is also a route so its `Sitemap:` line carries the
-configured site origin. Entry building lives in `src/lib/shared/utils/seo/sitemap.ts` and the XML
-rendering in `src/lib/shared/utils/seo/xml.ts`.
+with their publish date as `lastmod`, and every PCD landing, list, and entity page. Entity pages
+take `lastmod` from the history replay, the date of the last commit that touched the entity, so
+crawlers re-fetch pages that actually changed. Artifact routes (`.md`, `.yaml`, `.json`) are
+alternate representations and are not listed. `robots.txt` is also a route so its `Sitemap:` line
+carries the configured site origin. Entry building lives in `src/lib/shared/utils/seo/sitemap.ts`
+and the XML rendering in `src/lib/shared/utils/seo/xml.ts`.
 
 ## Validation
 

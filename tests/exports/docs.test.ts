@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { byDocOrder, docToMarkdown, docTree } from '$lib/shared/utils/llm/docs';
+import {
+	byDocOrder,
+	docPath,
+	docSlugFromPath,
+	docToMarkdown,
+	docTree
+} from '$lib/shared/utils/llm/docs';
 
 describe('docToMarkdown', () => {
 	it('builds the preamble from frontmatter and strips it from the body', () => {
@@ -56,5 +62,17 @@ describe('docTree', () => {
 		const build = () => docTree([{ title: 'Docker', slug: 'docker', parent: 'instalation' }]);
 
 		expect(build).toThrow('Docs page "docker" has unknown parent "instalation"');
+	});
+});
+
+describe('docSlugFromPath and docPath', () => {
+	it('give the root page an empty slug and the /docs path', () => {
+		expect(docSlugFromPath('/src/routes/docs/+page.svx')).toBe('');
+		expect(docPath('')).toBe('/docs');
+	});
+
+	it('use the route directory name for other pages', () => {
+		expect(docSlugFromPath('/src/routes/docs/docker/+page.svx')).toBe('docker');
+		expect(docPath('docker')).toBe('/docs/docker');
 	});
 });

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { EntryGenerator, RequestHandler } from './$types';
-import { docToMarkdown, type DocMeta } from '$lib/shared/utils/llm/index.js';
+import { docSlugFromPath, docToMarkdown, type DocMeta } from '$lib/shared/utils/llm/index.js';
 
 export const prerender = true;
 
@@ -14,17 +14,14 @@ const sources = import.meta.glob<string>('/src/routes/docs/**/+page.svx', {
 	import: 'default'
 });
 
-// The slug is the route directory name, same derivation as the nav in
-// +layout.server.ts.
-function slugFromPath(path: string): string {
-	return path.split('/').at(-2)!;
-}
-
+// The root page has an empty slug and its own mirror at /docs.md.
 export const entries: EntryGenerator = () =>
-	Object.keys(modules).map((path) => ({ slug: slugFromPath(path) }));
+	Object.keys(modules)
+		.map((path) => ({ slug: docSlugFromPath(path) }))
+		.filter((entry) => entry.slug !== '');
 
 export const GET: RequestHandler = ({ params }) => {
-	const path = Object.keys(modules).find((p) => slugFromPath(p) === params.slug);
+	const path = Object.keys(modules).find((p) => docSlugFromPath(p) === params.slug);
 
 	if (!path) error(404, 'Not found');
 

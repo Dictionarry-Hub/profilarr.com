@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { SITE_URL } from '$lib/shared/utils/llm/site.js';
 import { renderSitemap, sitemapEntries, type ArticleLike } from '$lib/shared/utils/seo/sitemap.js';
+import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
@@ -29,7 +30,7 @@ export const GET: RequestHandler = () => {
 		sitemapEntries(
 			articles(devLogModules),
 			articles(wikiModules),
-			Object.keys(docModules).map((path) => path.split('/').at(-2)!)
+			Object.keys(docModules).map(docSlugFromPath)
 		)
 	);
 	return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });

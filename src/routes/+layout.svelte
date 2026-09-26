@@ -6,7 +6,6 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
-		Landmark,
 		Library,
 		BookText,
 		Wrench,
@@ -21,7 +20,6 @@
 		Settings,
 		Ruler,
 		Code,
-		Info,
 		Rocket,
 		SquareTerminal,
 		Hammer,
@@ -58,7 +56,6 @@
 	// Sidebar icons for docs pages, keyed by slug. Pages without one render
 	// label only.
 	const docIcons: Record<string, typeof BookOpen> = {
-		'introduction': Info,
 		'quick-start': Rocket,
 		'installation': SquareTerminal,
 		'build': Hammer,
@@ -84,6 +81,7 @@
 	let mounted = $state(false);
 
 	const hasPcd = $derived(data.pcdDatabases.includes(databaseValue));
+	const currentDatabase = $derived(databaseOptions.find((d) => d.value === databaseValue));
 
 	// Sidebar entity names arrive after mount, one request per database. The
 	// prerendered HTML has the seven group links but no entity names.
@@ -211,6 +209,7 @@
 
 		<NavGroupLabel
 			label="Docs"
+			href="/docs"
 			icon={BookText}>
 			{#each data.docs as doc (doc.href)}
 				<!-- NavGroup shows a chevron whenever it has children, so pages
@@ -244,11 +243,13 @@
 		</NavGroupLabel>
 
 		<!-- PCD reference: the whole subtree is scoped to one database, chosen
-		     in the navbar switcher. -->
+		     in the navbar switcher, so the database is its root and landing page. -->
 		{#if hasPcd}
 			<NavGroupLabel
-				label="Database Browser"
-				icon={Landmark}>
+				label={currentDatabase?.label ?? databaseValue}
+				href="/pcd/{databaseValue}"
+				icon={currentDatabase?.icon}
+				open="auto">
 				<NavGroup
 					label="Quality Profiles"
 					href="/pcd/{databaseValue}/quality-profiles"
@@ -348,7 +349,10 @@
 		{#if data.devLogs.length > 0 || data.wiki.length > 0}
 			<NavGroupLabel
 				label="Articles"
-				icon={Library}>
+				href="/articles"
+				icon={Library}
+				open="auto"
+				sectionPaths={['/dev-logs', '/wiki']}>
 				{#if data.devLogs.length > 0}
 					<NavGroup
 						label="Dev Logs"

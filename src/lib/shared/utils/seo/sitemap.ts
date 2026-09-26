@@ -8,6 +8,7 @@
 import { pcdDatabaseEntries, pcdNavDatabase } from '../pcd/prerender.js';
 import { entityLastChanged } from '../pcd/history-data.js';
 import { slugify } from '../slug.js';
+import { docPath } from '../llm/docs.js';
 import type { SitemapEntry } from './xml.js';
 
 export { renderSitemap, type SitemapEntry } from './xml.js';
@@ -18,7 +19,7 @@ export interface ArticleLike {
 }
 
 // /pcd is a client-side redirect stub, not a page.
-export const STATIC_PAGES = ['/', '/dev-logs', '/wiki', '/api/v1'] as const;
+export const STATIC_PAGES = ['/', '/articles', '/dev-logs', '/wiki', '/api/v1'] as const;
 
 const NAMED_TYPES = [
 	['customFormats', 'custom-formats', 'custom_format'],
@@ -41,7 +42,7 @@ export function sitemapEntries(
 	const entries: SitemapEntry[] = STATIC_PAGES.map((path) => ({ path }));
 
 	for (const slug of docSlugs) {
-		entries.push({ path: `/docs/${slug}` });
+		entries.push({ path: docPath(slug) });
 	}
 
 	for (const article of devLogs) {
@@ -54,6 +55,8 @@ export function sitemapEntries(
 	for (const { database } of pcdDatabaseEntries()) {
 		const nav = pcdNavDatabase(database);
 		if (!nav) continue;
+
+		entries.push({ path: `/pcd/${database}` });
 
 		for (const [key, segment, entityType] of NAMED_TYPES) {
 			entries.push({ path: `/pcd/${database}/${segment}` });

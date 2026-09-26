@@ -1,5 +1,5 @@
 import type { PcdNavIndex } from '$lib/types/pcd';
-import { docTree, type DocMeta } from '$lib/shared/utils/llm/docs.js';
+import { docPath, docSlugFromPath, docTree, type DocMeta } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
@@ -23,18 +23,17 @@ function articleNav(files: Record<string, { metadata: ArticleMeta }>, base: stri
 }
 
 // Docs follow reading order, not publish date, and nest one level under a
-// `parent` page.
+// `parent` page. The root page is the Docs header's link, not an entry.
 function docsNav(files: Record<string, { metadata: DocMeta }>) {
-	const docs = Object.entries(files).map(([path, module]) => ({
-		...module.metadata,
-		slug: path.split('/').at(-2)!
-	}));
+	const docs = Object.entries(files)
+		.map(([path, module]) => ({ ...module.metadata, slug: docSlugFromPath(path) }))
+		.filter((doc) => doc.slug !== '');
 
 	return docTree(docs).map((doc) => ({
 		title: doc.title,
 		slug: doc.slug,
-		href: `/docs/${doc.slug}`,
-		children: doc.children.map((child) => ({ title: child.title, href: `/docs/${child.slug}` }))
+		href: docPath(doc.slug),
+		children: doc.children.map((child) => ({ title: child.title, href: docPath(child.slug) }))
 	}));
 }
 

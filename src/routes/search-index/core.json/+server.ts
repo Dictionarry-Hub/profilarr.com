@@ -3,6 +3,7 @@ import type { DevLogMeta, DocMeta, WikiMeta } from '$lib/shared/utils/llm/index.
 import { buildApiEndpointEntries } from '$lib/shared/utils/search/api.js';
 import { buildDevLogEntry } from '$lib/shared/utils/search/devlog.js';
 import { buildDocEntry } from '$lib/shared/utils/search/docs.js';
+import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
 import { buildWikiEntry } from '$lib/shared/utils/search/wiki.js';
 import { applyRatings } from '$lib/shared/utils/search/ratings.js';
 import { loadApiSpec } from '$lib/shared/utils/openapi/index.js';
@@ -27,7 +28,7 @@ const wikiModules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/*
 
 export const GET: RequestHandler = async () => {
 	const docs = Object.entries(docModules).map(([path, module]) =>
-		buildDocEntry({ ...module.metadata, slug: path.split('/').at(-2)! })
+		buildDocEntry({ ...module.metadata, slug: docSlugFromPath(path) })
 	);
 
 	const devLogs = Object.entries(devLogModules).map(([path, module]) =>

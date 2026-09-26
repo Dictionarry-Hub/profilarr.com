@@ -17,11 +17,22 @@ export interface DocIndexEntry extends DocMeta {
 	slug: string;
 }
 
+/** Slug of a docs page from its source path: the route directory name, or ''
+    for the root page at `src/routes/docs/+page.svx`. */
+export function docSlugFromPath(path: string): string {
+	return path.replace(/^\/src\/routes\/docs\/?/, '').replace(/\/?\+page\.svx$/, '');
+}
+
+/** Web path of a docs page: `/docs` for the root page, `/docs/{slug}` otherwise. */
+export function docPath(slug: string): string {
+	return slug === '' ? '/docs' : `/docs/${slug}`;
+}
+
 export function docToMarkdown(meta: DocMeta, source: string, slug: string): string {
 	return join([
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
-		`A page from the Profilarr documentation. Web version: ${SITE_URL}/docs/${slug}`,
+		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
 		articleBody(source)
 	]);
 }
