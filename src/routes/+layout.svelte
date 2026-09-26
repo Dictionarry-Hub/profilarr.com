@@ -34,6 +34,7 @@
 	import NavItem from '$lib/client/ui/nav/NavItem.svelte';
 	import SearchPalette from '$lib/client/ui/search/SearchPalette.svelte';
 	import TableOfContents from '$lib/client/ui/toc/TableOfContents.svelte';
+	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
 	import { slugify } from '$lib/shared/utils/slug';
 	import { loadPcdNav } from '$lib/client/pcd/nav';
 	import type { PcdNavDatabase } from '$lib/types/pcd';
@@ -154,18 +155,27 @@
 <div
 	class="fixed top-(--banner-height) left-0 flex h-[calc(100vh-var(--banner-height))] w-80 flex-col bg-bg font-sans text-text">
 	<!-- Navbar: logo, database switcher, and theme switcher. The database switcher only shows
-	     when the build compiled more than one database; production ships Dictionarry alone. -->
+	     when the build compiled more than one database; production ships Dictionarry alone.
+	     The logo links home. The negative margin keeps it aligned while the padding gives the
+	     hover background room. -->
 	<div class="flex items-center justify-between border-r border-b border-border px-6 py-4">
-		<div class="flex items-center gap-2">
-			<img
-				src="/icon.png"
-				alt="profilarr"
-				class="size-5" />
-			<span class="flex items-baseline gap-1">
-				<span class="font-accent text-lg font-semibold">profilarr</span>
-				<span class="font-mono text-sm text-text-muted">/docs</span>
-			</span>
-		</div>
+		<Tooltip
+			text="Go back home"
+			position="bottom">
+			<a
+				href="/"
+				aria-label="Profilarr home"
+				class="-mx-2 -my-1 flex items-center gap-2 rounded-control px-2 py-1 transition-colors hover:bg-surface-hover">
+				<img
+					src="/icon.png"
+					alt=""
+					class="size-5" />
+				<span class="flex items-baseline gap-1">
+					<span class="font-accent text-lg font-semibold">profilarr</span>
+					<span class="font-mono text-sm text-text-muted">/docs</span>
+				</span>
+			</a>
+		</Tooltip>
 		<div class="flex items-center gap-2">
 			{#if databaseOptions.length > 1}
 				<DropdownSelect
