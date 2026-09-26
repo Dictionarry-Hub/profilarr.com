@@ -1,7 +1,7 @@
 ---
 layout: docs
-title: Backups and Moving
-slug: backups-and-moving
+title: Backup
+slug: backup
 blurb: Keeping backups of Profilarr and restoring them, on the same machine or a new one.
 parent: installation
 order: 4
