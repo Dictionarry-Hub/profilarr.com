@@ -1,6 +1,12 @@
 export { specToMarkdown, tagToMarkdown, endpointToMarkdown, operationSlug } from './api.js';
 export { assistantLink, DEFAULT_PROMPT, type Assistant } from './assistants.js';
-export { docToMarkdown, byDocOrder, type DocMeta, type DocIndexEntry } from './docs.js';
+export {
+	docToMarkdown,
+	byDocOrder,
+	docTree,
+	type DocMeta,
+	type DocIndexEntry
+} from './docs.js';
 export {
 	devLogToMarkdown,
 	devLogIndexToMarkdown,

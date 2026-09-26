@@ -1,7 +1,7 @@
 import type { CompiledDatabase } from '$lib/types/pcd';
 import { slugify } from '$lib/shared/utils/slug';
 import type { DevLogIndexEntry } from './devlog.js';
-import type { DocIndexEntry } from './docs.js';
+import { docTree, type DocIndexEntry } from './docs.js';
 import { join } from './md.js';
 import { SITE_URL } from './site.js';
 import type { WikiIndexEntry } from './wiki.js';
@@ -19,6 +19,22 @@ export interface LlmsInput {
 
 function link(title: string, url: string, note?: string): string {
 	return `- [${title}](${url})${note ? `: ${note}` : ''}`;
+}
+
+function docLink(doc: DocIndexEntry): string {
+	return link(doc.title, `${SITE_URL}/docs/${doc.slug}.md`, doc.blurb);
+}
+
+// Child pages are indented under their parent, matching the sidebar.
+function docsSection(docs: DocIndexEntry[]): string {
+	const lines: string[] = [];
+	for (const doc of docTree(docs)) {
+		lines.push(docLink(doc));
+		for (const child of doc.children) {
+			lines.push(`  ${docLink(child)}`);
+		}
+	}
+	return lines.join('\n');
 }
 
 function plural(count: number, one: string, many: string): string {
@@ -75,9 +91,7 @@ export function llmsTxt(input: LlmsInput): string {
 		'Pages with a Markdown version serve it at the same URL with `.md` appended, and every' +
 			' Markdown page links back to this index.',
 		input.docs.length > 0 ? '## Docs' : null,
-		input.docs
-			.map((doc) => link(doc.title, `${SITE_URL}/docs/${doc.slug}.md`, doc.blurb))
-			.join('\n'),
+		docsSection(input.docs),
 		'## API Reference',
 		link(
 			'Profilarr API v1',

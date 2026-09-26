@@ -12,19 +12,24 @@ Setup guides and user-facing documentation. Written as mdsvex markdown. Authored
 
 Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
 reuses `src/lib/layouts/Article.svelte`. Docs follow reading order instead of publish date, so their
-frontmatter drops `author`, `created`, and `tags` and adds `order`:
+frontmatter drops `author`, `created`, and `tags` and adds `order` and `parent`:
 
-| Field    | Notes                                                                    |
-| -------- | ------------------------------------------------------------------------ |
-| `layout` | `docs`                                                                   |
-| `title`  | Display title and sidebar label                                          |
-| `slug`   | Matches the route directory name (which is what routes derive)           |
-| `blurb`  | Short description; SEO meta, search blurb, artifact preamble             |
-| `order`  | Position in the sidebar, ascending; pages without one sort last by title |
+| Field    | Notes                                                                        |
+| -------- | ---------------------------------------------------------------------------- |
+| `layout` | `docs`                                                                       |
+| `title`  | Display title and sidebar label                                              |
+| `slug`   | Matches the route directory name (which is what routes derive)               |
+| `blurb`  | Short description; SEO meta, search blurb, artifact preamble                 |
+| `order`  | Position among its siblings, ascending; pages without one sort last by title |
+| `parent` | Optional slug of the page it is listed under in the sidebar                  |
 
-The sidebar's Docs section lists the pages in that order above the API Reference, with icons keyed
-by slug in `src/routes/+layout.svelte`. The sidebar nav, search index, sitemap, `llms.txt`, and the
-`/docs/<slug>.md` Markdown mirror all glob the same path. There is no `/docs` index page.
+The sidebar's Docs section lists top-level pages in that order above the API Reference, with icons
+keyed by slug in `src/routes/+layout.svelte`. A page with `parent` set is listed under that page
+instead, one level deep; `docTree` in `src/lib/shared/utils/llm/docs.ts` builds the nesting and
+fails the build on an unknown parent. URLs stay flat (`/docs/docker`, not
+`/docs/installation/docker`), so moving a page to another section does not change its URL. The
+sidebar nav, search index, sitemap, `llms.txt`, and the `/docs/<slug>.md` Markdown mirror all glob
+the same path. There is no `/docs` index page.
 
 ### PCD Entity Browser
 

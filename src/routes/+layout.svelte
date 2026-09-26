@@ -23,6 +23,7 @@
 		Code,
 		Info,
 		Rocket,
+		SquareTerminal,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -55,7 +56,8 @@
 	// label only.
 	const docIcons: Record<string, typeof BookOpen> = {
 		'introduction': Info,
-		'quick-start': Rocket
+		'quick-start': Rocket,
+		'installation': SquareTerminal
 	};
 
 	let { children, data } = $props();
@@ -197,11 +199,27 @@
 			label="Docs"
 			icon={BookText}>
 			{#each data.docs as doc (doc.href)}
-				<NavGroup
-					label={doc.title}
-					href={doc.href}
-					icon={docIcons[doc.slug]}
-					class="mb-1" />
+				<!-- NavGroup shows a chevron whenever it has children, so pages
+				     without child pages render without the block. -->
+				{#if doc.children.length > 0}
+					<NavGroup
+						label={doc.title}
+						href={doc.href}
+						icon={docIcons[doc.slug]}
+						class="mb-1">
+						{#each doc.children as child (child.href)}
+							<NavItem
+								label={child.title}
+								href={child.href} />
+						{/each}
+					</NavGroup>
+				{:else}
+					<NavGroup
+						label={doc.title}
+						href={doc.href}
+						icon={docIcons[doc.slug]}
+						class="mb-1" />
+				{/if}
 			{/each}
 			<NavGroup
 				label="API Reference"

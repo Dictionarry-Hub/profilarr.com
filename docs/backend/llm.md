@@ -147,10 +147,10 @@ The slug is the route directory name, the same derivation the nav uses. The prea
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
 the web URL. Docs pages have no author, date, or tags, so their context line names the docs and the
 web URL. There is no docs index artifact because there is no `/docs` page; `llms.txt` lists the docs
-pages in reading order instead. The body ships nearly verbatim: frontmatter and `<script>` blocks
-are stripped, but embedded Svelte components stay intact, the same approach Anthropic's docs use.
-Components often carry real content in their props (e.g. `CodeBlock` code), so stripping them would
-lose information; models read component tags fine.
+pages in reading order instead, with child pages indented under their parent. The body ships nearly
+verbatim: frontmatter and `<script>` blocks are stripped, but embedded Svelte components stay
+intact, the same approach Anthropic's docs use. Components often carry real content in their props
+(e.g. `CodeBlock` code), so stripping them would lose information; models read component tags fine.
 
 Index links point at the `.md` artifacts, so each index doubles as a machine-readable directory of
 its layer.

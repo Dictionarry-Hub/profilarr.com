@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Authentication
+slug: authentication
+blurb: How to sign in to Profilarr, from a local password to SSO.
+parent: installation
+order: 2
+---
+
+TODO: How to sign in to Profilarr. Covers first-run setup and the password account, SSO through OIDC, turning login off behind an authenticating proxy, API keys, the settings that stop Profilarr from starting, and what to do if you lose access.

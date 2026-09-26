@@ -1,5 +1,5 @@
 import type { PcdNavIndex } from '$lib/types/pcd';
-import { byDocOrder, type DocMeta } from '$lib/shared/utils/llm/docs.js';
+import { docTree, type DocMeta } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
@@ -22,12 +22,20 @@ function articleNav(files: Record<string, { metadata: ArticleMeta }>, base: stri
 		.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 }
 
-// Docs follow reading order, not publish date.
+// Docs follow reading order, not publish date, and nest one level under a
+// `parent` page.
 function docsNav(files: Record<string, { metadata: DocMeta }>) {
-	return Object.entries(files)
-		.map(([path, module]) => ({ ...module.metadata, slug: path.split('/').at(-2)! }))
-		.sort(byDocOrder)
-		.map((doc) => ({ title: doc.title, slug: doc.slug, href: `/docs/${doc.slug}` }));
+	const docs = Object.entries(files).map(([path, module]) => ({
+		...module.metadata,
+		slug: path.split('/').at(-2)!
+	}));
+
+	return docTree(docs).map((doc) => ({
+		title: doc.title,
+		slug: doc.slug,
+		href: `/docs/${doc.slug}`,
+		children: doc.children.map((child) => ({ title: child.title, href: `/docs/${child.slug}` }))
+	}));
 }
 
 export async function load() {

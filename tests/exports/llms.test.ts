@@ -39,7 +39,11 @@ const database: CompiledDatabase = {
 
 describe('llmsTxt', () => {
 	const text = llmsTxt({
-		docs: [{ title: 'Introduction', slug: 'introduction', blurb: 'What Profilarr is.' }],
+		docs: [
+			{ title: 'Docker', slug: 'docker', parent: 'installation', order: 1 },
+			{ title: 'Introduction', slug: 'introduction', blurb: 'What Profilarr is.', order: 1 },
+			{ title: 'Installation', slug: 'installation', order: 2 }
+		],
 		devLogs: [{ title: 'Rebirth', slug: 'rebirth', blurb: 'Starting over.' }],
 		wiki: [{ title: 'Anatomy of a Profile', slug: 'anatomy-of-a-profile' }],
 		databases: [database]
@@ -53,9 +57,12 @@ describe('llmsTxt', () => {
 		expect(text).toContain('- [Profilarr API v1](https://profilarr.com/api/v1.md): ');
 	});
 
-	it('links docs pages in the order given', () => {
+	it('links docs pages in reading order with child pages indented', () => {
 		expect(text).toContain(
-			'## Docs\n\n- [Introduction](https://profilarr.com/docs/introduction.md): What Profilarr is.'
+			'## Docs\n\n' +
+				'- [Introduction](https://profilarr.com/docs/introduction.md): What Profilarr is.\n' +
+				'- [Installation](https://profilarr.com/docs/installation.md)\n' +
+				'  - [Docker](https://profilarr.com/docs/docker.md)\n'
 		);
 	});
 
