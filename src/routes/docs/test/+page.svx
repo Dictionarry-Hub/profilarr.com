@@ -1,0 +1,9 @@
+---
+layout: docs
+title: Test
+slug: test
+blurb: Checking your configuration before it reaches Radarr or Sonarr.
+order: 5
+---
+
+TODO: Checking your configuration before it reaches Radarr or Sonarr. Covers what each kind of test checks, that every test needs the optional parser service (the Docker page covers running it), that saving test cases needs a database you maintain, and links to each page in this section.

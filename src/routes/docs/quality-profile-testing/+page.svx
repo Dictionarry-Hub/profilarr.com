@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Quality Profiles
+slug: quality-profile-testing
+blurb: Scoring real releases against a quality profile.
+parent: test
+order: 3
+---
+
+TODO: Scoring releases against a quality profile. Covers adding movies and series from TMDB (which needs a TMDB token in Settings), adding releases by hand or importing them from a Radarr or Sonarr interactive search (Sonarr imports season packs only), Quick Parse for one-off titles, and what the score means: the sum of the custom format scores a release matches, not a full simulation of how Radarr or Sonarr would rank it.

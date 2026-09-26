@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Custom Formats
+slug: custom-format-testing
+blurb: Testing release titles against a custom format.
+parent: test
+order: 2
+---
+
+TODO: Testing custom formats against release titles. Covers adding test cases (a release title, whether it's a movie or a series, and whether it should match), reading the breakdown of which conditions passed for each result, and one limitation: the Testing tab checks every condition, including ones that only apply to Radarr or only to Sonarr, while sync leaves those out.

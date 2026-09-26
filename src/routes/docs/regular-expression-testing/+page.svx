@@ -1,0 +1,10 @@
+---
+layout: docs
+title: Regular Expressions
+slug: regular-expression-testing
+blurb: Running Regex101 unit tests against the regex engine Radarr and Sonarr use.
+parent: test
+order: 1
+---
+
+TODO: Testing regular expressions with Regex101 unit tests. Covers linking a Regex101 ID, how its unit tests run against the .NET regex engine Radarr and Sonarr use, filtering the results, and two things that catch people out: the tests run against the pattern saved on regex101.com, not the one saved in Profilarr, and results are cached after the first fetch and never refreshed.
