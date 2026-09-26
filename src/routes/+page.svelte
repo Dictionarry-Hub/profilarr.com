@@ -37,8 +37,8 @@
 
 	<h2>Works with</h2>
 	<p>
-		TODO: Supported apps (Radarr v5+, Sonarr v4+) and notification services (Discord, Telegram,
-		Slack, ntfy, Pushover, Gotify, Apprise, and webhooks).
+		TODO: Supported apps (Radarr v5+, Sonarr v4+) and notification services (Discord, ntfy,
+		Telegram, and webhooks).
 	</p>
 
 	<h2>Install</h2>
