@@ -14,9 +14,13 @@
 	</p>
 	<ul>
 		<li><a href="/dev/ui">UI Showcase</a>: the shared components and their states.</li>
-		<li>
-			Error pages: <a href="/dev/errors/404">404</a>, <a href="/dev/errors/403">403</a>, and
-			<a href="/dev/errors/500">500</a>.
-		</li>
+		<!-- The error previews respond with their error status, so production
+		     prerendering would treat these links as broken. -->
+		{#if import.meta.env.DEV}
+			<li>
+				Error pages: <a href="/dev/errors/404">404</a>, <a href="/dev/errors/403">403</a>,
+				and <a href="/dev/errors/500">500</a>.
+			</li>
+		{/if}
 	</ul>
 </div>
