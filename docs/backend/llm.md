@@ -248,7 +248,9 @@ Three pieces let a reader find the Markdown artifacts without a copy button.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
-  bakes the footer into the prerendered files.
+  bakes the footer into the prerendered files. The same hook rewrites site-relative Markdown links
+  (`](/docs/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page pasted into
+  a chat on its own still resolves its links.
 - **Alternate link.** Pages with a Markdown version pass its path to the `SEO` component's
   `markdown` prop, which renders `<link rel="alternate" type="text/markdown">` in the head, so tools
   that fetch the HTML learn the Markdown version exists.
