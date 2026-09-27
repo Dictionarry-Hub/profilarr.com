@@ -10,65 +10,7 @@ order: 1
 <script>
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
-
-	const watchtowerCompose = [
-		{
-			title: 'compose.yml',
-			language: 'yaml',
-			code: `services:
-  profilarr:
-    image: ghcr.io/dictionarry-hub/profilarr:latest
-    container_name: profilarr
-    # ...
-
-  profilarr-parser:
-    image: ghcr.io/dictionarry-hub/profilarr-parser:latest
-    container_name: profilarr-parser
-    # ...
-
-  watchtower:
-    image: nickfedor/watchtower
-    container_name: watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: profilarr profilarr-parser`
-		}
-	];
-
-	const scheduledPull = [
-		{
-			title: 'crontab',
-			language: 'sh',
-			code: `0 4 * * * cd /path/to/profilarr && docker compose pull && docker compose up -d`
-		}
-	];
-
-	const renovateImage = [
-		{
-			title: 'compose.yml',
-			language: 'yaml',
-			code: `image: ghcr.io/dictionarry-hub/profilarr:develop@sha256:<digest>`
-		}
-	];
-
-	const renovateRule = [
-		{
-			title: 'renovate.json',
-			language: 'json',
-			code: `{
-  "packageRules": [
-    {
-      "matchPackageNames": [
-        "ghcr.io/dictionarry-hub/profilarr",
-        "ghcr.io/dictionarry-hub/profilarr-parser"
-      ],
-      "groupName": "Profilarr"
-    }
-  ]
-}`
-		}
-	];
+	import { watchtowerCompose, scheduledPull, renovateImage, renovateRule } from './data';
 </script>
 
 TODO: Running Profilarr with Docker. Covers the compose file, including the optional parser container, what the `/config` volume holds, file permissions with `PUID` and `PGID` or a non-root user, health checks, and how to update. Also has an Unraid section: installing from the Community Applications template, choosing the `/config` path, the preset `PUID` `99` and `PGID` `100`, and adding the parser container by hand, since the template doesn't include it. Needs a warning callout near the top that the image changed: v2 is published as `ghcr.io/dictionarry-hub/profilarr`, not `santiagosayshey/profilarr`. That was deliberate, so v1 installs wouldn't auto-update onto v2 and break their configs.

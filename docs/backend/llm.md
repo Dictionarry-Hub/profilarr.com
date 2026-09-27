@@ -154,6 +154,16 @@ embedded Svelte components stay intact, the same approach Anthropic's docs use. 
 carry real content in their props (e.g. `CodeBlock` code), so stripping them would lose information;
 models read component tags fine.
 
+Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
+to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the
+docs mirror routes import the same module and pass it to `componentsToMarkdown`
+(`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
+`AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
+fenced block per tab under its title, and a `Callout` becomes a blockquote led by its type. Columns
+are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a cell for the mirror, so
+styling the page adds in snippets (badges, links, placeholders) has a text form. A tag that names
+data the module doesn't export, and any other component, stays as it is.
+
 Index links point at the `.md` artifacts, so each index doubles as a machine-readable directory of
 its layer.
 

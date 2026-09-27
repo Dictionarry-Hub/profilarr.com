@@ -35,7 +35,10 @@ mirrors (`/docs.md` for the root, `/docs/<slug>.md` for the rest) all glob the s
 `docSlugFromPath` and `docPath` in the same file map between source paths, slugs, and URLs. Titles
 repeat across sections (Build and Test both have a Custom Formats page), so search results and the
 document title put the parent's title in front of a child page's (`Test: Custom Formats`, built by
-`docFullTitle`); the sidebar and page heading keep the short title.
+`docFullTitle`); the sidebar and page heading keep the short title. A page that embeds components
+with data (AdaptiveList rows, CodeBlock examples) keeps that data in a `data.ts` next to its
+`+page.svx`, so the Markdown mirror can serialize it (see
+[llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
 
 ### PCD Entity Browser
 
