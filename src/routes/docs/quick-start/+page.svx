@@ -86,7 +86,7 @@ Open your instance under **Arrs** and go to its **Sync** tab. Work through its s
 
 <Callout type="info">
 
-Profilarr tries to stay neutral about how you set up your Arrs, but quality profiles need media management and a delay profile to sync alongside them. The custom formats and scores in a profile are tuned to specific file naming, size limits for each quality, and delays between protocols, and without those in place, matching, scoring, and renaming go wrong in ways that are hard to spot. That's why Profilarr won't save your quality profile choices until the other two sections are saved. If you'd rather use your own naming or settings, add them to a database and sync those instead.
+Profilarr tries to stay neutral about how you set up your Arrs, but quality profiles need media management and a delay profile synced alongside them. A profile's custom formats and scores are tuned to specific naming, size limits, and delays, so Profilarr won't save your quality profile choices until the other two sections are saved. To use your own naming or settings instead, add them to a database and sync those.
 
 </Callout>
 
