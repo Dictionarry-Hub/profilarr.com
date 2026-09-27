@@ -2,10 +2,10 @@
 	"exempt": [
 		{ "route": "/dev/ui", "reason": "component showcase, dev-only, not content" },
 		{ "route": "/dev", "reason": "dev tools index, dev-only, not content" },
-		{ "route": "/pcd", "reason": "client-side redirect stub to /pcd/{preference}/" }
+		{ "route": "/pcd", "reason": "client-side redirect stub to /pcd/{preference}/" },
+		{ "route": "/docs", "reason": "redirect to /, where the docs root page moved" }
 	],
 	"pending": [
-		{ "route": "/", "reason": "home" },
 		{ "route": "/articles", "reason": "articles section page, placeholder" },
 		{
 			"route": "/pcd/*",

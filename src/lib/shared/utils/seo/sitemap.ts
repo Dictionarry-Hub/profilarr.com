@@ -19,7 +19,8 @@ export interface ArticleLike {
 }
 
 // /pcd is a client-side redirect stub, not a page.
-export const STATIC_PAGES = ['/', '/articles', '/dev-logs', '/wiki', '/api/v1'] as const;
+// The home page is the docs root page, so it comes from the docs slugs.
+export const STATIC_PAGES = ['/articles', '/dev-logs', '/wiki', '/api/v1'] as const;
 
 const NAMED_TYPES = [
 	['customFormats', 'custom-formats', 'custom_format'],

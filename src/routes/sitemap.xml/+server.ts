@@ -5,7 +5,7 @@ import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
-const docModules = import.meta.glob('/src/routes/docs/**/+page.svx');
+const docModules = import.meta.glob(['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx']);
 
 const devLogModules = import.meta.glob<{ metadata: { created: string } }>(
 	'/src/routes/dev-logs/**/+page.svx',

@@ -217,6 +217,11 @@
 	margin: 1.5rem 0;
 }
 
+/* Screenshots sit in a tab panel that already spaces them from the tabs and caption. */
+.prose .screenshots img {
+	margin: 0;
+}
+
 /* Mermaid diagrams (tooling/markdown/mermaid.ts). The renderer's own font rules
    are stripped, so the fonts are set here. */
 

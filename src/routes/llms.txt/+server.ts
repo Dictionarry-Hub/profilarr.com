@@ -12,9 +12,12 @@ import type { CompiledDatabase } from '$lib/types/pcd';
 // the footer points to.
 export const prerender = true;
 
-const docModules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
-	eager: true
-});
+const docModules = import.meta.glob<{ metadata: DocMeta }>(
+	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	{
+		eager: true
+	}
+);
 const devLogModules = import.meta.glob<{ metadata: DevLogMeta }>(
 	'/src/routes/dev-logs/**/+page.svx',
 	{ eager: true }

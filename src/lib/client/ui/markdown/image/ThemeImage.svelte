@@ -3,10 +3,14 @@
 		dark: string;
 		light: string;
 		alt: string;
+		/** Outlines the image, for screenshots whose background matches the page. */
+		border?: boolean;
 		class?: string;
 	}
 
-	let { dark, light, alt, class: className }: Props = $props();
+	let { dark, light, alt, border = false, class: className }: Props = $props();
+
+	const classes = $derived(`${border ? 'border border-border' : ''} ${className ?? ''}`);
 </script>
 
 <!--
@@ -18,11 +22,11 @@
 <img
 	src={light}
 	{alt}
-	class="theme-img theme-img-light {className ?? ''}" />
+	class="theme-img theme-img-light {classes}" />
 <img
 	src={dark}
 	{alt}
-	class="theme-img theme-img-dark {className ?? ''}" />
+	class="theme-img theme-img-dark {classes}" />
 
 <style>
 	.theme-img-light {

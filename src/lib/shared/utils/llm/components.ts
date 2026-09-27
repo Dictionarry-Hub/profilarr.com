@@ -1,3 +1,4 @@
+import type { Component } from 'svelte';
 import { join } from './md.js';
 
 // Markdown serializers for the Svelte components docs pages embed. A page
@@ -26,6 +27,20 @@ export interface CodeExample {
 	title: string;
 	language: string;
 	code: string;
+}
+
+/** One tab of a Screenshots component. `light` and `dark` are the two
+    versions of the image; until they exist the tab shows a placeholder. */
+export interface Screenshot {
+	label: string;
+	/** Icon beside the tab label. */
+	icon?: Component<{ class?: string }>;
+	alt: string;
+	caption?: string;
+	light?: string;
+	dark?: string;
+	/** Outlines the image, for screenshots whose background matches the page. */
+	border?: boolean;
 }
 
 function tableCell(value: string): string {
@@ -109,6 +124,18 @@ export function mediaToMarkdown(body: string): string {
 		});
 }
 
+/** Each screenshot as an image linked to its light version, with its caption.
+    Placeholders without an image keep their label and caption. */
+export function markdownScreenshots(items: Screenshot[]): string {
+	return join(
+		items.map((item) => {
+			const src = item.light ?? item.dark;
+			const image = src ? `![${item.alt}](${src})` : `**${item.label}.**`;
+			return item.caption ? `${image}\n\n${item.caption}` : image;
+		})
+	);
+}
+
 function isRowList(value: unknown): value is Record<string, unknown>[] {
 	return Array.isArray(value);
 }
@@ -125,7 +152,11 @@ function isTreeList(value: unknown): value is TreeNode[] {
 	return Array.isArray(value);
 }
 
-/** Replaces AdaptiveList, CodeBlock, FileTree, and Callout tags in an mdsvex body with
+function isScreenshotList(value: unknown): value is Screenshot[] {
+	return Array.isArray(value);
+}
+
+/** Replaces AdaptiveList, CodeBlock, FileTree, Screenshots, and Callout tags in an mdsvex body with
     Markdown. `data` is the page's data.ts module; a tag that names data the
     module doesn't export is left as it is. */
 export function componentsToMarkdown(body: string, data: Record<string, unknown>): string {
@@ -145,6 +176,10 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 		.replace(/<FileTree\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
 			const items = data[name];
 			return isTreeList(items) ? markdownTree(items) : tag;
+		})
+		.replace(/<Screenshots\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
+			const items = data[name];
+			return isScreenshotList(items) ? markdownScreenshots(items) : tag;
 		})
 		.replace(/<Callout\s+type="(\w+)">([\s\S]*?)<\/Callout>/g, (_, type, inner) =>
 			markdownCallout(type, inner)

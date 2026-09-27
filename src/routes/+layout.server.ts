@@ -23,7 +23,8 @@ function articleNav(files: Record<string, { metadata: ArticleMeta }>, base: stri
 }
 
 // Docs follow reading order, not publish date, and nest one level under a
-// `parent` page. The root page is the Docs header's link, not an entry.
+// `parent` page. The root page is the home page and the Home header's link,
+// not an entry.
 function docsNav(files: Record<string, { metadata: DocMeta }>) {
 	const docs = Object.entries(files)
 		.map(([path, module]) => ({ ...module.metadata, slug: docSlugFromPath(path) }))
@@ -38,9 +39,12 @@ function docsNav(files: Record<string, { metadata: DocMeta }>) {
 }
 
 export async function load() {
-	const docFiles = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
-		eager: true
-	});
+	const docFiles = import.meta.glob<{ metadata: DocMeta }>(
+		['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+		{
+			eager: true
+		}
+	);
 	const devLogFiles = import.meta.glob<{ metadata: ArticleMeta }>(
 		'/src/routes/dev-logs/**/+page.svx',
 		{ eager: true }

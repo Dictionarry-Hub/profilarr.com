@@ -11,10 +11,11 @@ The site has four content layers:
 Setup guides and user-facing documentation. Written as mdsvex markdown. Authored by hand.
 
 Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
-reuses `src/lib/layouts/Article.svelte`. The Introduction is the root page at
-`src/routes/docs/+page.svx`, served at `/docs` with an empty slug. Docs follow reading order instead
-of publish date, so their frontmatter drops `author`, `created`, and `tags` and adds `order`,
-`parent`, and `keywords`:
+reuses `src/lib/layouts/Article.svelte`. The root page is the site's home page: it lives at
+`src/routes/+page.svx`, is served at `/` with an empty slug, and is titled "Profilarr" so the `SEO`
+component gives it the bare site name. `/docs`, where it used to live, redirects to `/`. Docs follow
+reading order instead of publish date, so their frontmatter drops `author`, `created`, and `tags`
+and adds `order`, `parent`, and `keywords`:
 
 | Field      | Notes                                                                           |
 | ---------- | ------------------------------------------------------------------------------- |
@@ -25,29 +26,32 @@ of publish date, so their frontmatter drops `author`, `created`, and `tags` and 
 | `order`    | Position among its siblings, ascending; pages without one sort last by title    |
 | `parent`   | Optional slug of the page it is listed under in the sidebar                     |
 | `keywords` | Optional extra search terms that appear in no heading                           |
-| `next`     | Optional list of slugs to point readers at in the page footer                   |
+| `next`     | Optional list of docs slugs or site links to point readers at in the footer     |
 
 A page with `next` set ends with a footer that links to those pages, as cards with each page's title
-and blurb (`PageFooter` in `src/lib/client/ui/footer/`). `docNext` in
-`src/lib/shared/utils/llm/docs.ts` resolves the slugs and fails the build on an unknown one. It runs
-in `src/routes/docs/+layout.server.ts`, which reads the URL so each prerendered page carries only
-its own links, and in the Markdown mirror routes, which list the same pages under a `## Next`
-heading. Pages without `next` have no footer.
+and blurb (`PageFooter` in `src/lib/client/ui/footer/`). An entry is a docs slug, or a link to
+another page on the site written as `{ title, href, blurb }`, such as the database browser.
+`docNext` in `src/lib/shared/utils/llm/docs.ts` resolves the entries and fails the build on an
+unknown slug or a link that leaves the site. It runs in `src/routes/docs/+layout.server.ts`, which
+reads the URL so each prerendered page carries only its own links, in `src/routes/+page.server.ts`
+for the home page, and in the Markdown mirror routes, which list the same pages under a `## Next`
+heading. `docsIndex` in `src/lib/server/docs.ts` holds every page's metadata for these lookups.
+Pages without `next` have no footer.
 
-The Docs section header links to the root page. Below it the sidebar lists the other top-level pages
+The Home section header links to the root page. Below it the sidebar lists the other top-level pages
 in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page
 with `parent` set is listed under that page instead, one level deep; `docTree` in
 `src/lib/shared/utils/llm/docs.ts` builds the nesting and fails the build on an unknown parent. URLs
 stay flat (`/docs/docker`, not `/docs/installation/docker`), so moving a page to another section
 does not change its URL. The sidebar nav, search index, sitemap, `llms.txt`, and the Markdown
-mirrors (`/docs.md` for the root, `/docs/<slug>.md` for the rest) all glob the same path, and
-`docSlugFromPath` and `docPath` in the same file map between source paths, slugs, and URLs. Titles
-repeat across sections (Build and Test both have a Custom Formats page), so search results and the
-document title put the parent's title in front of a child page's (`Test: Custom Formats`, built by
-`docFullTitle`); the sidebar and page heading keep the short title. A page that embeds components
-with data (AdaptiveList rows, CodeBlock examples) keeps that data in a `data.ts` next to its
-`+page.svx`, so the Markdown mirror can serialize it (see
-[llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
+mirrors (`/index.md` for the root, `/docs/<slug>.md` for the rest) all glob the same two paths,
+`src/routes/+page.svx` and `src/routes/docs/**/+page.svx`, and `docSlugFromPath`, `docPath`, and
+`docMarkdownPath` in the same file map between source paths, slugs, and URLs. Titles repeat across
+sections (Build and Test both have a Custom Formats page), so search results and the document title
+put the parent's title in front of a child page's (`Test: Custom Formats`, built by `docFullTitle`);
+the sidebar and page heading keep the short title. A page that embeds components with data
+(AdaptiveList rows, CodeBlock examples) keeps that data in a `data.ts` next to its `+page.svx`, so
+the Markdown mirror can serialize it (see [llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
 
 ### PCD Entity Browser
 

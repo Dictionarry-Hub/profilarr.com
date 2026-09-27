@@ -6,6 +6,7 @@ export {
 	docTree,
 	docSlugFromPath,
 	docPath,
+	docMarkdownPath,
 	docFullTitle,
 	docNext,
 	type DocMeta,

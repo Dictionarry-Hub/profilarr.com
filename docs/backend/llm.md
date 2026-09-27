@@ -137,7 +137,7 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 
 | Artifact      | URL                   | Content                                                  |
 | ------------- | --------------------- | -------------------------------------------------------- |
-| Docs root     | `/docs.md`            | Preamble from frontmatter, then the source body verbatim |
+| Home page     | `/index.md`           | Preamble from frontmatter, then the source body verbatim |
 | Docs page     | `/docs/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
 | Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
 | Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
@@ -147,12 +147,12 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
 the web URL. Docs pages have no author, date, or tags, so their context line names the docs and the
-web URL. The docs root page at `/docs` is the Introduction, not an index, so there is no docs index
-artifact; `llms.txt` lists the docs pages in reading order instead, with child pages indented under
-their parent. The body ships nearly verbatim: frontmatter and `<script>` blocks are stripped, but
-embedded Svelte components stay intact, the same approach Anthropic's docs use. Components often
-carry real content in their props (e.g. `CodeBlock` code), so stripping them would lose information;
-models read component tags fine.
+web URL. The docs root page is the home page at `/`, not an index, so its mirror is `/index.md` and
+there is no docs index artifact; `llms.txt` lists the docs pages in reading order instead, with
+child pages indented under their parent. The body ships nearly verbatim: frontmatter and `<script>`
+blocks are stripped, but embedded Svelte components stay intact, the same approach Anthropic's docs
+use. Components often carry real content in their props (e.g. `CodeBlock` code), so stripping them
+would lose information; models read component tags fine.
 
 Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
 to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the
@@ -160,10 +160,10 @@ docs mirror routes import the same module and pass it to `componentsToMarkdown`
 (`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
 `AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
 fenced block per tab under its title, a `FileTree` becomes a plain-text tree like the `tree` command
-prints, and a `Callout` becomes a blockquote led by its type. Columns are typed as `MarkdownColumn`,
-whose optional `markdown(row)` formats a cell for the mirror, so styling the page adds in snippets
-(badges, links, placeholders) has a text form. A tag that names data the module doesn't export, and
-any other component, stays as it is.
+prints, a `Screenshots` becomes each image with its caption, and a `Callout` becomes a blockquote
+led by its type. Columns are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a
+cell for the mirror, so styling the page adds in snippets (badges, links, placeholders) has a text
+form. A tag that names data the module doesn't export, and any other component, stays as it is.
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
@@ -327,9 +327,9 @@ and forgetting its markdown mirror. See [tooling/lint.md](../tooling/lint.md) fo
 Planned but not yet built. Each reuses the same three pieces (serializer, artifact route, copy
 component):
 
-- **Remaining mdsvex surfaces.** Docs pages, dev logs, and wiki articles are done (see Docs, Dev
-  Log, and Wiki Artifacts); the home page follows the same pattern. Landing each removes its entries
-  from the rule's `PENDING` list (see Enforcement).
+- **Remaining mdsvex surfaces.** Docs pages, including the home page, dev logs, and wiki articles
+  are done (see Docs, Dev Log, and Wiki Artifacts). Landing each removes its entries from the rule's
+  `PENDING` list (see Enforcement).
 - **PCD entity mirrors.** Custom formats, regular expressions, delay profiles, naming configs, media
   settings, quality definitions, and quality profiles are done (see PCD Entity Artifacts); the
   entity list pages follow the same serializer-per-entity pattern in

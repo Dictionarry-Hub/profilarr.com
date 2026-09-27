@@ -298,6 +298,26 @@ it out.
 | ------- | ----------- | -------- | ------- |
 | `links` | `DocLink[]` | yes      |         |
 
+### Tabs
+
+#### `Tabs`
+
+`src/lib/client/ui/tabs/Tabs.svelte`
+
+A tab bar above one panel, styled like the tabs in Profilarr's own UI: labels with optional icons on
+a bottom border, with the selected tab underlined in the accent color. It follows the WAI-ARIA tabs
+pattern: `tablist`, `tab`, and `tabpanel` roles, arrow keys to move between tabs, and Home and End
+to jump to the ends. The `panel` snippet receives the selected tab and renders its content. `value`
+is bindable.
+
+| Prop    | Type                                                | Required | Default         |
+| ------- | --------------------------------------------------- | -------- | --------------- |
+| `items` | `{ id: string; label: string; icon?: Component }[]` | yes      |                 |
+| `label` | `string`                                            | yes      |                 |
+| `panel` | `Snippet<[TabItem]>`                                | yes      |                 |
+| `value` | `string`                                            | no       | first item's id |
+| `class` | `string`                                            | no       |                 |
+
 ### Kbd
 
 #### `Kbd`
@@ -834,11 +854,30 @@ Renders two images and uses CSS to show the correct one based on the active them
 because the inline script in `app.html` sets `data-theme` before first paint. Which image shows is
 driven by the `--theme-image-*` tokens each theme declares; the component never enumerates themes.
 
-| Prop    | Type     | Required | Default |
-| ------- | -------- | -------- | ------- |
-| `dark`  | `string` | yes      |         |
-| `light` | `string` | yes      |         |
-| `alt`   | `string` | yes      |         |
+| Prop     | Type      | Required | Default |
+| -------- | --------- | -------- | ------- |
+| `dark`   | `string`  | yes      |         |
+| `light`  | `string`  | yes      |         |
+| `alt`    | `string`  | yes      |         |
+| `border` | `boolean` | no       | `false` |
+
+`border` outlines the image with the border token. Profilarr's UI uses the same background colors as
+this site, so screenshots of it blend into the page without one.
+
+#### `Screenshots`
+
+`src/lib/client/ui/markdown/screenshots/Screenshots.svelte`
+
+Tabbed screenshots: one tab per image, each a `ThemeImage` with an optional caption and an optional
+`icon` beside the tab label. An item without both `light` and `dark` shows a dashed placeholder
+labeled with the tab name, so a page can lay out its screenshots before the images exist. Pages keep
+the items in `data.ts` as `Screenshot[]` (from `src/lib/shared/utils/llm/components.ts`), and the
+Markdown mirror lists each image and caption.
+
+| Prop    | Type           | Required | Default         |
+| ------- | -------------- | -------- | --------------- |
+| `items` | `Screenshot[]` | yes      |                 |
+| `label` | `string`       | no       | `'Screenshots'` |
 
 #### `Video`
 
