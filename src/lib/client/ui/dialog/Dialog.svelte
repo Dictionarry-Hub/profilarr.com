@@ -7,6 +7,9 @@
 		/** Fires on any close: Escape, backdrop click, or open set to false. */
 		onclose?: () => void;
 		ariaLabel?: string;
+		/** No panel surface (border, background, shadow) and a stronger backdrop
+		    blur, for content that floats over the page, like an image preview. */
+		bare?: boolean;
 		class?: string;
 		/** Fixed region above the scrollable content, separated by a border. */
 		header?: Snippet;
@@ -19,6 +22,7 @@
 		open = $bindable(false),
 		onclose,
 		ariaLabel,
+		bare = false,
 		class: className = '',
 		header,
 		footer,
@@ -77,10 +81,12 @@
 	onclose={handleClose}
 	onclick={handleClick}
 	aria-label={ariaLabel}
-	class="m-auto overflow-hidden rounded-xl border border-border bg-bg p-0 text-text shadow-card backdrop:bg-bg/50 backdrop:backdrop-blur-[2px] {className}">
+	class="m-auto overflow-hidden p-0 text-text {bare
+		? 'bg-transparent backdrop:bg-bg/60 backdrop:backdrop-blur-md'
+		: 'rounded-xl border border-border bg-bg shadow-card backdrop:bg-bg/50 backdrop:backdrop-blur-[2px]'} {className}">
 	<!-- Opaque bg-bg base above, translucent bg-surface layer here, so the
 	     backdrop and page never bleed through (matches Dropdown). -->
-	<div class="flex min-h-0 flex-1 flex-col bg-surface">
+	<div class="flex min-h-0 flex-1 flex-col {bare ? '' : 'bg-surface'}">
 		{#if header}
 			<div class="shrink-0 border-b border-border">
 				{@render header()}

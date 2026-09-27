@@ -217,8 +217,10 @@
 	margin: 1.5rem 0;
 }
 
-/* Screenshots sit in a tab panel that already spaces them from the tabs and caption. */
-.prose .screenshots img {
+/* Screenshots sit in a tab panel that already spaces them from the tabs and
+   caption, and the image preview (ImagePreview) spaces its own image. */
+.prose .screenshots img,
+.prose .image-preview img {
 	margin: 0;
 }
 
