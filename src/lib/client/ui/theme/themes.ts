@@ -18,6 +18,7 @@ import { Laptop, Moon, Sun } from '@lucide/svelte';
 import AstronautHelmet from './icons/AstronautHelmet.svelte';
 import FloppyDisk2 from './icons/FloppyDisk2.svelte';
 import Ufo from './icons/Ufo.svelte';
+import WhaleNarwhal from './icons/WhaleNarwhal.svelte';
 
 export interface ThemeDefinition {
 	id: string;
@@ -29,6 +30,7 @@ export const THEME_DEFINITIONS = [
 	{ id: 'system', label: 'System', icon: Laptop },
 	{ id: 'light', label: 'Light', icon: Sun },
 	{ id: 'dark', label: 'Dark', icon: Moon },
+	{ id: 'classic', label: 'Classic', icon: WhaleNarwhal },
 	{ id: 'retro', label: 'Retro', icon: FloppyDisk2 },
 	{ id: 'roswell', label: 'Roswell', icon: Ufo },
 	{ id: 'voyager', label: 'Voyager', icon: AstronautHelmet }
