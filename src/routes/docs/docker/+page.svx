@@ -7,4 +7,125 @@ parent: installation
 order: 1
 ---
 
-TODO: Running Profilarr with Docker. Covers the compose file, the optional parser service and when you need it, what the `/config` volume holds, file permissions with `PUID` and `PGID` or a non-root user, health checks, release channels, and how to update.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+
+	const watchtowerCompose = [
+		{
+			title: 'compose.yml',
+			language: 'yaml',
+			code: `services:
+  profilarr:
+    image: ghcr.io/dictionarry-hub/profilarr:latest
+    container_name: profilarr
+    # ...
+
+  profilarr-parser:
+    image: ghcr.io/dictionarry-hub/profilarr-parser:latest
+    container_name: profilarr-parser
+    # ...
+
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: profilarr profilarr-parser`
+		}
+	];
+
+	const scheduledPull = [
+		{
+			title: 'crontab',
+			language: 'sh',
+			code: `0 4 * * * cd /path/to/profilarr && docker compose pull && docker compose up -d`
+		}
+	];
+
+	const renovateImage = [
+		{
+			title: 'compose.yml',
+			language: 'yaml',
+			code: `image: ghcr.io/dictionarry-hub/profilarr:develop@sha256:<digest>`
+		}
+	];
+
+	const renovateRule = [
+		{
+			title: 'renovate.json',
+			language: 'json',
+			code: `{
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "ghcr.io/dictionarry-hub/profilarr",
+        "ghcr.io/dictionarry-hub/profilarr-parser"
+      ],
+      "groupName": "Profilarr"
+    }
+  ]
+}`
+		}
+	];
+</script>
+
+TODO: Running Profilarr with Docker. Covers the compose file, including the optional parser container, what the `/config` volume holds, file permissions with `PUID` and `PGID` or a non-root user, health checks, and how to update. Also has an Unraid section: installing from the Community Applications template, choosing the `/config` path, the preset `PUID` `99` and `PGID` `100`, and adding the parser container by hand, since the template doesn't include it. Needs a warning callout near the top that the image changed: v2 is published as `ghcr.io/dictionarry-hub/profilarr`, not `santiagosayshey/profilarr`. That was deliberate, so v1 installs wouldn't auto-update onto v2 and break their configs.
+
+## Automatic Updates
+
+Which updates you get depends on the [release channel](/docs/installation#release-channels) you pick. With Watchtower or a scheduled pull, `latest` follows every stable release, `2` stays within v2, `develop` gets every build, and an exact version like `2.1.0` never changes.
+
+### Watchtower
+
+[Watchtower](https://github.com/nicholas-fedor/watchtower) is the most hands-off option. It checks your containers for new images and recreates them with the same settings when one appears. Updates happen without any review, so you find out what changed after the fact.
+
+<Callout type="info">
+
+The original `containrrr/watchtower` project was archived in December 2025. The link above is the maintained fork.
+
+</Callout>
+
+Watchtower runs as its own container next to Profilarr, with access to the Docker socket so it can see and recreate other containers. Its `command` lists the containers it should update, so it leaves everything else alone. The names have to match each service's `container_name`:
+
+<CodeBlock items={watchtowerCompose} />
+
+### Scheduled Pull
+
+If you'd rather not run another container, a daily cron job does the same thing. This one pulls new images and recreates anything that changed every day at 4am:
+
+<CodeBlock items={scheduledPull} />
+
+### Renovate
+
+> If your homelab has a dependency bot, you probably don't need a guide for this!
+
+Rather than updating your containers for you, [Renovate](https://docs.renovatebot.com) proposes each update as a pull request against your compose files, with the release notes attached. Nothing changes until you review and merge it. It needs your compose files in a Git repository.
+
+**Exact versions** (`2.1.0`) work out of the box. Renovate sees `2.2.0` as newer and opens a pull request for it.
+
+**Moving tags** (`latest`, `2`, and `develop`) keep the same name when they update, so Renovate has no version to compare. Add the image's digest after the tag, and Renovate tracks the digest instead. It opens a pull request whenever the image behind the tag changes:
+
+<CodeBlock items={renovateImage} />
+
+Pin the parser the same way. Then group the two so their updates arrive in one pull request:
+
+<CodeBlock items={renovateRule} />
+
+If another rule in your config also groups these images, such as one for all non-major updates, put this rule after it. When rules set the same option, the later one wins. The `docker:pinDigests` preset adds digests to your images automatically if you'd rather not add them by hand.
+
+<Callout type="info">
+
+Renovate treats your homelab the way software projects treat their dependencies: every change is reviewed before it goes in. With Watchtower or a scheduled pull, whatever is pushed to a tag ends up running on your server, and you find out what changed afterwards. That includes the rare case of a supply chain attack, where a compromised image is published under a legitimate project's name.
+
+With Renovate you:
+
+- Read the release notes before anything changes
+- See exactly what's changing in each pull request
+- Decide when to merge, or skip an update entirely
+- Can make Renovate wait until a release is a few days old with `minimumReleaseAge`, so problems have time to surface first
+
+Watchtower's image cooldown can hold back new images the same way, but it still updates without a review.
+
+</Callout>

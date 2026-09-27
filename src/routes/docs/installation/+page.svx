@@ -6,4 +6,367 @@ blurb: Every way to install Profilarr, what it needs to run, and how to configur
 order: 3
 ---
 
-TODO: The ways to install Profilarr and where each one stands. Covers a table of installation methods (Docker today, with Windows, macOS, and Linux binaries planned), requirements, every environment variable with the Docker-only ones marked, outbound proxy settings, and links to the guides for each step.
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Badge from '$lib/client/ui/badge/Badge.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+
+	const methods = [
+		{ method: 'Docker', runsOn: 'Any Docker host, amd64 or arm64', status: 'Available', href: '/docs/docker' },
+		{ method: 'Unraid', runsOn: 'Unraid, from Community Applications', status: 'Available', href: '/docs/docker#unraid' },
+		{ method: 'Windows binary', runsOn: 'Windows', status: 'Planned' },
+		{ method: 'macOS binary', runsOn: 'macOS', status: 'Planned' },
+		{ method: 'Linux binary', runsOn: 'Linux', status: 'Planned' }
+	];
+
+	const channels = [
+		{ tag: 'latest', description: 'The newest stable release, including future major versions.' },
+		{ tag: '2', description: 'The newest stable release within v2. It never moves to a new major version.' },
+		{ tag: '2.1.0', description: 'One specific release. It never updates.' },
+		{ tag: 'develop', description: 'Pre-release builds still being tested. Not guaranteed to be stable.' }
+	];
+
+	const channelColumns = [
+		{ key: 'tag', header: 'Tag' },
+		{ key: 'description', header: 'What you get' }
+	];
+
+	const methodColumns = [
+		{ key: 'method', header: 'Method' },
+		{ key: 'runsOn', header: 'Runs on' },
+		{ key: 'status', header: 'Status' }
+	];
+	const envGeneral = [
+		{ variable: 'PUID', default: '1000', description: 'User ID that Profilarr runs as. Its config folder is owned by this user.', dockerOnly: true },
+		{ variable: 'PGID', default: '1000', description: 'Group ID that Profilarr runs as. Its config folder is owned by this group.', dockerOnly: true },
+		{ variable: 'UMASK', default: '022', description: 'File creation mask for files Profilarr writes.', dockerOnly: true },
+		{ variable: 'TZ', default: 'UTC', description: 'Timezone used for schedules, such as Australia/Adelaide.' },
+		{ variable: 'PORT', default: '6868', description: 'Port the web UI listens on.' },
+		{ variable: 'HOST', default: '0.0.0.0', description: 'Address the web UI binds to.' }
+	];
+
+	const envAuth = [
+		{ variable: 'AUTH', default: 'on', description: 'Turns login on or off.', seeAlso: { label: 'Authentication', href: '/docs/authentication' } },
+		{ variable: 'OIDC_DISCOVERY_URL', default: '', description: 'Discovery URL of your OIDC provider.' },
+		{ variable: 'OIDC_CLIENT_ID', default: '', description: 'Client ID registered with your OIDC provider.' },
+		{ variable: 'OIDC_CLIENT_SECRET', default: '', description: 'Client secret registered with your OIDC provider.' },
+		{ variable: 'ORIGIN', default: '', description: 'The URL you reach Profilarr at behind a reverse proxy, such as https://profilarr.example.com.', seeAlso: { label: 'Reverse Proxy', href: '/docs/reverse-proxy' } },
+		{ variable: 'PROFILARR_API_KEY', default: '', description: 'An API key with full access, for scripts and automated deployments.', seeAlso: { label: 'Authentication', href: '/docs/authentication' } }
+	];
+
+	const envParser = [
+		{ variable: 'PARSER_HOST', default: 'localhost', description: 'Host name of the parser service, such as its service name in your compose file.' },
+		{ variable: 'PARSER_PORT', default: '5000', description: 'Port of the parser service.' }
+	];
+
+	const envProxy = [
+		{ variable: 'HTTPS_PROXY', default: '', description: 'Proxy for outbound https:// requests.' },
+		{ variable: 'HTTP_PROXY', default: '', description: 'Proxy for outbound http:// requests.' },
+		{ variable: 'ALL_PROXY', default: '', description: 'Proxy for both http:// and https:// requests.' },
+		{ variable: 'NO_PROXY', default: '', description: 'Comma-separated hosts, IPs, or ranges that skip the proxy.' }
+	];
+
+	const envAnnouncements = [
+		{ variable: 'PROFILARR_BULLETIN_URL', default: 'https://raw.githubusercontent.com/Dictionarry-Hub/bulletin/main', defaultLabel: 'Dictionarry-Hub/bulletin', defaultHref: 'https://github.com/Dictionarry-Hub/bulletin', description: 'Where announcements and release information are fetched from. Only change it to point at a mirror.' }
+	];
+
+	const envColumns = [
+		{ key: 'variable', header: 'Variable' },
+		{ key: 'default', header: 'Default' },
+		{ key: 'description', header: 'Description' }
+	];
+
+	const proxyExample = [
+		{
+			title: 'compose.yml',
+			language: 'yaml',
+			code: `environment:
+  - HTTPS_PROXY=http://user:pass@gluetun:8888
+  - NO_PROXY=localhost,127.0.0.1,parser,radarr,sonarr`
+		}
+	];
+
+	const secretsExample = [
+		{
+			title: 'compose.yml',
+			language: 'yaml',
+			code: `environment:
+  - OIDC_CLIENT_SECRET_FILE=/run/secrets/oidc_client_secret`
+		}
+	];
+</script>
+
+Profilarr is a self-hosted web app that runs continuously, like Radarr and Sonarr. It keeps everything in one folder: its SQLite database, logs, backups, and the databases you link. Testing custom formats and quality profiles requires the Profilarr parser, a small companion service that runs as its own container.
+
+## Requirements
+
+- A Docker host running Linux kernel 3.17 or newer, on `linux/amd64` or `linux/arm64`.
+- [Sonarr](https://sonarr.tv) `v4.0.9.2386` or newer.
+- [Radarr](https://radarr.video) `v5.10.4` or newer.
+
+<Callout type="info">
+
+Profilarr crashes at startup with `getentropy failed` on kernels older than 3.17. [Deno](https://deno.com), the runtime Profilarr is built on, relies on the `getrandom` system call, which Linux added in 3.17. This mostly affects older NAS devices, such as Synology DSM installs that still run kernel 3.10. See [issue #650](https://github.com/Dictionarry-Hub/profilarr/issues/650) for more details.
+
+</Callout>
+
+## Installation Methods
+
+Profilarr is currently distributed as a Docker image. Standalone binaries for Windows, macOS, and Linux are a work in progress.
+
+<div class="mb-5">
+<AdaptiveList
+	data={methods}
+	columns={methodColumns}
+	href={(row) => row.href}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'status'}
+			<Badge color={row.status === 'Available' ? 'success' : 'neutral'} variant="subtle" pill>{row.status}</Badge>
+		{:else if col.key === 'method'}
+			<span class="font-medium {row.href ? 'text-link-text group-hover/row:underline' : ''}">{row.method}</span>
+		{:else}
+			{row[col.key]}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex items-start justify-between gap-2">
+			<div>
+				<div class="font-medium {row.href ? 'text-link-text group-hover/row:underline' : ''}">{row.method}</div>
+				<div class="text-sm text-text-muted">{row.runsOn}</div>
+			</div>
+			<Badge color={row.status === 'Available' ? 'success' : 'neutral'} variant="subtle" pill>{row.status}</Badge>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+## The Parser
+
+The parser is a small companion service that reads release titles the way Radarr and Sonarr do. It's written in `C#`, like Radarr and Sonarr, so it uses the same parsing logic and the same `.NET` regex engine they do. That means test results match what your Arrs will actually decide.
+
+Profilarr uses it for:
+
+- Custom format testing
+- Quality profile testing, including Quick Parse
+- Checking that a regular expression is valid
+- Running Regex101 unit tests
+
+The parser was built mostly for the development side of Profilarr: building and testing configurations. If you're only linking a database and syncing it to your Arrs, without changing its configs, you can skip the parser entirely and lose nothing you'd use (and save about 50 MB of RAM). Without it, Profilarr hides custom format and quality profile testing, and regex checks and Regex101 tests show no results.
+
+## Release Channels
+
+Profilarr is published under a few tags, so you can choose how it updates. New features land on `develop` first for beta testers, and a batch becomes a stable release once it's verified. How you keep Profilarr up to date depends on how you installed it. For Docker, see [Automatic updates](/docs/docker#automatic-updates).
+
+<div class="mb-5">
+<AdaptiveList
+	data={channels}
+	columns={channelColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'tag'}
+			<Badge color={row.tag === 'develop' ? 'success' : 'info'} variant="subtle" pill>{row.tag}</Badge>
+		{:else}
+			{row[col.key]}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div><Badge color={row.tag === 'develop' ? 'success' : 'info'} variant="subtle" pill>{row.tag}</Badge></div>
+			<div class="text-sm text-text-muted">{row.description}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+Use `latest` unless you specifically want to test upcoming changes. The parser publishes the same tags. Keep both containers on the same one.
+
+## Environment Variables
+
+Profilarr is configured with environment variables. Most are read by Profilarr itself and work the same way with any installation method. The ones marked Docker only are handled by the container's startup script, so they won't apply to the standalone binaries.
+
+### General
+
+<div class="mb-5">
+<AdaptiveList
+	data={envGeneral}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+### Authentication
+
+<div class="mb-5">
+<AdaptiveList
+	data={envAuth}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+Set all three `OIDC_` variables to turn on SSO.
+
+### Parser
+
+See [The Parser](#the-parser) for what it does and whether you need it.
+
+<div class="mb-5">
+<AdaptiveList
+	data={envParser}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+### Outbound Proxy
+
+Profilarr has no proxy setting of its own. It follows these standard variables for everything it fetches: database updates from GitHub, notifications, TMDB, and announcements.
+
+<div class="mb-5">
+<AdaptiveList
+	data={envProxy}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+- Proxy URLs take the form `scheme://user:pass@host:port`, where the scheme is `http`, `socks5`, or `socks5h`. Use `socks5h` to send DNS lookups through the proxy too.
+- Special characters in the username or password need to be URL-encoded, such as `@` as `%40` and `:` as `%3A`.
+
+<Callout type="warning">
+
+Add your Radarr and Sonarr instances and the parser to `NO_PROXY`. Any host that isn't listed is sent to the proxy, and the proxy usually can't reach services on your local network. This matters most when `HTTP_PROXY` or `ALL_PROXY` is set, since those also cover plain `http://` addresses.
+
+</Callout>
+
+For example, this routes Profilarr through a proxy container named `gluetun`, while your Arrs and the parser stay direct:
+
+<CodeBlock items={proxyExample} />
+
+### Announcements
+
+<div class="mb-5">
+<AdaptiveList
+	data={envAnnouncements}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+### Secrets from Files
+
+Docker only. Any variable can be read from a file instead by adding `_FILE` to its name and setting it to the file's path. This works with Docker secrets, so values like the OIDC client secret don't have to sit in your compose file:
+
+<CodeBlock items={secretsExample} />
+
+The startup script reads the file, strips any newlines, and sets the variable without `_FILE` from it. If the file doesn't exist, it logs a warning and leaves the variable unset.

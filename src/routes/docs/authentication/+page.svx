@@ -7,4 +7,4 @@ parent: installation
 order: 2
 ---
 
-TODO: How to sign in to Profilarr. Covers first-run setup and the password account, SSO through OIDC, turning login off behind an authenticating proxy, API keys, the settings that stop Profilarr from starting, and what to do if you lose access.
+TODO: How to sign in to Profilarr. Covers first-run setup and the password account, SSO through OIDC, turning login off behind an authenticating proxy, API keys, the settings that stop Profilarr from starting, and what to do if you lose access. Also has an info callout noting that `AUTH=oidc` still works as an alias for `on` but is deprecated, and covers `PROFILARR_API_KEY`: API keys are normally created under Settings > Security, but this variable sets one with full access for scripts and automated deployments. It must be at least 32 characters or Profilarr won't start, it isn't stored in the database, and it shows up in Settings > Security as a read-only key named Environment.
