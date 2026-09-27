@@ -12,6 +12,8 @@ export interface DocMeta {
 	order?: number;
 	/** Slug of the page this one is listed under in the sidebar. */
 	parent?: string;
+	/** Extra search terms that don't appear in the title, blurb, or headings. */
+	keywords?: string[];
 }
 
 export interface DocIndexEntry extends DocMeta {

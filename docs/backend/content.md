@@ -13,17 +13,18 @@ Setup guides and user-facing documentation. Written as mdsvex markdown. Authored
 Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
 reuses `src/lib/layouts/Article.svelte`. The Introduction is the root page at
 `src/routes/docs/+page.svx`, served at `/docs` with an empty slug. Docs follow reading order instead
-of publish date, so their frontmatter drops `author`, `created`, and `tags` and adds `order` and
-`parent`:
+of publish date, so their frontmatter drops `author`, `created`, and `tags` and adds `order`,
+`parent`, and `keywords`:
 
-| Field    | Notes                                                                           |
-| -------- | ------------------------------------------------------------------------------- |
-| `layout` | `docs`                                                                          |
-| `title`  | Display title and sidebar label                                                 |
-| `slug`   | Matches the route directory name (which is what routes derive); omitted on root |
-| `blurb`  | Short description; SEO meta, search blurb, artifact preamble                    |
-| `order`  | Position among its siblings, ascending; pages without one sort last by title    |
-| `parent` | Optional slug of the page it is listed under in the sidebar                     |
+| Field      | Notes                                                                           |
+| ---------- | ------------------------------------------------------------------------------- |
+| `layout`   | `docs`                                                                          |
+| `title`    | Display title and sidebar label                                                 |
+| `slug`     | Matches the route directory name (which is what routes derive); omitted on root |
+| `blurb`    | Short description; SEO meta, search blurb, artifact preamble                    |
+| `order`    | Position among its siblings, ascending; pages without one sort last by title    |
+| `parent`   | Optional slug of the page it is listed under in the sidebar                     |
+| `keywords` | Optional extra search terms that appear in no heading                           |
 
 The Docs section header links to the root page. Below it the sidebar lists the other top-level pages
 in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page

@@ -4,6 +4,8 @@ title: Installation
 slug: installation
 blurb: Every way to install Profilarr, what it needs to run, and how to configure it.
 order: 3
+keywords:
+  - synology
 ---
 
 <script>
