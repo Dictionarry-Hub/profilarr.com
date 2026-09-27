@@ -22,7 +22,7 @@ next:
 
 ## Don't Repeat Yourself
 
-_Don't Repeat Yourself_ (DRY) is a software engineering principle that I learned in my first semester of computer science. Andy Hunt and Dave Thomas formulated it in [_The Pragmatic Programmer_](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/):
+[_Don't Repeat Yourself_](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/) is a software engineering principle that I learned in my first semester of computer science:
 
 > Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
 
