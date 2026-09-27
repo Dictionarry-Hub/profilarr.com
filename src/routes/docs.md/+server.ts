@@ -1,11 +1,17 @@
 import type { RequestHandler } from './$types';
-import { docToMarkdown, type DocMeta } from '$lib/shared/utils/llm/index.js';
+import {
+	docNext,
+	docSlugFromPath,
+	docToMarkdown,
+	type DocMeta
+} from '$lib/shared/utils/llm/index.js';
 
 export const prerender = true;
 
 // Mirror of the docs root page. Child pages are served by /docs/[slug].md.
 
-const modules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/+page.svx', {
+// Every docs page's metadata, to resolve the root page's `next` links.
+const modules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
 	eager: true
 });
 
@@ -20,9 +26,14 @@ const dataModules = import.meta.glob<Record<string, unknown>>('/src/routes/docs/
 });
 
 export const GET: RequestHandler = () => {
-	const [path, module] = Object.entries(modules)[0];
+	const docs = Object.entries(modules).map(([path, module]) => ({
+		...module.metadata,
+		slug: docSlugFromPath(path)
+	}));
+	const root = docs.find((doc) => doc.slug === '')!;
+	const [source] = Object.values(sources);
 	const data = Object.values(dataModules)[0] ?? {};
-	const markdown = docToMarkdown(module.metadata, sources[path], '', data);
+	const markdown = docToMarkdown(root, source, '', data, docNext(root, docs));
 
 	return new Response(markdown, {
 		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }

@@ -25,6 +25,14 @@ of publish date, so their frontmatter drops `author`, `created`, and `tags` and 
 | `order`    | Position among its siblings, ascending; pages without one sort last by title    |
 | `parent`   | Optional slug of the page it is listed under in the sidebar                     |
 | `keywords` | Optional extra search terms that appear in no heading                           |
+| `next`     | Optional list of slugs to point readers at in the page footer                   |
+
+A page with `next` set ends with a footer that links to those pages, as cards with each page's title
+and blurb (`PageFooter` in `src/lib/client/ui/footer/`). `docNext` in
+`src/lib/shared/utils/llm/docs.ts` resolves the slugs and fails the build on an unknown one. It runs
+in `src/routes/docs/+layout.server.ts`, which reads the URL so each prerendered page carries only
+its own links, and in the Markdown mirror routes, which list the same pages under a `## Next`
+heading. Pages without `next` have no footer.
 
 The Docs section header links to the root page. Below it the sidebar lists the other top-level pages
 in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page

@@ -7,8 +7,10 @@ export {
 	docSlugFromPath,
 	docPath,
 	docFullTitle,
+	docNext,
 	type DocMeta,
-	type DocIndexEntry
+	type DocIndexEntry,
+	type DocLink
 } from './docs.js';
 export {
 	devLogToMarkdown,

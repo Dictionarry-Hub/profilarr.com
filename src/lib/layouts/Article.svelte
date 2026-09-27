@@ -3,9 +3,10 @@
 	import SEO from '$lib/client/ui/utils/SEO.svelte';
 	import PageActionsMenu from '$lib/client/ui/page-actions/PageActionsMenu.svelte';
 	import PageHeader from '$lib/client/ui/header/PageHeader.svelte';
+	import PageFooter from '$lib/client/ui/footer/PageFooter.svelte';
 	import Author from '$lib/client/ui/author/Author.svelte';
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
-	import { docFullTitle } from '$lib/shared/utils/llm/docs.js';
+	import { docFullTitle, type DocLink } from '$lib/shared/utils/llm/docs.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -39,6 +40,10 @@
 			return { name: value, href: undefined, avatar: undefined };
 		}
 	}
+
+	// Docs only: the pages this one points readers at, resolved from its `next`
+	// frontmatter by src/routes/docs/+layout.server.ts.
+	const next = $derived((page.data.docNext as DocLink[] | undefined) ?? []);
 
 	const authors = $derived.by(() => {
 		if (!author) return [];
@@ -82,4 +87,6 @@
 	<div class="prose">
 		{@render children()}
 	</div>
+
+	<PageFooter links={next} />
 </article>

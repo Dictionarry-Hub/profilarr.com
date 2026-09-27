@@ -216,3 +216,53 @@
 	border-radius: var(--theme-radius-card);
 	margin: 1.5rem 0;
 }
+
+/* Mermaid diagrams (tooling/markdown/mermaid.ts). The renderer's own font rules
+   are stripped, so the fonts are set here. */
+
+.prose .mermaid-diagram {
+	margin: 1.5rem 0;
+}
+
+.prose .mermaid-diagram svg {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+}
+
+.prose .mermaid-diagram text {
+	font-family: var(--theme-font-sans);
+}
+
+.prose .mermaid-diagram .mono {
+	font-family: var(--theme-font-mono);
+}
+
+/* The renderer draws square corners. rx and ry work as CSS properties on SVG
+   rects, so corners follow the theme's radius tokens (square in Retro). Only
+   plain rectangle nodes are rounded; other shapes keep their own geometry. */
+
+.prose .mermaid-diagram .node[data-shape='rectangle'] rect {
+	rx: var(--theme-radius-control);
+	ry: var(--theme-radius-control);
+	stroke-width: 1px;
+}
+
+.prose .mermaid-diagram .edge-label rect {
+	rx: var(--theme-radius-control-sm);
+	ry: var(--theme-radius-control-sm);
+}
+
+.prose .mermaid-diagram .subgraph rect:first-of-type {
+	rx: var(--theme-radius-card);
+	ry: var(--theme-radius-card);
+	stroke-dasharray: 6 4;
+}
+
+/* A subgraph's header band is a second square rect that would poke out of the
+   rounded outline, so it is hidden and the label sits on the group. */
+.prose .mermaid-diagram .subgraph rect:nth-of-type(2) {
+	fill: none;
+	stroke: none;
+}
