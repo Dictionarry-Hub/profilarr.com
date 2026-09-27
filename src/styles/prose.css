@@ -94,6 +94,11 @@
 	color: var(--theme-text-soft);
 }
 
+/* Inline code inside a link takes the link color, so linked code reads as a link. */
+.prose a code:not(pre code) {
+	color: var(--theme-link-text);
+}
+
 /* Plain fenced code blocks (mdsvex default output). The CodeBlock component
    styles its own pre elements. */
 
