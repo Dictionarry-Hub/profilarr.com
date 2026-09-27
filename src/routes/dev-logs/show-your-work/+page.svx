@@ -177,7 +177,7 @@ For example, the "High Priority Popular" filter in the screenshot below says: mo
 <ThemeImage
 	dark="/images/devlog_show_your_work_upgrade[style=dark].png"
 	light="/images/devlog_show_your_work_upgrade[style=light].png"
-	alt="Upgrades 2.0" />
+	alt="The High Priority Popular upgrade filter: monitored is true, cutoff met is false, and size on disk is under 15 GB, plus a nested group matching any of popularity over 30, a TMDb rating of at least 7, or a year of 2020 or later. Below it are the filter's settings: an 80% cutoff, a 24-hour cooldown, random selection, and 5 items per run." />
 
 You can filter on basically anything the arr knows about: title, year, genre, studio, collection, ratings from TMDb/IMDb/Rotten Tomatoes/Trakt, runtime, file size, release group, date added, original language, and more. Each field supports the operators that make sense for its type, text fields get contains/starts with/ends with, numbers get greater than/less than/equals, dates get before/after/in the last N days. Essentially, ~~ripping~~ riffing off Plex's [smart collection filtering](https://support.plex.tv/articles/201273953-collections/)!
 
@@ -234,7 +234,7 @@ Storing the full versioned ID also makes caching easier. Since it's immutable, w
 <ThemeImage
 	dark="/images/devlog_show_your_work_regex[style=dark].png"
 	light="/images/devlog_show_your_work_regex[style=light].png"
-	alt="Regex 2.0" />
+	alt="A regular expression's Pattern section, linked to the versioned Regex101 ID GMV8jd/3 and its six unit tests, all passing: four HDR and Dolby Vision releases that should match, and two releases that shouldn't." />
 
 ## Custom Formats
 
@@ -247,7 +247,7 @@ With the parser in place, I added a parse table to the GUI. It breaks down each 
 <ThemeImage
 	dark="/images/devlog_show_your_work_cf[style=dark].png"
 	light="/images/devlog_show_your_work_cf[style=light].png"
-	alt="CF 2.0" />
+	alt="The Testing tab of the 1080p Compact Movie Bluray Tier 1 custom format, with a Wonder Woman 1080p Blu-ray release from Chivaman expanded: each condition with its expected and actual values, the required resolution, source, and release title conditions passing, and Chivaman the only matching release group. Below it are the values the parser read from the title." />
 
 ## Quality Profiles
 

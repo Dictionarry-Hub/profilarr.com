@@ -84,7 +84,7 @@ You can mix types freely. A single custom format might check the release title f
 <ThemeImage
 	dark="/images/wiki_anatomy_cf1[style=dark].png"
 	light="/images/wiki_anatomy_cf1[style=light].png"
-	alt="cf" />
+	alt="The Conditions tab of the 1080p Compact Movie Bluray Tier 1 custom format: required 1080p resolution, Bluray source, and x265 release title conditions, plus nine release group conditions." />
 
 This format, "1080p Compact Movie Bluray Tier 1", combines four condition types: a release title pattern, a list of trusted release groups, a source, and a resolution. Let's test it against a release:
 
@@ -95,7 +95,7 @@ Shang-Chi.and.the.Legend.of.the.Ten.Rings.2021.1080p.BluRay.10Bit.X265.DD.5.1-Ch
 <ThemeImage
 	dark="/images/wiki_anatomy_cf_test[style=dark].png"
 	light="/images/wiki_anatomy_cf_test[style=light].png"
-	alt="cf_test" />
+	alt="The Testing tab for the same custom format, with the Shang-Chi release expanded: the required resolution, source, and release title conditions pass, and Chivaman is the only release group that matches, which is enough for the format to match." />
 
 Notice how matching works:
 
@@ -178,7 +178,7 @@ Let's revisit that initial Lord of the Rings release using the [2160p Remux](/pc
 <ThemeImage
 	dark="/images/wiki_anatomy_qp_test[style=dark].png"
 	light="/images/wiki_anatomy_qp_test[style=light].png"
-	alt="qp_test" />
+	alt="Radarr's page for The Lord of the Rings: The Return of the King: a 2160p remux from FraMeSToR on the 2160p Remux profile, matching custom formats including 2160p Remux, Atmos, Dolby Vision, HDR10, Remux Tier 2, Special Edition, and TrueHD, for a total score of +506680." />
 
 Notice how multiple formats match the same release. Each matched format contributes its score, and they all add up. This release matches REMUX, DV, TrueHD ATMOS, and several others. The total determines where it ranks.
 
