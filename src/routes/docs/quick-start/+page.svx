@@ -3,6 +3,7 @@ layout: docs
 title: Quick Start
 slug: quick-start
 blurb: A first Profilarr setup from start to finish.
+author: https://github.com/santiagosayshey
 order: 2
 next: [build, test]
 ---

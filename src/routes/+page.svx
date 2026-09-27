@@ -2,6 +2,7 @@
 layout: docs
 title: Profilarr
 blurb: What Profilarr is and where it fits alongside Radarr and Sonarr.
+author: https://github.com/santiagosayshey
 order: 1
 next:
   - quick-start

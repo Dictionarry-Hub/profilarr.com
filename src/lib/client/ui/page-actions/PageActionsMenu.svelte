@@ -7,7 +7,8 @@
 		Download,
 		FileCode,
 		FileText,
-		LayoutTemplate
+		LayoutTemplate,
+		SquarePen
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -30,6 +31,8 @@
 		pagePath: string;
 		prompt?: string;
 		viewSwitcher?: boolean;
+		/** Link to edit the page's source, shown as an Edit this page item. */
+		editUrl?: string;
 	}
 
 	let {
@@ -37,7 +40,8 @@
 		artifactPath,
 		pagePath,
 		prompt,
-		viewSwitcher = false
+		viewSwitcher = false,
+		editUrl
 	}: Props = $props();
 
 	let mounted = $state(false);
@@ -182,6 +186,13 @@
 				icon={OpenAiIcon}
 				onclick={() =>
 					openLink(assistantLink('chatgpt', { artifactPath, pagePath }, prompt))} />
+			{#if editUrl}
+				<DropdownHeader label="Contribute" />
+				<DropdownItem
+					label="Edit this page"
+					icon={SquarePen}
+					onclick={() => openLink(editUrl)} />
+			{/if}
 		</Dropdown>
 	{/if}
 </div>

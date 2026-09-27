@@ -1,4 +1,13 @@
-import { docSlugFromPath, type DocIndexEntry, type DocMeta } from '$lib/shared/utils/llm/docs.js';
+import {
+	commitUrl,
+	docEditUrl,
+	docSlugFromPath,
+	docSourcePath,
+	type DocIndexEntry,
+	type DocMeta,
+	type DocSource
+} from '$lib/shared/utils/llm/docs.js';
+import { lastCommit } from './git';
 
 // Every docs page's metadata: the root page, which is the site's home page,
 // and the pages under /docs. Used to resolve `next` links and build mirrors.
@@ -15,4 +24,13 @@ export const docsIndex: DocIndexEntry[] = Object.entries(modules).map(([path, mo
 
 export function findDoc(slug: string): DocIndexEntry | undefined {
 	return docsIndex.find((doc) => doc.slug === slug);
+}
+
+export function docSource(slug: string): DocSource {
+	const commit = lastCommit(docSourcePath(slug));
+	return {
+		editUrl: docEditUrl(slug),
+		updated: commit?.date,
+		commitUrl: commit && commitUrl(commit.hash)
+	};
 }

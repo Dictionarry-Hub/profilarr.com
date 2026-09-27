@@ -4,8 +4,11 @@ import {
 	docNext,
 	moreInfoLinks,
 	moreInfoToMarkdown,
+	commitUrl,
+	docEditUrl,
 	docMarkdownPath,
 	docPath,
+	docSourcePath,
 	docSlugFromPath,
 	docToMarkdown,
 	docTree
@@ -22,7 +25,50 @@ describe('docToMarkdown', () => {
 		);
 
 		expect(markdown).toBe(
-			'# Introduction\n\n> What Profilarr is.\n\nA page from the Profilarr documentation. Web version: https://profilarr.com/docs/introduction\n\nTODO: Covers Profilarr.'
+			'# Introduction\n\n> What Profilarr is.\n\nA page from the Profilarr documentation. Web version: https://profilarr.com/docs/introduction. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/introduction/+page.svx\n\nTODO: Covers Profilarr.'
+		);
+	});
+});
+
+describe('docToMarkdown preamble', () => {
+	it('names the authors, the last commit, and the edit link', () => {
+		const markdown = docToMarkdown(
+			{ title: 'Installation', author: ['https://github.com/a', 'https://github.com/b'] },
+			'Body.',
+			'installation',
+			{},
+			[],
+			[],
+			{
+				updated: '2026-09-27T17:19:25+09:30',
+				commitUrl: 'https://github.com/Dictionarry-Hub/profilarr.com/commit/68e8963'
+			}
+		);
+
+		expect(markdown).toContain(
+			'A page from the Profilarr documentation by https://github.com/a, https://github.com/b, last updated 2026-09-27 (commit: https://github.com/Dictionarry-Hub/profilarr.com/commit/68e8963). Web version: https://profilarr.com/docs/installation. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/installation/+page.svx'
+		);
+	});
+});
+
+describe('docSourcePath and docEditUrl', () => {
+	it('point at the home page source for the root page', () => {
+		expect(docSourcePath('')).toBe('src/routes/+page.svx');
+		expect(docEditUrl('')).toBe(
+			'https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/+page.svx'
+		);
+	});
+
+	it('link commits in the site repository', () => {
+		expect(commitUrl('2957228e')).toBe(
+			'https://github.com/Dictionarry-Hub/profilarr.com/commit/2957228e'
+		);
+	});
+
+	it('point at the route directory for other pages', () => {
+		expect(docSourcePath('docker')).toBe('src/routes/docs/docker/+page.svx');
+		expect(docEditUrl('docker')).toBe(
+			'https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/docker/+page.svx'
 		);
 	});
 });

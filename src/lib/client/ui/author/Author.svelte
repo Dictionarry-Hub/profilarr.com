@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { User, ExternalLink } from '@lucide/svelte';
+	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
 
 	interface Props {
 		name: string;
@@ -27,38 +28,40 @@
 	};
 
 	const pillClasses = $derived(
-		`inline-flex items-center gap-1.5 rounded-pill bg-surface-muted px-2.5 py-1 ${className ?? ''}`
+		`inline-flex items-center gap-1.5 rounded-control-sm border border-border bg-surface px-2.5 py-1 shadow-control ${className ?? ''}`
 	);
 </script>
 
-{#if href}
-	<a
-		{href}
-		rel="external"
-		class="{pillClasses} text-text-soft transition-colors hover:bg-surface-hover">
-		{#if avatar}
-			<img
-				src={avatar}
-				alt={name}
-				class="rounded-pill object-cover {avatarSizes[size!]}" />
-		{:else}
-			<User size={iconSizes[size!]} />
-		{/if}
-		<span class="font-medium {textSizes[size!]}">{name}</span>
-		<ExternalLink
-			size={iconSizes[size!]}
-			class="text-text-muted" />
-	</a>
-{:else}
-	<span class="{pillClasses} text-text-soft">
-		{#if avatar}
-			<img
-				src={avatar}
-				alt={name}
-				class="rounded-pill object-cover {avatarSizes[size!]}" />
-		{:else}
-			<User size={iconSizes[size!]} />
-		{/if}
-		<span class="font-medium {textSizes[size!]}">{name}</span>
-	</span>
-{/if}
+<Tooltip text="Author">
+	{#if href}
+		<a
+			{href}
+			rel="external"
+			class="{pillClasses} text-text-soft transition-colors hover:bg-surface-hover">
+			{#if avatar}
+				<img
+					src={avatar}
+					alt={name}
+					class="rounded-pill object-cover {avatarSizes[size!]}" />
+			{:else}
+				<User size={iconSizes[size!]} />
+			{/if}
+			<span class="font-medium {textSizes[size!]}">{name}</span>
+			<ExternalLink
+				size={iconSizes[size!]}
+				class="text-text-muted" />
+		</a>
+	{:else}
+		<span class="{pillClasses} text-text-soft">
+			{#if avatar}
+				<img
+					src={avatar}
+					alt={name}
+					class="rounded-pill object-cover {avatarSizes[size!]}" />
+			{:else}
+				<User size={iconSizes[size!]} />
+			{/if}
+			<span class="font-medium {textSizes[size!]}">{name}</span>
+		</span>
+	{/if}
+</Tooltip>
