@@ -104,9 +104,7 @@ describe('componentsToMarkdown', () => {
 	});
 
 	it('replaces FileTree tags', () => {
-		expect(componentsToMarkdown('<FileTree items={tree} />', data)).toBe(
-			'```text\nlogs/\n```'
-		);
+		expect(componentsToMarkdown('<FileTree items={tree} />', data)).toBe('```text\nlogs/\n```');
 	});
 
 	it('leaves tags alone when the data module does not export their data', () => {
