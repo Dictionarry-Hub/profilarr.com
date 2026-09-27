@@ -6,4 +6,56 @@ blurb: Where to get help and talk with other Profilarr users.
 order: 9
 ---
 
-TODO: Where to find other Profilarr users and get help. Covers the Discord server, GitHub issues for bug reports and feature requests (including the Report a Bug and Request a Feature links in the app's help button), and what to include when asking for help.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+</script>
+
+Profilarr users hang out on Discord and Reddit, and bugs and feature requests go to GitHub.
+
+## Discord
+
+The [Discord server](https://discord.gg/2A89tXZMgA) is the quickest place to get help, share setups, and talk about Profilarr. When you ask for help, include the same details a [bug report](#reporting-a-bug) asks for, so people don't have to ask for them one at a time.
+
+## Reddit
+
+[r/Profilarr](https://www.reddit.com/r/Profilarr/) is there for questions and discussion if you'd rather not use Discord.
+
+## GitHub
+
+### Reporting a Bug
+
+Open the help menu in Profilarr and choose **Report a Bug**, or open the [bug report template](https://github.com/Dictionarry-Hub/profilarr/issues/new?template=bug.yml) directly. Search the [existing issues](https://github.com/Dictionarry-Hub/profilarr/issues) first in case it's already been reported.
+
+A good report includes:
+
+- What happened, what you expected to happen, and the steps to reproduce it. Screenshots help.
+- Your Profilarr version, from Settings → About, and your release channel and installation method.
+- Your Profilarr logs, from Settings → Logs → Download. See [Logs](/docs/logs) for more.
+- If an Arr instance is involved, its version and its logs from around the time of the issue.
+- Which databases you have linked.
+
+<Callout type="warning">
+
+AI is fine for wording, translating, or organizing your notes, but the report has to come from you. A confident but wrong report, such as a cause stated as fact that nobody checked, takes time to disprove before anyone can look at the real problem. Before you post, make sure you've seen the problem yourself, checked every claim, marked guesses as guesses, and can answer follow-up questions without the AI. Reports that don't meet this are closed, and can be reopened once you reply with verified details. See the [issue guidelines](https://github.com/Dictionarry-Hub/profilarr/issues/936) for the rest.
+
+</Callout>
+
+### Requesting a Feature
+
+Open the help menu and choose **Request a Feature**, or open the [feature request template](https://github.com/Dictionarry-Hub/profilarr/issues/new?template=feature.yml). Start with the problem you're trying to solve and how you handle it today, rather than the exact feature you have in mind.
+
+### Questions
+
+For setup help and general questions, start a thread in [GitHub Discussions](https://github.com/Dictionarry-Hub/profilarr/discussions/new?category=q-a).
+
+### Database Content
+
+Wrong scores, regular expressions, or profiles are problems in a database, not in Profilarr. For the Dictionarry database, open an issue on [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database/issues). For any other database, use that database's repository.
+
+<Callout type="info">
+
+Profilarr is free and open source. We are not a company, and you are not a customer. Nobody here owes you a fix or a feature, and you don't owe us anything either. We're peers working on the same problem, and everyone who answers an issue or a question on Discord does it because they care about the project.
+
+That goes both ways. We'll treat your reports and ideas with respect, and we ask the same of you. Criticism is welcome, and it's most useful when it says what's wrong, why, and what you'd do instead. A pull request is better still. Making demands or being mean does the opposite: it wears down the people who would otherwise help. A project like this runs on goodwill.
+
+</Callout>
