@@ -4,8 +4,103 @@ title: Quick Start
 slug: quick-start
 blurb: A first Profilarr setup from start to finish.
 order: 2
+next: [build, test]
 ---
 
-TODO: A first setup from start to finish. Walks through installing Profilarr, logging in, checking the Dictionarry database that is linked on first start, adding a Radarr or Sonarr instance, and running a first sync, with links to the detailed pages for each step. Ends by pointing to the guided tours under Settings > Onboarding for a walkthrough inside the app, and mentions the interface preferences under Settings > General, such as fonts and alert position.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+	import MoreInfo from '$lib/client/ui/markdown/more-info/MoreInfo.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import { install } from './data';
+</script>
 
-> This guide assumes you understand the basics of media automation and already run Radarr or Sonarr. If you're new to them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides.
+> This guide assumes you understand the basics of media automation, already run Radarr or Sonarr, and have Docker installed. If you're new to any of them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides, or Docker's [install guide](https://docs.docker.com/get-started/get-docker/).
+
+## Install Profilarr
+
+Save this as `compose.yml`, then run `docker compose up -d` in the same folder:
+
+<CodeBlock items={install} />
+
+> <MoreInfo pages="docker, installation" />
+
+## Create Your Account
+
+Open Profilarr at `http://localhost:6868`. On a new install, the first visit goes to a setup page where you create the admin account: pick a username and a password of at least 8 characters. Profilarr signs you in once the account is created.
+
+<ThemeImage
+	light="/images/quickstart_setup[style=light].png"
+	dark="/images/quickstart_setup[style=dark].png"
+	alt="Profilarr's first-run setup page, with fields for a username, a password, and the password again"
+	border />
+
+> <MoreInfo pages="authentication" />
+
+## Link a Database
+
+Profilarr links the [Dictionarry](/pcd/dictionarry) database on first start. Its card on the **Databases** page shows the repository it pulls from and how often Profilarr checks it for updates. Its quality profiles, custom formats, and the rest appear under their own sections in the sidebar.
+
+<ThemeImage
+	light="/images/quickstart_database[style=light].png"
+	dark="/images/quickstart_database[style=dark].png"
+	alt="The Dictionarry database on Profilarr's Databases page, with 11 quality profiles, 263 custom formats, and 2 delay profiles, set to sync hourly with auto pull on"
+	border />
+
+> <MoreInfo pages="databases, local-changes" />
+
+## Connect an Arr Instance
+
+Go to **Arrs** and add an instance. Give it a name, pick Radarr or Sonarr, then enter its URL and API key. Use **Test Connection** to check that Profilarr can reach it, then save.
+
+<Callout type="info">
+
+The URL has to work from inside the Profilarr container, where `localhost` means the container itself. If both run in Docker on the same network, use the Arr's container name, like `http://radarr:7878`.
+
+</Callout>
+
+<ThemeImage
+	light="/images/quickstart_arr[style=light].png"
+	dark="/images/quickstart_arr[style=dark].png"
+	alt="Profilarr's Add Instance form for a Radarr instance named Movies, with its URL, a hidden API key, a Test Connection button, and tags"
+	border />
+
+> <MoreInfo pages="arr-instances" />
+
+## Sync Your Configurations
+
+Open your instance under **Arrs** and go to its **Sync** tab. Work through its sections from top to bottom, each choosing part of what Profilarr sends to the Arr:
+
+- **Media Management**: how files are named, the size limits for each quality, and other media settings.
+- **Delay Profiles**: how long the Arr waits before grabbing a release, and whether it prefers Usenet or torrents.
+- **Quality Profiles**: the profiles to sync. Each one brings along the custom formats it scores.
+
+<ThemeImage
+	light="/images/quickstart_sync[style=light].png"
+	dark="/images/quickstart_sync[style=dark].png"
+	alt="The Quality Profiles section of an Arr instance's Sync tab in Profilarr, with the Dictionarry profiles 1080p Quality and 720p Quality selected, the trigger set to On Pull, and Sync and Save buttons"
+	border />
+
+<Callout type="info">
+
+Profilarr tries to stay neutral about how you set up your Arrs, but quality profiles need media management and a delay profile to sync alongside them. The custom formats and scores in a profile are tuned to specific file naming, size limits for each quality, and delays between protocols, and without those in place, matching, scoring, and renaming go wrong in ways that are hard to spot. That's why Profilarr won't save your quality profile choices until the other two sections are saved. If you'd rather use your own naming or settings, add them to a database and sync those instead.
+
+</Callout>
+
+Each section has its own trigger. **Manual** syncs when you press Sync, **Schedule** syncs on a timetable, and **On Pull** syncs whenever the database pulls an update, so changes to Dictionarry reach your Arr on their own. Save your choices, then press **Sync** to send them now.
+
+> <MoreInfo pages="sync" />
+
+## That's It
+
+Profilarr can look intimidating at first, with words like databases, syncs, and triggers thrown at you. But what you just did comes down to a few steps: you picked the profiles you wanted from a database, connected your Arr, and told Profilarr when to sync. With On Pull, Dictionarry's updates now reach your Arr on their own.
+
+Everything else in Profilarr builds on what you've set up:
+
+- [Upgrades](/docs/upgrades) search for better releases of what you already have.
+- [Renames](/docs/renames) keep your files in line with your naming format.
+- [Drift](/docs/drift) tells you when an Arr no longer matches Profilarr.
+- [Cleanup](/docs/cleanup) removes what Profilarr no longer manages.
+- [Build](/docs/build) and [Test](/docs/test) cover changing configurations and checking them against real releases.
+
+For a walkthrough inside Profilarr itself, guided tours can be found under Settings > Onboarding.

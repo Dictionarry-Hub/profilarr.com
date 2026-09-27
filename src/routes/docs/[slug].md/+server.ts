@@ -29,7 +29,14 @@ export const GET: RequestHandler = ({ params }) => {
 
 	const dataPath = Object.keys(dataModules).find((p) => docSlugFromPath(p) === params.slug);
 	const data = dataPath ? dataModules[dataPath] : {};
-	const markdown = docToMarkdown(doc, sources[path], params.slug, data, docNext(doc, docsIndex));
+	const markdown = docToMarkdown(
+		doc,
+		sources[path],
+		params.slug,
+		data,
+		docNext(doc, docsIndex),
+		docsIndex
+	);
 
 	return new Response(markdown, {
 		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }

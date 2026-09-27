@@ -9,9 +9,12 @@ export {
 	docMarkdownPath,
 	docFullTitle,
 	docNext,
+	moreInfoLinks,
+	moreInfoToMarkdown,
 	type DocMeta,
 	type DocIndexEntry,
-	type DocLink
+	type DocLink,
+	type MoreInfoLink
 } from './docs.js';
 export {
 	devLogToMarkdown,

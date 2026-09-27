@@ -909,6 +909,28 @@ set, and stepping through the preview switches the tab underneath.
 | `items` | `Screenshot[]` | yes      |                 |
 | `label` | `string`       | no       | `'Screenshots'` |
 
+#### `MoreInfo`
+
+`src/lib/client/ui/markdown/more-info/MoreInfo.svelte`
+
+A line of links to the pages that cover a step in more detail, such as each step of Quick Start: a
+📖 book emoji, "More info:", and the links separated by dots. `pages` lists docs slugs separated by
+commas, each with an optional `#anchor` and an optional `: label`. A link shows the page's own title
+unless it has a label; pages that share a title, like Build and Test's Custom Formats, need one.
+Titles come from the sidebar data in the root layout, so renaming a page updates its links, and an
+unknown slug fails the build (`moreInfoLinks` in `src/lib/shared/utils/llm/docs.ts`). The Markdown
+mirror turns the tag into `More info:` followed by the links.
+
+| Prop    | Type     | Required | Default |
+| ------- | -------- | -------- | ------- |
+| `pages` | `string` | yes      |         |
+
+```md
+> <MoreInfo pages="docker, installation#the-parser: The parser" />
+```
+
+Pages write it in a blockquote, as above, so it sits apart from the step like a note.
+
 #### `Video`
 
 `src/lib/client/ui/markdown/video/Video.svelte`

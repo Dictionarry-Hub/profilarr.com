@@ -34,7 +34,11 @@ function docsNav(files: Record<string, { metadata: DocMeta }>) {
 		title: doc.title,
 		slug: doc.slug,
 		href: docPath(doc.slug),
-		children: doc.children.map((child) => ({ title: child.title, href: docPath(child.slug) }))
+		children: doc.children.map((child) => ({
+			title: child.title,
+			slug: child.slug,
+			href: docPath(child.slug)
+		}))
 	}));
 }
 

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
 	byDocOrder,
 	docNext,
+	moreInfoLinks,
+	moreInfoToMarkdown,
 	docMarkdownPath,
 	docPath,
 	docSlugFromPath,
@@ -97,6 +99,30 @@ describe('docNext', () => {
 	it('throws on an unknown slug', () => {
 		const broken = { title: 'FAQ', slug: 'faq', next: ['quikc-start'] };
 		expect(() => docNext(broken, [...docs, broken])).toThrow(/"faq".*"quikc-start"/);
+	});
+});
+
+describe('moreInfoLinks', () => {
+	const docs = [
+		{ title: 'Docker', slug: 'docker', parent: 'installation' },
+		{ title: 'Installation', slug: 'installation' }
+	];
+
+	it('resolves slugs to titled links, with anchors and labels', () => {
+		expect(moreInfoLinks('docker, installation#the-parser: The parser', docs)).toEqual([
+			{ label: 'Docker', href: '/docs/docker' },
+			{ label: 'The parser', href: '/docs/installation#the-parser' }
+		]);
+	});
+
+	it('throws on an unknown slug', () => {
+		expect(() => moreInfoLinks('dokcer', docs)).toThrow('unknown docs page "dokcer"');
+	});
+
+	it('serializes the tag as a line of links', () => {
+		expect(moreInfoToMarkdown('Step.\n\n<MoreInfo pages="installation" />', docs)).toBe(
+			'Step.\n\nMore info: [Installation](/docs/installation)'
+		);
 	});
 });
 

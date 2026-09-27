@@ -53,21 +53,61 @@ export function docFullTitle(title: string, parentTitle?: string): string {
 	return parentTitle ? `${parentTitle}: ${title}` : title;
 }
 
+/** One link in a MoreInfo row. */
+export interface MoreInfoLink {
+	label: string;
+	href: string;
+}
+
+/** Resolves MoreInfo's `pages` attribute: comma-separated docs slugs, each
+    with an optional `#anchor` and an optional `: label` shown instead of the
+    page title, as in `docker, installation#the-parser: The parser`. Links
+    use the page's own title; pages that share a title (Build and Test both
+    have Custom Formats) need a label. Throws on an unknown slug so a typo
+    fails the build instead of dropping a link. */
+export function moreInfoLinks(pages: string, docs: DocIndexEntry[]): MoreInfoLink[] {
+	return pages
+		.split(',')
+		.map((entry) => entry.trim())
+		.filter(Boolean)
+		.map((entry) => {
+			const [target, ...labelParts] = entry.split(':');
+			const label = labelParts.join(':').trim();
+			const [slug, anchor] = target.trim().split('#');
+			const doc = docs.find((candidate) => candidate.slug === slug);
+			if (!doc) throw new Error(`MoreInfo links to unknown docs page "${slug}"`);
+			return {
+				label: label || doc.title,
+				href: `${docPath(slug)}${anchor ? `#${anchor}` : ''}`
+			};
+		});
+}
+
+/** Replaces MoreInfo tags with a line of links. */
+export function moreInfoToMarkdown(body: string, docs: DocIndexEntry[]): string {
+	return body.replace(/<MoreInfo\s+pages="([^"]*)"\s*\/>/g, (_, pages: string) => {
+		const links = moreInfoLinks(pages, docs).map((link) => `[${link.label}](${link.href})`);
+		return `More info: ${links.join(', ')}`;
+	});
+}
+
 /** `data` is the page's data.ts module, used to serialize the components the
     page embeds. Pages without one pass nothing. `next` is the page's resolved
-    `next` frontmatter (see docNext), listed at the end like the page footer. */
+    `next` frontmatter (see docNext), listed at the end like the page footer.
+    `docs` is every docs page, which MoreInfo links resolve against. */
 export function docToMarkdown(
 	meta: DocMeta,
 	source: string,
 	slug: string,
 	data: Record<string, unknown> = {},
-	next: DocLink[] = []
+	next: DocLink[] = [],
+	docs: DocIndexEntry[] = []
 ): string {
 	return join([
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
-		mediaToMarkdown(componentsToMarkdown(articleBody(source), data)),
+		moreInfoToMarkdown(mediaToMarkdown(componentsToMarkdown(articleBody(source), data)), docs),
 		next.length > 0 ? '## Next' : '',
 		next
 			.map((link) => `- [${link.title}](${link.href})${link.blurb ? `: ${link.blurb}` : ''}`)

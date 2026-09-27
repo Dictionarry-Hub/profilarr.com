@@ -174,6 +174,9 @@ sure that text exists.
 A docs page with `next` frontmatter ends its mirror with a `## Next` list of those pages, each a
 link with its blurb, matching the footer on the web page.
 
+A `MoreInfo` tag becomes `More info:` followed by its links, resolved against every docs page's
+metadata by `moreInfoToMarkdown`.
+
 Mermaid diagrams need no serializer. A ` ```mermaid ` fence is already Markdown, so the mirror ships
 the diagram source, including its `accTitle` and `accDescr` lines, while the HTML page renders it to
 SVG (see [markdown.md](../frontend/markdown.md#diagrams)).
