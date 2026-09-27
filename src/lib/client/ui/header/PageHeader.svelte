@@ -7,10 +7,12 @@
 		tags?: string[];
 		badges?: Snippet;
 		meta?: Snippet;
+		/** Right-aligned in the meta row, under the actions. */
+		metaEnd?: Snippet;
 		actions?: Snippet;
 	}
 
-	let { title, tags, badges, meta, actions }: Props = $props();
+	let { title, tags, badges, meta, metaEnd, actions }: Props = $props();
 </script>
 
 <header class="mb-8 border-b border-border-muted pb-4">
@@ -22,9 +24,16 @@
 			</div>
 		{/if}
 	</div>
-	{#if meta}
-		<div class="mt-2 flex items-center gap-2 text-text-soft">
-			{@render meta()}
+	{#if meta || metaEnd}
+		<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-text-soft">
+			<div class="flex items-center gap-2">
+				{@render meta?.()}
+			</div>
+			{#if metaEnd}
+				<div class="flex items-center gap-2">
+					{@render metaEnd()}
+				</div>
+			{/if}
 		</div>
 	{/if}
 	{#if (tags && tags.length > 0) || badges}

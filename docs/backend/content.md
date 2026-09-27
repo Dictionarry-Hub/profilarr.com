@@ -14,8 +14,8 @@ Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` m
 reuses `src/lib/layouts/Article.svelte`. The root page is the site's home page: it lives at
 `src/routes/+page.svx`, is served at `/` with an empty slug, and is titled "Profilarr" so the `SEO`
 component gives it the bare site name. `/docs`, where it used to live, redirects to `/`. Docs follow
-reading order instead of publish date, so their frontmatter drops `author`, `created`, and `tags`
-and adds `order`, `parent`, and `keywords`:
+reading order instead of publish date, so their frontmatter drops `created` and `tags`, makes
+`author` optional, and adds `order`, `parent`, and `keywords`:
 
 | Field      | Notes                                                                           |
 | ---------- | ------------------------------------------------------------------------------- |
@@ -26,6 +26,7 @@ and adds `order`, `parent`, and `keywords`:
 | `order`    | Position among its siblings, ascending; pages without one sort last by title    |
 | `parent`   | Optional slug of the page it is listed under in the sidebar                     |
 | `keywords` | Optional extra search terms that appear in no heading                           |
+| `author`   | Optional GitHub profile URL (or list), shown in the page header                 |
 | `next`     | Optional list of docs slugs or site links to point readers at in the footer     |
 
 A page with `next` set ends with a footer that links to those pages, as cards with each page's title
@@ -37,6 +38,17 @@ reads the URL so each prerendered page carries only its own links, in `src/route
 for the home page, and in the Markdown mirror routes, which list the same pages under a `## Next`
 heading. `docsIndex` in `src/lib/server/docs.ts` holds every page's metadata for these lookups.
 Pages without `next` have no footer.
+
+Every docs page shows when its source last changed and links to where it can be edited. The page
+header's meta row reads "Last updated" with the date, which links to the last commit that changed
+the page on GitHub. The Actions menu gets an "Edit this page" item that opens the source file in
+GitHub's editor. `docEditUrl` and `docSourcePath` in `src/lib/shared/utils/llm/docs.ts` build the
+edit link, and `lastCommit` in `src/lib/server/git.ts` reads the last commit's hash and date from
+`git log` at build time. `docSource` in `src/lib/server/docs.ts` puts them together for the page
+loaders that resolve `next`. A build without full git history, like a shallow clone, gets no dates
+rather than wrong ones, since every file's last commit there is the clone's one commit; the deploy
+and the CI build check out with `fetch-depth: 0` for that reason. Content kept in a page's `data.ts`
+doesn't change its date.
 
 The Home section header links to the root page. Below it the sidebar lists the other top-level pages
 in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page

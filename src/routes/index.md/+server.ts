@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { docNext, docToMarkdown } from '$lib/shared/utils/llm/index.js';
-import { docsIndex, findDoc } from '$lib/server/docs';
+import { docSource, docsIndex, findDoc } from '$lib/server/docs';
 
 export const prerender = true;
 
@@ -21,7 +21,15 @@ export const GET: RequestHandler = () => {
 	const root = findDoc('')!;
 	const [source] = Object.values(sources);
 	const data = Object.values(dataModules)[0] ?? {};
-	const markdown = docToMarkdown(root, source, '', data, docNext(root, docsIndex), docsIndex);
+	const markdown = docToMarkdown(
+		root,
+		source,
+		'',
+		data,
+		docNext(root, docsIndex),
+		docsIndex,
+		docSource('')
+	);
 
 	return new Response(markdown, {
 		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }

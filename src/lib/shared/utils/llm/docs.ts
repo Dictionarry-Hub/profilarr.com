@@ -1,5 +1,5 @@
 import { SITE_URL } from './site.js';
-import { join, articleBody } from './md.js';
+import { join, articleBody, isoDate } from './md.js';
 import { componentsToMarkdown, mediaToMarkdown } from './components.js';
 
 // Markdown serializers for Profilarr docs artifacts. Same shape as the wiki
@@ -8,6 +8,8 @@ import { componentsToMarkdown, mediaToMarkdown } from './components.js';
 
 export interface DocMeta {
 	title: string;
+	/** GitHub profile URL of the page's author, or a list of them. */
+	author?: string | string[];
 	blurb?: string;
 	order?: number;
 	/** Slug of the page this one is listed under in the sidebar. */
@@ -40,6 +42,31 @@ export function docSlugFromPath(path: string): string {
 /** Web path of a docs page: `/` for the root page, `/docs/{slug}` otherwise. */
 export function docPath(slug: string): string {
 	return slug === '' ? '/' : `/docs/${slug}`;
+}
+
+/** Repository path of a docs page's source file. */
+export function docSourcePath(slug: string): string {
+	return slug === '' ? 'src/routes/+page.svx' : `src/routes/docs/${slug}/+page.svx`;
+}
+
+const REPO_URL = 'https://github.com/Dictionarry-Hub/profilarr.com';
+
+/** GitHub editor link for a docs page's source file. */
+export function docEditUrl(slug: string): string {
+	return `${REPO_URL}/edit/develop/${docSourcePath(slug)}`;
+}
+
+/** Where a docs page's source lives: its GitHub edit link, and the date and
+    link of the last commit that changed it when the build has git history. */
+export interface DocSource {
+	editUrl: string;
+	updated?: string;
+	commitUrl?: string;
+}
+
+/** GitHub link to a commit in this site's repository. */
+export function commitUrl(hash: string): string {
+	return `${REPO_URL}/commit/${hash}`;
 }
 
 /** Path of a docs page's Markdown mirror: `/index.md` for the root page. */
@@ -94,19 +121,26 @@ export function moreInfoToMarkdown(body: string, docs: DocIndexEntry[]): string 
 /** `data` is the page's data.ts module, used to serialize the components the
     page embeds. Pages without one pass nothing. `next` is the page's resolved
     `next` frontmatter (see docNext), listed at the end like the page footer.
-    `docs` is every docs page, which MoreInfo links resolve against. */
+    `docs` is every docs page, which MoreInfo links resolve against.
+    `updated` and `commitUrl` are the page's last commit, when the build has
+    git history. */
 export function docToMarkdown(
 	meta: DocMeta,
 	source: string,
 	slug: string,
 	data: Record<string, unknown> = {},
 	next: DocLink[] = [],
-	docs: DocIndexEntry[] = []
+	docs: DocIndexEntry[] = [],
+	{ updated, commitUrl }: Pick<DocSource, 'updated' | 'commitUrl'> = {}
 ): string {
+	const authors = meta.author ? [meta.author].flat() : [];
+	const by = authors.length > 0 ? ` by ${authors.join(', ')}` : '';
+	const commit = commitUrl ? ` (commit: ${commitUrl})` : '';
+	const lastUpdated = updated ? `, last updated ${isoDate(updated)}${commit}` : '';
 	return join([
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
-		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
+		`A page from the Profilarr documentation${by}${lastUpdated}. Web version: ${SITE_URL}${docPath(slug)}. Edit on GitHub: ${docEditUrl(slug)}`,
 		moreInfoToMarkdown(mediaToMarkdown(componentsToMarkdown(articleBody(source), data)), docs),
 		next.length > 0 ? '## Next' : '',
 		next

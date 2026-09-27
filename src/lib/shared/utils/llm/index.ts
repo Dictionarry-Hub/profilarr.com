@@ -7,6 +7,9 @@ export {
 	docSlugFromPath,
 	docPath,
 	docMarkdownPath,
+	docSourcePath,
+	docEditUrl,
+	commitUrl,
 	docFullTitle,
 	docNext,
 	moreInfoLinks,
@@ -14,6 +17,7 @@ export {
 	type DocMeta,
 	type DocIndexEntry,
 	type DocLink,
+	type DocSource,
 	type MoreInfoLink
 } from './docs.js';
 export {

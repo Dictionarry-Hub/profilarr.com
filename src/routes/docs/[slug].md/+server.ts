@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { EntryGenerator, RequestHandler } from './$types';
 import { docNext, docSlugFromPath, docToMarkdown } from '$lib/shared/utils/llm/index.js';
-import { docsIndex, findDoc } from '$lib/server/docs';
+import { docSource, docsIndex, findDoc } from '$lib/server/docs';
 
 export const prerender = true;
 
@@ -35,7 +35,8 @@ export const GET: RequestHandler = ({ params }) => {
 		params.slug,
 		data,
 		docNext(doc, docsIndex),
-		docsIndex
+		docsIndex,
+		docSource(params.slug)
 	);
 
 	return new Response(markdown, {

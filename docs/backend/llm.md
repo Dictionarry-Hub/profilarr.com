@@ -146,13 +146,14 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 
 The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
-the web URL. Docs pages have no author, date, or tags, so their context line names the docs and the
-web URL. The docs root page is the home page at `/`, not an index, so its mirror is `/index.md` and
-there is no docs index artifact; `llms.txt` lists the docs pages in reading order instead, with
-child pages indented under their parent. The body ships nearly verbatim: frontmatter and `<script>`
-blocks are stripped, but embedded Svelte components stay intact, the same approach Anthropic's docs
-use. Components often carry real content in their props (e.g. `CodeBlock` code), so stripping them
-would lose information; models read component tags fine.
+the web URL. Docs pages have no publish date or tags, so their context line names the docs, the
+page's authors when it has any, its last-updated date and commit link from git when the build has
+them, the web URL, and the GitHub link to edit the page. The docs root page is the home page at `/`,
+not an index, so its mirror is `/index.md` and there is no docs index artifact; `llms.txt` lists the
+docs pages in reading order instead, with child pages indented under their parent. The body ships
+nearly verbatim: frontmatter and `<script>` blocks are stripped, but embedded Svelte components stay
+intact, the same approach Anthropic's docs use. Components often carry real content in their props
+(e.g. `CodeBlock` code), so stripping them would lose information; models read component tags fine.
 
 Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
 to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the

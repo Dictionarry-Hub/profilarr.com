@@ -271,8 +271,9 @@ The carousel draws from all groups flattened. The pre-rendered HTML carries the 
 
 `src/lib/client/ui/header/PageHeader.svelte`
 
-Page title with optional metadata, tags, supplementary badges, and actions. Supplementary badges
-render in the same row as tags through the `badges` snippet.
+Page title with optional metadata, tags, supplementary badges, and actions. `metaEnd` renders on the
+right of the metadata row, under the actions, such as a docs page's last-updated date. Supplementary
+badges render in the same row as tags through the `badges` snippet.
 
 | Prop      | Type       | Required | Default |
 | --------- | ---------- | -------- | ------- |
@@ -280,6 +281,7 @@ render in the same row as tags through the `badges` snippet.
 | `tags`    | `string[]` | no       |         |
 | `badges`  | `Snippet`  | no       |         |
 | `meta`    | `Snippet`  | no       |         |
+| `metaEnd` | `Snippet`  | no       |         |
 | `actions` | `Snippet`  | no       |         |
 
 ### PageFooter
@@ -402,8 +404,9 @@ Unified page-level menu for page views, machine-readable formats, and AI actions
 actions plus their Markdown artifact and page paths. Setting `viewSwitcher` adds Rich view and YAML
 view choices under Page view, with the active choice selected. Page formats contains the entity
 format actions followed by Copy page as Markdown and View as Markdown; AI actions contains the
-assistant links. Successful copies close the menu and replace the trigger with a green confirmation
-for two seconds; failures use the same pattern with the danger state.
+assistant links. Passing `editUrl` adds an Edit this page item under Contribute, which docs pages
+use to open their source on GitHub. Successful copies close the menu and replace the trigger with a
+green confirmation for two seconds; failures use the same pattern with the danger state.
 
 ### Search
 
@@ -739,8 +742,9 @@ strings and full ISO timestamps (as produced by YAML date parsing).
 
 `src/lib/client/ui/author/Author.svelte`
 
-Pill-shaped author display with optional avatar and link. Shows a lucide `User` icon when no avatar
-is provided. Linked variant uses subtle styling with an `ExternalLink` icon.
+Author display with optional avatar and link, on a bordered surface like the site's buttons. Shows
+the avatar, or a lucide `User` icon when no avatar is provided. The linked variant adds an
+`ExternalLink` icon and a hover state. A tooltip labels it "Author".
 
 | Prop     | Type           | Required | Default |
 | -------- | -------------- | -------- | ------- |

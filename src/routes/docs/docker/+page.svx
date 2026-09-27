@@ -3,6 +3,7 @@ layout: docs
 title: Docker
 slug: docker
 blurb: Installing and updating Profilarr with Docker Compose.
+author: https://github.com/santiagosayshey
 parent: installation
 order: 1
 ---

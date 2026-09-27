@@ -6,7 +6,7 @@
 	import PageFooter from '$lib/client/ui/footer/PageFooter.svelte';
 	import Author from '$lib/client/ui/author/Author.svelte';
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
-	import { docFullTitle, type DocLink } from '$lib/shared/utils/llm/docs.js';
+	import { docFullTitle, type DocLink, type DocSource } from '$lib/shared/utils/llm/docs.js';
 	import { markdownPath } from '$lib/shared/utils/llm/md.js';
 	import type { Snippet } from 'svelte';
 
@@ -47,6 +47,11 @@
 	// src/routes/docs/+layout.server.ts for the rest.
 	const next = $derived((page.data.docNext as DocLink[] | undefined) ?? []);
 
+	// Docs only: the GitHub link to edit this page's source (in the Actions
+	// menu), and when that source last changed with a link to that commit (in
+	// the header). The date is missing in builds without git history.
+	const source = $derived(page.data.docSource as DocSource | undefined);
+
 	const authors = $derived.by(() => {
 		if (!author) return [];
 		const list = Array.isArray(author) ? author : [author];
@@ -66,6 +71,7 @@
 		{#snippet actions()}
 			<PageActionsMenu
 				artifactPath={markdownPath(page.url.pathname)}
+				editUrl={source?.editUrl}
 				pagePath={page.url.pathname} />
 		{/snippet}
 		{#snippet meta()}
@@ -82,6 +88,19 @@
 				<DateTime
 					date={created}
 					class="text-sm" />
+			{/if}
+		{/snippet}
+		{#snippet metaEnd()}
+			{#if source?.updated}
+				<span class="text-xs text-text-muted italic"
+					>Last updated {#if source.commitUrl}<a
+							href={source.commitUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							title="View the last change to this page"
+							class="transition-colors hover:text-link-text hover:underline"
+							><DateTime date={source.updated} /></a
+						>{:else}<DateTime date={source.updated} />{/if}</span>
 			{/if}
 		{/snippet}
 	</PageHeader>
