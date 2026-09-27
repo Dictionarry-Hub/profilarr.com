@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import type { DevLogMeta, DocMeta, WikiMeta } from '$lib/shared/utils/llm/index.js';
 import { buildApiEndpointEntries } from '$lib/shared/utils/search/api.js';
 import { buildDevLogEntry } from '$lib/shared/utils/search/devlog.js';
-import { buildDocEntry } from '$lib/shared/utils/search/docs.js';
+import { buildDocEntry, buildDocSectionEntries } from '$lib/shared/utils/search/docs.js';
 import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
 import { buildWikiEntry } from '$lib/shared/utils/search/wiki.js';
 import { applyRatings } from '$lib/shared/utils/search/ratings.js';
@@ -17,6 +17,13 @@ const docModules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/
 	eager: true
 });
 
+// Raw sources, for the section headings each docs page adds to the index.
+const docSources = import.meta.glob<string>('/src/routes/docs/**/+page.svx', {
+	eager: true,
+	query: '?raw',
+	import: 'default'
+});
+
 const devLogModules = import.meta.glob<{ metadata: DevLogMeta }>(
 	'/src/routes/dev-logs/**/+page.svx',
 	{ eager: true }
@@ -29,12 +36,17 @@ const wikiModules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/*
 export const GET: RequestHandler = async () => {
 	const docMetas = Object.entries(docModules).map(([path, module]) => ({
 		...module.metadata,
-		slug: docSlugFromPath(path)
+		slug: docSlugFromPath(path),
+		source: docSources[path]
 	}));
 	const docTitles = new Map(docMetas.map((doc) => [doc.slug, doc.title]));
-	const docs = docMetas.map((doc) =>
-		buildDocEntry(doc, doc.parent ? docTitles.get(doc.parent) : undefined)
-	);
+	const docs = docMetas.flatMap((doc) => {
+		const parentTitle = doc.parent ? docTitles.get(doc.parent) : undefined;
+		return [
+			buildDocEntry(doc, parentTitle),
+			...buildDocSectionEntries(doc, doc.source, parentTitle)
+		];
+	});
 
 	const devLogs = Object.entries(devLogModules).map(([path, module]) =>
 		buildDevLogEntry({ ...module.metadata, slug: path.split('/').at(-2)! })

@@ -12,6 +12,7 @@ project-specific conventions.
 | `pnpm lint:seo`     | Custom rules in the `seo` category     |
 | `pnpm lint:ui`      | Custom rules in the `ui` category      |
 | `pnpm lint:exports` | Custom rules in the `exports` category |
+| `pnpm lint:media`   | Custom rules in the `media` category   |
 
 `pnpm lint` is what CI runs. It requires a build first because some rules inspect build output.
 
@@ -144,6 +145,15 @@ Every built page (`build/**/*.html`) must have a sibling `.md` markdown mirror f
 Runs against build output, so it requires `pnpm build` first. Exempt and pending routes are
 configured in `tooling/lint/md-mirror.json`. See [backend/llm.md](../backend/llm.md) for the
 architecture and the list semantics.
+
+#### `require-media-alt` (category: `media`)
+
+Every image and video in an authored page (`src/routes/**/*.svx`) needs a text version: `ThemeImage`
+and Markdown images need `alt` text of at least 15 characters, and `Video` needs a `description` of
+at least 50. Screen readers read the text, and the Markdown mirrors replace the media with it (see
+[backend/llm.md](../backend/llm.md)). The minimums only catch placeholders like `alt="cf"`; they
+can't judge whether a description is good. Reports the line each tag starts on. Reads source files,
+so it doesn't need a build.
 
 #### `require-yaml-artifact` (category: `exports`)
 

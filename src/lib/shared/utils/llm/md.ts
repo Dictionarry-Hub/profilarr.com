@@ -11,6 +11,23 @@ export function withIndexFooter(markdown: string, siteUrl: string): string {
 	return `${markdown.trimEnd()}\n\n---\n\nIndex of this site's Markdown pages: ${siteUrl}/llms.txt\n`;
 }
 
+/** Point site-relative Markdown links (`](/docs/docker)`) at the full site URL,
+    so a page still resolves when it's read on its own, outside the site. Fenced
+    code blocks are left as they are. */
+export function absoluteLinks(markdown: string, siteUrl: string): string {
+	let inFence = false;
+	return markdown
+		.split('\n')
+		.map((line) => {
+			if (line.trimStart().startsWith('```')) {
+				inFence = !inFence;
+				return line;
+			}
+			return inFence ? line : line.replace(/\]\(\/(?!\/)/g, `](${siteUrl}/`);
+		})
+		.join('\n');
+}
+
 export function fence(language: string, code: string): string {
 	return `\`\`\`${language}\n${code.trim()}\n\`\`\``;
 }

@@ -15,9 +15,14 @@ const sources = import.meta.glob<string>('/src/routes/docs/+page.svx', {
 	import: 'default'
 });
 
+const dataModules = import.meta.glob<Record<string, unknown>>('/src/routes/docs/data.ts', {
+	eager: true
+});
+
 export const GET: RequestHandler = () => {
 	const [path, module] = Object.entries(modules)[0];
-	const markdown = docToMarkdown(module.metadata, sources[path], '');
+	const data = Object.values(dataModules)[0] ?? {};
+	const markdown = docToMarkdown(module.metadata, sources[path], '', data);
 
 	return new Response(markdown, {
 		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }

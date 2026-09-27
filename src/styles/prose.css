@@ -94,6 +94,11 @@
 	color: var(--theme-text-soft);
 }
 
+/* Inline code inside a link takes the link color, so linked code reads as a link. */
+.prose a code:not(pre code) {
+	color: var(--theme-link-text);
+}
+
 /* Plain fenced code blocks (mdsvex default output). The CodeBlock component
    styles its own pre elements. */
 
@@ -164,9 +169,10 @@
 	margin: 2rem 0;
 }
 
-/* Tables */
+/* Tables. Only Markdown tables, which are direct children of .prose; component
+   tables nested inside (such as Table in AdaptiveList) style themselves. */
 
-.prose table {
+.prose > table {
 	width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
@@ -179,27 +185,27 @@
 	box-shadow: var(--theme-shadow-card);
 }
 
-.prose thead tr {
+.prose > table thead tr {
 	border-bottom: 1px solid var(--theme-border);
 	background: var(--theme-surface);
 }
 
-.prose th {
+.prose > table th {
 	padding: 0.75rem 1rem;
 	font-weight: 500;
 	color: var(--theme-text-muted);
 	text-align: left;
 }
 
-.prose td {
+.prose > table td {
 	padding: 0.75rem 1rem;
 }
 
-.prose tbody tr {
+.prose > table tbody tr {
 	border-bottom: 1px solid var(--theme-border-subtle);
 }
 
-.prose tbody tr:last-child {
+.prose > table tbody tr:last-child {
 	border-bottom: none;
 }
 

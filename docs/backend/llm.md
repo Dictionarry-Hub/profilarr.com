@@ -154,6 +154,23 @@ embedded Svelte components stay intact, the same approach Anthropic's docs use. 
 carry real content in their props (e.g. `CodeBlock` code), so stripping them would lose information;
 models read component tags fine.
 
+Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
+to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the
+docs mirror routes import the same module and pass it to `componentsToMarkdown`
+(`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
+`AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
+fenced block per tab under its title, a `FileTree` becomes a plain-text tree like the `tree` command
+prints, and a `Callout` becomes a blockquote led by its type. Columns are typed as `MarkdownColumn`,
+whose optional `markdown(row)` formats a cell for the mirror, so styling the page adds in snippets
+(badges, links, placeholders) has a text form. A tag that names data the module doesn't export, and
+any other component, stays as it is.
+
+Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
+`mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
+`![alt](light image)`, so a model can read the alt text or fetch the image, and a `Video` becomes
+its title and `description` followed by a link to the file. The `require-media-alt` lint rule makes
+sure that text exists.
+
 Index links point at the `.md` artifacts, so each index doubles as a machine-readable directory of
 its layer.
 
@@ -238,7 +255,9 @@ Three pieces let a reader find the Markdown artifacts without a copy button.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
-  bakes the footer into the prerendered files.
+  bakes the footer into the prerendered files. The same hook rewrites site-relative Markdown links
+  (`](/docs/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page pasted into
+  a chat on its own still resolves its links.
 - **Alternate link.** Pages with a Markdown version pass its path to the `SEO` component's
   `markdown` prop, which renders `<link rel="alternate" type="text/markdown">` in the head, so tools
   that fetch the HTML learn the Markdown version exists.

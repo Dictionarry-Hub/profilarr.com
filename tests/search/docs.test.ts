@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildDocEntry } from '$lib/shared/utils/search/docs';
+import { buildDocEntry, buildDocSectionEntries, docHeadings } from '$lib/shared/utils/search/docs';
 
 describe('buildDocEntry', () => {
 	it('passes the frontmatter blurb through and tags the entry as docs', () => {
@@ -29,9 +29,69 @@ describe('buildDocEntry', () => {
 		expect(entry.title).toBe('Test: Custom Formats');
 	});
 
+	it('adds frontmatter keywords to the search terms', () => {
+		const entry = buildDocEntry({
+			title: 'Installation',
+			slug: 'installation',
+			keywords: ['synology']
+		});
+
+		expect(entry.keywords).toEqual(['synology', 'docs', 'documentation']);
+	});
+
 	it('tolerates a missing blurb', () => {
 		const entry = buildDocEntry({ title: 'Introduction', slug: 'introduction' });
 
 		expect(entry.blurb).toBe('');
+	});
+});
+
+describe('docHeadings', () => {
+	it('finds section headings outside code and scripts, with rehype-slug anchors', () => {
+		const source = [
+			'---',
+			'title: Docker',
+			'---',
+			'<script>',
+			'## Not a heading',
+			'</script>',
+			'## Installing Profilarr',
+			'### Running as Non-Root',
+			'```md',
+			'## Also not a heading',
+			'```',
+			'## Unraid',
+			'## Unraid'
+		].join('\n');
+
+		expect(docHeadings(source)).toEqual([
+			{ level: 2, text: 'Installing Profilarr', anchor: 'installing-profilarr' },
+			{ level: 3, text: 'Running as Non-Root', anchor: 'running-as-non-root' },
+			{ level: 2, text: 'Unraid', anchor: 'unraid' },
+			{ level: 2, text: 'Unraid', anchor: 'unraid-1' }
+		]);
+	});
+});
+
+describe('buildDocSectionEntries', () => {
+	it('links each section and names its parent section for subheadings', () => {
+		const entries = buildDocSectionEntries(
+			{ title: 'Docker', slug: 'docker', parent: 'installation' },
+			'## File Permissions\n\n### Linux Basics',
+			'Installation'
+		);
+
+		expect(entries.map((entry) => [entry.title, entry.url, entry.blurb])).toEqual([
+			[
+				'Docker: File Permissions',
+				'/docs/docker#file-permissions',
+				'Section of Installation: Docker'
+			],
+			[
+				'Docker: Linux Basics',
+				'/docs/docker#linux-basics',
+				'Section of File Permissions, in Installation: Docker'
+			]
+		]);
 	});
 });

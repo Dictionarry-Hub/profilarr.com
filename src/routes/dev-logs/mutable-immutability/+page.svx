@@ -139,7 +139,7 @@ Here's how the current schema looks:
 <ThemeImage
 	dark="/svg/devlog_mutable_immutability_schema[style=dark].svg"
 	light="/svg/devlog_mutable_immutability_schema[style=light].svg"
-	alt="PCD Schema" />
+	alt="A database diagram of the PCD schema: regular expressions, custom formats with one table per condition type (such as source, resolution, size, and language), and quality profiles with their tags, custom format scores, and quality groups, all linked by one-to-many relationships." />
 
 The trade-off is that normalised data means no more "grab profile and you're done." Now it's multiple queries to assemble a complete profile.
 

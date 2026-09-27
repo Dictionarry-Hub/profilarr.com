@@ -59,7 +59,9 @@ ffmpeg -i "SpongeBob.SquarePants.S02E01-E02.mkv" \
 
 Even with perfect timestamps, the result isn't perfect. Lossless splits using `-c copy` can only cut at [keyframes](https://en.wikipedia.org/wiki/Key_frame#Video_compression) - complete video frames that occur every few seconds in encoded video. This results in weird splits where episodes might start at the very end of the previous episode, as shown in the video below. For a perfectionist like myself, this is even more infuriating than having multi-episode files in the first place!
 
-<Video src="/video/wiki_lossless_split_bad.mp4" />
+<Video
+	src="/video/wiki_lossless_split_bad.mp4"
+	description="The start of Squid's Day Off after a lossless split: before its title card, the file opens with the last shot of the previous episode, SpongeBob sitting in a giant shoe, because the cut could only land on a keyframe." />
 
 ---
 
@@ -124,7 +126,9 @@ ffmpeg -i "SpongeBob.SquarePants.S02E01-E02.mkv" \
 
 Since we're re-encoding anyway, every frame becomes a potential keyframe. Our timestamps hit exactly where we want - no more episodes starting mid-scene. As a bonus, encoding to `AV1` reduced the file size by 70% with transparent quality (for me at least. Don't come at me quality purists). I haven't actually finished encoding season 2 yet, but still the same result for season 1:
 
-<Video src="/video/wiki_lossy_split_good.mp4" />
+<Video
+	src="/video/wiki_lossy_split_good.mp4"
+	description="The start of Reef Blower after a lossy split at the exact timestamp: a few seconds of black, then its title card fades in, with nothing from the previous episode before it." />
 
 ---
 

@@ -1,5 +1,6 @@
 import { SITE_URL } from './site.js';
 import { join, articleBody } from './md.js';
+import { componentsToMarkdown, mediaToMarkdown } from './components.js';
 
 // Markdown serializers for Profilarr docs artifacts. Same shape as the wiki
 // serializers, minus author and date: docs pages are ordered by `order`, not
@@ -11,16 +12,18 @@ export interface DocMeta {
 	order?: number;
 	/** Slug of the page this one is listed under in the sidebar. */
 	parent?: string;
+	/** Extra search terms that don't appear in the title, blurb, or headings. */
+	keywords?: string[];
 }
 
 export interface DocIndexEntry extends DocMeta {
 	slug: string;
 }
 
-/** Slug of a docs page from its source path: the route directory name, or ''
-    for the root page at `src/routes/docs/+page.svx`. */
+/** Slug of a docs page from the path of any file in its route directory, such
+    as `+page.svx` or `data.ts`: the directory name, or '' for the root page. */
 export function docSlugFromPath(path: string): string {
-	return path.replace(/^\/src\/routes\/docs\/?/, '').replace(/\/?\+page\.svx$/, '');
+	return path.replace(/^\/src\/routes\/docs\/?/, '').replace(/\/?[^/]+$/, '');
 }
 
 /** Web path of a docs page: `/docs` for the root page, `/docs/{slug}` otherwise. */
@@ -34,12 +37,19 @@ export function docFullTitle(title: string, parentTitle?: string): string {
 	return parentTitle ? `${parentTitle}: ${title}` : title;
 }
 
-export function docToMarkdown(meta: DocMeta, source: string, slug: string): string {
+/** `data` is the page's data.ts module, used to serialize the components the
+    page embeds. Pages without one pass nothing. */
+export function docToMarkdown(
+	meta: DocMeta,
+	source: string,
+	slug: string,
+	data: Record<string, unknown> = {}
+): string {
 	return join([
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
-		articleBody(source)
+		mediaToMarkdown(componentsToMarkdown(articleBody(source), data))
 	]);
 }
 

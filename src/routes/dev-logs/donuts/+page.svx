@@ -92,7 +92,10 @@ type Stage = {
 Knives Out is a murder mystery whose protagonist isn't built for murder mysteries. Marta Cabrera is a Paraguayan-Uruguayan-Brazilian nurse so honest she physically can't lie. When her patient, the renowned mystery author Harlan Thrombey, dies, Marta gets pulled into a plot worthy of his own novels, against a family whose love for her extends exactly as far as their inheritance.
 I've seen it maybe ten times. I was watching it again the other night, and somewhere in Daniel Craig's bizarre monologue about donut holes within donut holes, my brain jumped to onboarding.
 
-<Video src="/video/knives_clip_donuts_web.mp4" title="The Hole at the Center of the Donut" />
+<Video
+	src="/video/knives_clip_donuts_web.mp4"
+	title="The Hole at the Center of the Donut"
+	description="Benoit Blanc, in Knives Out, gets carried away explaining the case to Marta in Harlan's study: it's a donut with a hole in the middle, and that hole has a donut hole of its own. Daniel Craig leans in, waves his hands, and savors every word of the Southern drawl, while Marta stares back, baffled." />
 
 A donut hole within a donut's hole. You cut away the noise to expose the thing that matters, and inside that, there's another thing that matters even more. That's kind of the whole problem with onboarding, isn't it? You've got this massive, complex system and you need to get people to the center of it without losing them in everything around it. Cut the hole. Spotlight the thing. Then go deeper.
 
@@ -105,7 +108,7 @@ The concept is really quite simple. You build a layer on top of your UI that blo
 <ThemeImage
 	dark="/images/devlog_donuts_cutscene[style=dark].png"
 	light="/images/devlog_donuts_cutscene[style=light].png"
-	alt="Cutscene" />
+	alt="A cutscene running on the Onboarding page: everything is dimmed except the sidebar, which sits in a hole cut through the overlay, while a popup for the Navigation stage says “Let's take a quick look at the main sections of the app” at step 1 of 5." />
 
 ## Primitives
 
@@ -149,7 +152,10 @@ I don't know. Building things for other people is really weird sometimes. Like, 
 
 When someone says your work is bad, you have to decide what to do with that. Are they trying to make the thing better? Are they attacking the work? Are they attacking you? Are they just protecting what they've already built, justifying the time they sunk into it by tearing down the thing that threatens to make it irrelevant? You can't actually know. And even if you could, what do you do differently? If you push back, you're defensive. If you absorb it, you're a pushover. If you ignore it, you don't care about your users. There's no version of it that feels right. Sometimes it's hard to separate the value of this work from the value of me.
 
-<Video src="/video/chef_clip_cake_web.mp4" title="It's F*CKING MOLTEN!" />
+<Video
+	src="/video/chef_clip_cake_web.mp4"
+	title="It's F*CKING MOLTEN!"
+	description="Carl Casper, in Chef, storms out of his kitchen and screams at the food critic Ramsey Michel in front of a full dining room, taking the bad review of his chocolate lava cake personally: it wasn't undercooked, it was molten. The critic sits still while diners film the meltdown on their phones, and the video goes viral. This is what it looks like when you can't separate the value of your work from the value of you." />
 
 It's your own decisions too. How do you say no to something without making someone feel dismissed? How do you say yes to something you disagree with because you know it's the right call? How do you close an issue that someone clearly cares about? I keep coming back to this question of whether you can get things done and still be kind about it. Whether efficiency and empathy are actually compatible or if at some point you have to pick one. Am I going to be an asshole today? Or am I going to get nothing done?
 
@@ -159,6 +165,8 @@ This is all about downloading movies slightly better, in case you forgot.
 
 So why build one? Because I can. Because it's fun. Because two years ago I just wanted to share some quality profiles and now I'm here writing about dimensions and overlay engines. Because at some point you stop building to solve a problem and you start building because you like how the pieces fit together.
 
-<Video src="/video/chef_clip_grilled_cheese_web.mp4" />
+<Video
+	src="/video/chef_clip_grilled_cheese_web.mp4"
+	description="Carl Casper, in Chef, makes his son Percy a grilled cheese: butter on the griddle, a stack of different cheeses, the sandwich pressed flat, cut, and served on a yellow plate. No critic, no review, just a chef cooking the way he likes for someone he loves. When Percy says his mom cuts off the crusts, Carl answers that he doesn't. It's the same reason Marta beats Harlan at Go: she isn't playing to win, she just likes how the pieces fit together. That's where this dev log ends up too." />
 
 The v2 announcement post / dev log will be next :D

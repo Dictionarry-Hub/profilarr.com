@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { llmsTxt } from '$lib/shared/utils/llm/llms';
-import { withIndexFooter } from '$lib/shared/utils/llm/md';
+import { absoluteLinks, withIndexFooter } from '$lib/shared/utils/llm/md';
 import type { CompiledDatabase, QualityProfile } from '$lib/types/pcd';
 
 function qualityProfile(name: string, tags: string[]): QualityProfile {
@@ -91,6 +91,22 @@ describe('withIndexFooter', () => {
 	it('ends a Markdown page with a link to the index', () => {
 		expect(withIndexFooter('# Page\n\nBody.\n\n', 'https://profilarr.com')).toBe(
 			"# Page\n\nBody.\n\n---\n\nIndex of this site's Markdown pages: https://profilarr.com/llms.txt\n"
+		);
+	});
+});
+
+describe('absoluteLinks', () => {
+	it('points site-relative links at the site URL and leaves the rest alone', () => {
+		const markdown = [
+			'See [Docker](/docs/docker), [Parser](#the-parser), and [Deno](https://deno.com).',
+			'',
+			'```md',
+			'[Example](/not/rewritten)',
+			'```'
+		].join('\n');
+
+		expect(absoluteLinks(markdown, 'https://profilarr.com')).toBe(
+			markdown.replace('](/docs/docker)', '](https://profilarr.com/docs/docker)')
 		);
 	});
 });

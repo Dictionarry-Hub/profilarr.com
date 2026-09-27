@@ -1,5 +1,6 @@
 import { SITE_URL } from './site.js';
 import { join, isoDate, articleBody } from './md.js';
+import { mediaToMarkdown } from './components.js';
 
 // Markdown serializers for dev log artifacts. The source .svx files are
 // already markdown, so the body ships nearly verbatim via articleBody.
@@ -33,7 +34,7 @@ export function devLogToMarkdown(meta: DevLogMeta, source: string, slug: string)
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		context,
-		articleBody(source)
+		mediaToMarkdown(articleBody(source))
 	]);
 }
 
