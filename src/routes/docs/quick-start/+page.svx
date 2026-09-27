@@ -11,8 +11,9 @@ next: [build, test]
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
 	import MoreInfo from '$lib/client/ui/markdown/more-info/MoreInfo.svelte';
+	import Screenshots from '$lib/client/ui/markdown/screenshots/Screenshots.svelte';
 	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
-	import { install } from './data';
+	import { install, radarrScreens } from './data';
 </script>
 
 > This guide assumes you understand the basics of media automation, already run Radarr or Sonarr, and have Docker installed. If you're new to any of them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides, or Docker's [install guide](https://docs.docker.com/get-started/get-docker/).
@@ -90,6 +91,14 @@ Profilarr tries to stay neutral about how you set up your Arrs, but quality prof
 Each section has its own trigger. **Manual** syncs when you press Sync, **Schedule** syncs on a timetable, and **On Pull** syncs whenever the database pulls an update, so changes to Dictionarry reach your Arr on their own. Save your choices, then press **Sync** to send them now.
 
 > <MoreInfo pages="sync" />
+
+## Assign Your Profile
+
+Once the sync finishes, open Radarr's Settings > Profiles and your synced quality profile is there, with its custom formats under Settings > Custom Formats.
+
+Syncing doesn't assign the profile to anything, so your library keeps the profiles it already had. To use the new one, edit a movie and pick it under **Quality Profile**, or select several movies from the Movies page and change them together. Sonarr works the same way, with series instead of movies.
+
+<Screenshots items={radarrScreens} />
 
 ## That's It
 
