@@ -37,7 +37,7 @@ Profilarr is my attempt to fix this. Each quality profile, custom format, and re
 
 Profilarr is a self-hosted web app that manages the configuration of your Radarr and Sonarr instances. It runs alongside them, pulls configuration from one or more databases, and syncs it to your instances through their APIs. You can change anything a database gives you, and Profilarr keeps your changes when the database updates.
 
-Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
+> Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
 
 ## How It Works
 
