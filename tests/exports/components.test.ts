@@ -3,7 +3,8 @@ import {
 	componentsToMarkdown,
 	markdownCallout,
 	markdownCode,
-	markdownTable
+	markdownTable,
+	markdownTree
 } from '$lib/shared/utils/llm/components';
 
 type Row = { name: string; note: string; flag?: boolean };
@@ -46,11 +47,30 @@ describe('markdownCallout', () => {
 	});
 });
 
+describe('markdownTree', () => {
+	it('draws folders, files, and notes like the tree command', () => {
+		const markdown = markdownTree([
+			{
+				name: 'config',
+				children: [
+					{ name: 'data', note: 'Settings', children: [{ name: 'profilarr.db' }] },
+					{ name: 'logs', children: [] }
+				]
+			}
+		]);
+
+		expect(markdown).toBe(
+			'```text\nconfig/\n├── data/  # Settings\n│   └── profilarr.db\n└── logs/\n```'
+		);
+	});
+});
+
 describe('componentsToMarkdown', () => {
 	const data = {
 		rows,
 		columns,
-		example: [{ title: 'crontab', language: 'sh', code: 'echo hi' }]
+		example: [{ title: 'crontab', language: 'sh', code: 'echo hi' }],
+		tree: [{ name: 'logs', children: [] }]
 	};
 
 	it('replaces a wrapped AdaptiveList, including its snippets and wrapper', () => {
@@ -75,10 +95,16 @@ describe('componentsToMarkdown', () => {
 	});
 
 	it('replaces CodeBlock and Callout tags', () => {
-		const body = '<CodeBlock items={example} />\n\n<Callout type="info">\n\nNote.\n\n</Callout>';
+		const body = '<CodeBlock items={example} />\n\n<Callout type="info">\nNote.\n</Callout>';
 
 		expect(componentsToMarkdown(body, data)).toBe(
 			'`crontab`\n\n```sh\necho hi\n```\n\n> **Info:** Note.'
+		);
+	});
+
+	it('replaces FileTree tags', () => {
+		expect(componentsToMarkdown('<FileTree items={tree} />', data)).toBe(
+			'```text\nlogs/\n```'
 		);
 	});
 

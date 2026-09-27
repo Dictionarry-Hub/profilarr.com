@@ -13,6 +13,14 @@ export interface MarkdownColumn<T> {
 	markdown?: (row: T) => string;
 }
 
+/** One entry of a FileTree. Entries with `children` are folders, even when
+    the array is empty. */
+export interface TreeNode {
+	name: string;
+	note?: string;
+	children?: TreeNode[];
+}
+
 /** One tab of a CodeBlock. */
 export interface CodeExample {
 	title: string;
@@ -48,6 +56,26 @@ export function markdownCode(items: CodeExample[]): string {
 	return join(items.map(codeItem));
 }
 
+/** A plain-text tree like `tree` prints, in a fenced block. Folders end in a
+    slash and notes follow as comments. */
+export function markdownTree(items: TreeNode[]): string {
+	const lines: string[] = [];
+	const walk = (nodes: TreeNode[], prefix: string, root: boolean) => {
+		nodes.forEach((node, index) => {
+			const last = index === nodes.length - 1;
+			const branch = root ? '' : last ? '└── ' : '├── ';
+			const name = `${node.name}${node.children ? '/' : ''}`;
+			lines.push(`${prefix}${branch}${name}${node.note ? `  # ${node.note}` : ''}`);
+			if (node.children) {
+				walk(node.children, root ? prefix : `${prefix}${last ? '    ' : '│   '}`, false);
+			}
+		});
+	};
+	walk(items, '', true);
+	const fence = '```';
+	return `${fence}text\n${lines.join('\n')}\n${fence}`;
+}
+
 export function markdownCallout(type: string, body: string): string {
 	const label = type.charAt(0).toUpperCase() + type.slice(1);
 	const lines = `**${label}:** ${body.trim()}`.split('\n');
@@ -70,7 +98,11 @@ function isCodeList(value: unknown): value is CodeExample[] {
 	return Array.isArray(value);
 }
 
-/** Replaces AdaptiveList, CodeBlock, and Callout tags in an mdsvex body with
+function isTreeList(value: unknown): value is TreeNode[] {
+	return Array.isArray(value);
+}
+
+/** Replaces AdaptiveList, CodeBlock, FileTree, and Callout tags in an mdsvex body with
     Markdown. `data` is the page's data.ts module; a tag that names data the
     module doesn't export is left as it is. */
 export function componentsToMarkdown(body: string, data: Record<string, unknown>): string {
@@ -86,6 +118,10 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 		.replace(/<CodeBlock\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
 			const items = data[name];
 			return isCodeList(items) ? markdownCode(items) : tag;
+		})
+		.replace(/<FileTree\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
+			const items = data[name];
+			return isTreeList(items) ? markdownTree(items) : tag;
 		})
 		.replace(/<Callout\s+type="(\w+)">([\s\S]*?)<\/Callout>/g, (_, type, inner) =>
 			markdownCallout(type, inner)

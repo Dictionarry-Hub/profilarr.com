@@ -1,4 +1,4 @@
-import type { CodeExample, MarkdownColumn } from '$lib/shared/utils/llm/components.js';
+import type { CodeExample, MarkdownColumn, TreeNode } from '$lib/shared/utils/llm/components.js';
 
 // Component data for the Docker page. The page renders it and the Markdown
 // mirror serializes it, so both show the same thing.
@@ -63,19 +63,32 @@ docker run -d \\
 	}
 ];
 
-export const configTree: CodeExample[] = [
+export const configTree: TreeNode[] = [
 	{
-		title: 'config',
-		language: 'text',
-		code: `config/
-├── backups/
-│   └── backup-2026-09-27-043000.tar.gz
-├── data/
-│   ├── databases/
-│   │   └── <id>/
-│   └── profilarr.db
-└── logs/
-    └── 2026-09-27.log`
+		name: 'config',
+		children: [
+			{
+				name: 'backups',
+				note: 'Backup archives',
+				children: [{ name: 'backup-2026-09-27-043000.tar.gz' }]
+			},
+			{
+				name: 'data',
+				children: [
+					{
+						name: 'databases',
+						note: 'A Git clone of each linked database',
+						children: [{ name: '<id>', children: [] }]
+					},
+					{ name: 'profilarr.db', note: 'Settings, Arr instances, and linked databases' }
+				]
+			},
+			{
+				name: 'logs',
+				note: 'One log file per day',
+				children: [{ name: '2026-09-27.log' }]
+			}
+		]
 	}
 ];
 

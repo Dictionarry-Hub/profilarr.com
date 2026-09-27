@@ -794,6 +794,22 @@ Renders code as pre-rendered plain HTML, then lazy-loads Shiki and the active ta
 after hydration. Inactive tab grammars load when selected. Plain-text and unsupported languages stay
 unhighlighted, and highlighting failures leave the readable plain code in place.
 
+#### `FileTree`
+
+`src/lib/client/ui/markdown/tree/FileTree.svelte`
+
+Renders a folder and file tree from nested data, for docs pages that show a directory layout.
+Folders (entries with `children`, even an empty array) get a folder icon and a trailing slash, files
+get a file icon, and an optional `note` follows each name in muted text. Children indent under a
+vertical guide line. It uses divs with list roles instead of `ul` and `li`, so the prose list styles
+don't apply inside docs content. The data type, `TreeNode`, lives in
+`src/lib/shared/utils/llm/components.ts` so the Markdown mirror can serialize the same data as a
+plain-text tree.
+
+| Prop    | Type         | Required | Default |
+| ------- | ------------ | -------- | ------- |
+| `items` | `TreeNode[]` | yes      |         |
+
 #### `ThemeImage`
 
 `src/lib/client/ui/markdown/image/ThemeImage.svelte`

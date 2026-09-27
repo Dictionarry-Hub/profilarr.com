@@ -12,6 +12,7 @@ order: 1
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
 	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import FileTree from '$lib/client/ui/markdown/tree/FileTree.svelte';
 	import { install, configTree, idExample, nonRootExample, healthChecks, healthCheckColumns, dockerPsExample, updateByHand, watchtowerCompose, scheduledPull, renovateImage, renovateRule } from './data';
 </script>
 
@@ -77,12 +78,9 @@ Unraid checks for new images itself and shows available updates in the **Docker*
 
 Everything Profilarr keeps lives in the folder you mount at `/config`. Point a new container at the same folder and it picks up exactly where it left off.
 
-<CodeBlock items={configTree} />
+<FileTree items={configTree} />
 
-- `data/profilarr.db` is the SQLite database with your settings, Arr instances, and linked databases. While Profilarr runs, SQLite also keeps `profilarr.db-wal` and `profilarr.db-shm` next to it.
-- `data/databases/` holds a Git clone of each database you've linked, one folder each.
-- `logs/` has one log file per day.
-- `backups/` holds backup archives, made on a schedule or from Settings > Backups. See [Backups](/docs/backups).
+While Profilarr runs, SQLite also keeps `profilarr.db-wal` and `profilarr.db-shm` next to the database. To back this folder up, see [Backups](/docs/backups).
 
 ## File Permissions
 
