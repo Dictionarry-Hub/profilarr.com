@@ -51,6 +51,54 @@ tree. Newer versions expect a micromark-based pipeline and fail silently or loud
 KaTeX rendering happens at build time; the KaTeX stylesheet is imported per-article in the
 `<script>` block of articles that use math, so non-math pages don't ship it.
 
+## Diagrams
+
+Fenced code blocks with the `mermaid` language render to inline SVG at build time. The mdsvex
+`highlighter` in `svelte.config.js` sends them to `mermaidBlock` in `tooling/markdown/mermaid.ts`
+and passes every other language to mdsvex's default Prism highlighter. The Markdown mirrors ship the
+fence source verbatim (see [llm.md](../backend/llm.md#docs-dev-log-and-wiki-artifacts)), so models
+read the Mermaid and browsers get the SVG. No Mermaid JavaScript reaches the browser.
+
+````md
+```mermaid
+flowchart LR
+  accTitle: How Profilarr works
+  accDescr: A database and your local changes build your configurations.
+  DB[Database] --> B[Build]
+  LC[Local changes] --> B
+```
+````
+
+Every diagram needs an `accDescr` line, and the build fails without one. `accTitle` is optional.
+Both must be single lines; the block form (`accDescr { ... }`) is not supported. They become the
+SVG's `<title>` and `<desc>`, which screen readers read.
+
+Rendering uses [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid), which lays
+diagrams out without a browser. Its output needs four changes before it goes on a page, all made in
+`mermaid.ts`:
+
+- Its `<style>` block imports the font from Google Fonts and styles every `svg` and `text` on the
+  page. The imports and font rules are removed, the rest is scoped to the diagram, and
+  `src/styles/prose.css` sets the fonts.
+- Its marker ids are fixed. Every id is prefixed with a hash of the diagram source, so diagrams on
+  the same page don't repeat ids.
+- It draws `accTitle` and `accDescr` as nodes. They are removed before rendering and added back as
+  `<title>` and `<desc>`.
+- It draws flowchart edges as right-angled polylines. `edgePath` redraws them as paths with each
+  corner replaced by a curve, so a short step between two nodes becomes an S-curve. The route is
+  unchanged, which keeps edge labels on the line.
+
+Colors come from the theme tokens (`--theme-bg`, `--theme-text`, and so on), so diagrams follow
+theme switches without re-rendering. Corners come from the radius tokens: `prose.css` sets `rx` and
+`ry`, which work as CSS properties on SVG rects, on rectangle nodes (`--theme-radius-control`), edge
+labels (`--theme-radius-control-sm`), and subgraphs (`--theme-radius-card`, with a dashed outline).
+Retro's square radii give square diagrams. A subgraph's header band is hidden, since its square
+corners would stick out of the rounded outline.
+
+The package is pinned to an exact version because these changes depend on its output shape.
+`tests/tooling/mermaid.test.ts` fails if an update changes it, and Dependabot opens its updates as
+separate PRs so the tests check each one.
+
 ## Frontmatter
 
 Markdown files use YAML frontmatter for metadata. Frontmatter values are used for SEO meta tags,

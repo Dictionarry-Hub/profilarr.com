@@ -3,6 +3,58 @@ layout: docs
 title: Introduction
 blurb: What Profilarr is and where it fits alongside Radarr and Sonarr.
 order: 1
+next: [quick-start, installation]
 ---
 
-TODO: What Profilarr is and where it fits alongside Radarr and Sonarr. Covers the problem it solves, how databases, local changes, and sync fit together, the typical build, test, and deploy workflow, supported apps, and the project's history and license.
+> This guide assumes you understand the basics of media automation and already run Radarr or Sonarr. If you're new to them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides.
+
+## Don't Repeat Yourself
+
+_Don't Repeat Yourself_ (DRY) is a software engineering principle that I learned in my first semester of computer science. Andy Hunt and Dave Thomas formulated it in [_The Pragmatic Programmer_](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/):
+
+> Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
+
+When the same thing is written in several places, every change has to be made in each copy, and sooner or later the copies drift apart.
+
+I kept breaking that rule while building my own Arr configs. I wrote the same _quality profiles_ and _custom formats_ by hand in every Radarr and Sonarr instance I ran. A custom format can't share a regex with another, so I repeated the same regular expressions across slightly different custom formats. Then I'd forget to update one of them and wonder why things weren't matching properly. If I had a dollar for every time someone posted "How do I prefer x265 encodes" in r/radarr, I probably wouldn't need to be a software engineer.
+
+
+Profilarr is my attempt to follow DRY. Each quality profile, custom format, and regular expression is written once, in a _database_, and every instance syncs from it. When a regex changes, every custom format that uses it picks up the change. Databases are shared, so the next person who wants x265 encodes can link one instead of building it from scratch.
+
+## So What Even Is Profilarr?
+
+Profilarr is a self-hosted web app that manages the configuration of your Radarr and Sonarr instances. It runs alongside them, pulls configuration from one or more databases, and syncs it to your instances through their APIs. You can change anything a database gives you, and Profilarr keeps your changes when the database updates.
+
+Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
+
+## How It Works
+
+Profilarr is built on three simple steps. You [build](/docs/build) your configurations, starting from a [database](/docs/databases) and adding your own [local changes](/docs/local-changes). You [test](/docs/test) them against real release titles to check they grab what you expect. Then you [deploy](/docs/deploy) them by [syncing](/docs/sync) to your Radarr and Sonarr instances.
+
+```mermaid
+flowchart LR
+  accTitle: How Profilarr works
+  accDescr: Profilarr builds your configurations from a database and your local changes, tests them, then deploys them by syncing to an Arr instance.
+  DB[Database]
+  A[Arr]
+  subgraph P[Profilarr]
+    LC[Local changes]
+    B[Build]
+    T[Test]
+    D[Deploy]
+  end
+  DB --> B
+  LC --> B
+  B --> T --> D
+  D -->|sync| A
+```
+
+## Supported Apps
+
+Profilarr syncs to Radarr v5 or newer and Sonarr v4 or newer, and you can [connect](/docs/arr-instances) as many instances of each as you run. Other Arr apps, like Lidarr, aren't supported.
+
+## License
+
+Profilarr is free and open source under the [AGPL-3.0](https://github.com/Dictionarry-Hub/profilarr/blob/develop/LICENSE) license. Anyone can use, change, and share it, and anyone who runs a modified version for other people has to share their changes under the same license.
+
+You don't need to pay anyone to use Profilarr. If someone is charging you for access to it, they are violating the spirit of this project.

@@ -282,6 +282,22 @@ render in the same row as tags through the `badges` snippet.
 | `meta`    | `Snippet`  | no       |         |
 | `actions` | `Snippet`  | no       |         |
 
+### PageFooter
+
+#### `PageFooter`
+
+`src/lib/client/ui/footer/PageFooter.svelte`
+
+Closes a docs page with links to the pages it points readers at next, as `Card` links with each
+page's title and blurb. `Article.svelte` renders it below the content from the page's resolved
+`next` frontmatter (see [content.md](../backend/content.md#profilarr-documentation)). Renders
+nothing when there are no links. The "Next" label is not a heading, so the table of contents leaves
+it out.
+
+| Prop    | Type        | Required | Default |
+| ------- | ----------- | -------- | ------- |
+| `links` | `DocLink[]` | yes      |         |
+
 ### Kbd
 
 #### `Kbd`

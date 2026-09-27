@@ -12,6 +12,10 @@ updates:
           npm:
               patterns:
                   - '*'
+              # Pinned because tooling/markdown/mermaid.ts depends on its output
+              # shape. Separate PRs let tests/tooling/mermaid.test.ts vet each bump.
+              exclude-patterns:
+                  - beautiful-mermaid
       cooldown:
           default-days: 7
       ignore:

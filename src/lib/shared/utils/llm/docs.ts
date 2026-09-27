@@ -14,10 +14,19 @@ export interface DocMeta {
 	parent?: string;
 	/** Extra search terms that don't appear in the title, blurb, or headings. */
 	keywords?: string[];
+	/** Slugs of the pages to point readers at next, in the page footer. */
+	next?: string[];
 }
 
 export interface DocIndexEntry extends DocMeta {
 	slug: string;
+}
+
+/** A page another page points at, resolved from its frontmatter. */
+export interface DocLink {
+	title: string;
+	blurb?: string;
+	href: string;
 }
 
 /** Slug of a docs page from the path of any file in its route directory, such
@@ -38,19 +47,43 @@ export function docFullTitle(title: string, parentTitle?: string): string {
 }
 
 /** `data` is the page's data.ts module, used to serialize the components the
-    page embeds. Pages without one pass nothing. */
+    page embeds. Pages without one pass nothing. `next` is the page's resolved
+    `next` frontmatter (see docNext), listed at the end like the page footer. */
 export function docToMarkdown(
 	meta: DocMeta,
 	source: string,
 	slug: string,
-	data: Record<string, unknown> = {}
+	data: Record<string, unknown> = {},
+	next: DocLink[] = []
 ): string {
 	return join([
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
-		mediaToMarkdown(componentsToMarkdown(articleBody(source), data))
+		mediaToMarkdown(componentsToMarkdown(articleBody(source), data)),
+		next.length > 0 ? '## Next' : '',
+		next
+			.map((link) => `- [${link.title}](${link.href})${link.blurb ? `: ${link.blurb}` : ''}`)
+			.join('\n')
 	]);
+}
+
+/** Resolves a page's `next` slugs to the pages they name, in the order given.
+    Child pages get their parent's title in front, as in search results. Throws
+    on an unknown slug so a typo fails the build instead of dropping a link. */
+export function docNext(doc: DocIndexEntry, docs: DocIndexEntry[]): DocLink[] {
+	return (doc.next ?? []).map((slug) => {
+		const target = docs.find((candidate) => candidate.slug === slug);
+		if (!target) {
+			throw new Error(`Docs page "${doc.slug || 'docs'}" has unknown next page "${slug}"`);
+		}
+		const parent = docs.find((candidate) => candidate.slug === target.parent);
+		return {
+			title: docFullTitle(target.title, parent?.title),
+			blurb: target.blurb,
+			href: docPath(target.slug)
+		};
+	});
 }
 
 /** Reading order among siblings: ascending `order`, pages without one last,

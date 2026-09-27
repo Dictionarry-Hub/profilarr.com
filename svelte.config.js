@@ -1,10 +1,11 @@
-import { mdsvex } from 'mdsvex';
+import { mdsvex, code_highlighter } from 'mdsvex';
 import adapter from '@sveltejs/adapter-static';
 import rehypeSlug from 'rehype-slug';
 import remarkMath from 'remark-math';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import { mermaidBlock } from './tooling/markdown/mermaid.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -29,6 +30,14 @@ const config = {
 	preprocess: [
 		mdsvex({
 			extensions: ['.svx', '.md'],
+			// ```mermaid fences render to inline SVG at build time; every other
+			// language keeps mdsvex's default Prism highlighting.
+			highlight: {
+				highlighter: (code, lang, meta, filename, optimise) =>
+					lang === 'mermaid'
+						? mermaidBlock(code, filename)
+						: code_highlighter(code, lang, meta, filename, optimise)
+			},
 			// remark-math is pinned to an old major: mdsvex bundles an older
 			// remark, and newer plugin versions target a micromark-based tree
 			// it cannot parse.

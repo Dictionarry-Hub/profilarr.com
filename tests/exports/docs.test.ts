@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	byDocOrder,
+	docNext,
 	docPath,
 	docSlugFromPath,
 	docToMarkdown,
@@ -20,6 +21,56 @@ describe('docToMarkdown', () => {
 		expect(markdown).toBe(
 			'# Introduction\n\n> What Profilarr is.\n\nA page from the Profilarr documentation. Web version: https://profilarr.com/docs/introduction\n\nTODO: Covers Profilarr.'
 		);
+	});
+});
+
+describe('docToMarkdown next links', () => {
+	it('lists the next pages after the body', () => {
+		const markdown = docToMarkdown(
+			{ title: 'Introduction' },
+			'---\ntitle: Introduction\n---\n\nBody.\n',
+			'',
+			{},
+			[
+				{ title: 'Quick Start', blurb: 'A first setup.', href: '/docs/quick-start' },
+				{ title: 'FAQ', href: '/docs/faq' }
+			]
+		);
+
+		expect(
+			markdown.endsWith(
+				'Body.\n\n## Next\n\n- [Quick Start](/docs/quick-start): A first setup.\n- [FAQ](/docs/faq)'
+			)
+		).toBe(true);
+	});
+
+	it('adds nothing without next links', () => {
+		expect(docToMarkdown({ title: 'FAQ' }, 'Body.', 'faq')).not.toContain('## Next');
+	});
+});
+
+describe('docNext', () => {
+	const docs = [
+		{ title: 'Introduction', slug: '', next: ['quick-start', 'custom-format-testing'] },
+		{ title: 'Quick Start', slug: 'quick-start', blurb: 'A first setup.' },
+		{ title: 'Test', slug: 'test' },
+		{ title: 'Custom Formats', slug: 'custom-format-testing', parent: 'test' }
+	];
+
+	it('resolves slugs in order, with the parent title on child pages', () => {
+		expect(docNext(docs[0], docs)).toEqual([
+			{ title: 'Quick Start', blurb: 'A first setup.', href: '/docs/quick-start' },
+			{ title: 'Test: Custom Formats', blurb: undefined, href: '/docs/custom-format-testing' }
+		]);
+	});
+
+	it('returns nothing for a page without next', () => {
+		expect(docNext(docs[1], docs)).toEqual([]);
+	});
+
+	it('throws on an unknown slug', () => {
+		const broken = { title: 'FAQ', slug: 'faq', next: ['quikc-start'] };
+		expect(() => docNext(broken, [...docs, broken])).toThrow(/"faq".*"quikc-start"/);
 	});
 });
 

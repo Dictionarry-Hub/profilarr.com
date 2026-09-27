@@ -20,16 +20,6 @@
 		Settings,
 		Ruler,
 		Code,
-		Rocket,
-		SquareTerminal,
-		Hammer,
-		Send,
-		FlaskConical,
-		Activity,
-		CircleQuestionMark,
-		Users,
-		GitPullRequest,
-		Heart,
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -38,6 +28,7 @@
 	import NavGroup from '$lib/client/ui/nav/NavGroup.svelte';
 	import NavGroupLabel from '$lib/client/ui/nav/NavGroupLabel.svelte';
 	import NavItem from '$lib/client/ui/nav/NavItem.svelte';
+	import { docIcons } from '$lib/client/ui/nav/doc-icons';
 	import SearchPalette from '$lib/client/ui/search/SearchPalette.svelte';
 	import TableOfContents from '$lib/client/ui/toc/TableOfContents.svelte';
 	import Tooltip from '$lib/client/ui/tooltip/Tooltip.svelte';
@@ -57,21 +48,6 @@
 		'trash-french': Trash2,
 		'trash-german': Trash2,
 		'dumpstarr': Flame
-	};
-
-	// Sidebar icons for docs pages, keyed by slug. Pages without one render
-	// label only.
-	const docIcons: Record<string, typeof BookOpen> = {
-		'quick-start': Rocket,
-		'installation': SquareTerminal,
-		'build': Hammer,
-		'deploy': Send,
-		'test': FlaskConical,
-		'monitoring': Activity,
-		'faq': CircleQuestionMark,
-		'community': Users,
-		'contributing': GitPullRequest,
-		'sponsor': Heart
 	};
 
 	let { children, data } = $props();
