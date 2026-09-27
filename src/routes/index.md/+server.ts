@@ -21,7 +21,7 @@ export const GET: RequestHandler = () => {
 	const root = findDoc('')!;
 	const [source] = Object.values(sources);
 	const data = Object.values(dataModules)[0] ?? {};
-	const markdown = docToMarkdown(root, source, '', data, docNext(root, docsIndex));
+	const markdown = docToMarkdown(root, source, '', data, docNext(root, docsIndex), docsIndex);
 
 	return new Response(markdown, {
 		headers: { 'Content-Type': 'text/markdown; charset=utf-8' }
