@@ -2,9 +2,200 @@
 layout: docs
 title: Authentication
 slug: authentication
-blurb: How to sign in to Profilarr, from a local password to SSO.
+blurb: How Profilarr protects your setup, from passwords and SSO to API keys.
+author: https://github.com/santiagosayshey
 parent: installation
 order: 2
 ---
 
-TODO: How to sign in to Profilarr. Covers first-run setup and the password account, SSO through OIDC, turning login off behind an authenticating proxy, API keys, the settings that stop Profilarr from starting, and what to do if you lose access. Also has an info callout noting that `AUTH=oidc` still works as an alias for `on` but is deprecated, and covers `PROFILARR_API_KEY`: API keys are normally created under Settings > Security, but this variable sets one with full access for scripts and automated deployments. It must be at least 32 characters or Profilarr won't start, it isn't stored in the database, and it shows up in Settings > Security as a read-only key named Environment.
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import { startupErrors, startupErrorColumns } from './data';
+</script>
+
+Profilarr implements its own authentication for one simple reason: _to protect you from stupid mistakes._
+
+Profilarr stores the API key for every Radarr and Sonarr instance you connect, and anyone who gets into Profilarr can use them. An Arr API key can do anything the Arr can: search every indexer you've added, change any setting, and download .torrent files from your private trackers. Each of those files carries your personal passkey, and anything someone does with that passkey counts against your account.
+
+Ideally, you never touch Profilarr's authentication at all, and I'd rather you didn't. Connect to your server over a VPN like [WireGuard](https://www.wireguard.com/), or through [Tailscale](https://tailscale.com/). If Profilarr has to be reachable from outside your network, put it behind a [reverse proxy](/docs/reverse-proxy) and have [Authelia](https://www.authelia.com/) or [Authentik](https://goauthentik.io/) make everyone sign in before the proxy lets a request through. Protecting your services is the whole point of those tools, and they're _much_ better at it than Profilarr will ever be.
+
+So Profilarr's goal is not to make itself safe to expose to the internet, but to make sure one stupid mistake doesn't give a stranger access to your entire media stack.
+
+## Defence in Depth
+
+Profilarr's security model is [_defence in depth_](https://en.wikipedia.org/wiki/Defense_in_depth_(computing)): it protects your secrets in layers, so getting past one layer doesn't get someone past all of them.
+
+1. **Authentication.** Profilarr [_denies by default_](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html#deny-by-default): only the sign-in pages and a health check are open, and everything else needs a signed-in session or an API key. The rest of this page covers the ways to sign in.
+2. **Nothing sensitive reaches the browser.** Profilarr uses your API keys, tokens, and passwords on the server, but never sends them to the page. The web UI only knows whether a key is set, not what it is. Backups you download from the web UI have their secrets stripped too.
+3. **The filesystem is yours to protect.** Profilarr's [config folder](/docs/docker#the-config-folder) holds your secrets unencrypted, and so do the backups Profilarr writes there. Keeping that folder safe is up to you and your environment.
+
+## Password Login
+
+Password login is on by default. You sign in with a username and password, and Profilarr stores the password as a [hash](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#hashing-vs-encryption): a one-way scramble that can check a password but can't be turned back into it.
+
+### Creating Your Account
+
+The first time you open Profilarr, it sends you to a setup page to create your account. Pick a username of at least 3 characters and a password of at least 8, and Profilarr signs you in.
+
+Profilarr has one password account, and it can change everything. There are no roles or permission levels.
+
+<Callout type="warning">
+
+Until you create that account, the setup page is open to anyone who can reach Profilarr. Create it as soon as Profilarr is running, before you make it reachable from anywhere else.
+
+</Callout>
+
+### Changing Your Password
+
+To change your password, open Settings > Security and fill in the Change Password form with your current password and the new one. The new password needs at least 8 characters.
+
+Changing your password doesn't sign anyone out. If you're changing it because someone else might know it, revoke their sessions as well. See [Sessions](#sessions).
+
+<Callout type="warning">
+
+You can't reset a forgotten password from the web UI. Getting back in means editing Profilarr's database by hand, so don't forget it.
+
+</Callout>
+
+### Failed Sign-Ins
+
+Profilarr counts failed sign-ins from each IP address over the last 15 minutes. After 10 failures, it blocks sign-ins from that address for up to 15 minutes and shows "Too many login attempts. Please try again later." Usernames that attackers commonly try, like `admin` or `root`, trigger the block after only 3 failures when no account has that name. A successful sign-in clears the count.
+
+Profilarr keeps the count in its database, so restarting it doesn't clear the block. Otherwise, an attacker who could crash Profilarr would get a fresh set of attempts every time it restarted.
+
+<Callout type="warning">
+
+Behind a reverse proxy, every request reaches Profilarr from the proxy's address, so everyone shares one count. Someone else's failed sign-ins can lock you out too. Profilarr ignores the `X-Forwarded-For` header here on purpose: anyone can set it, so trusting it would let an attacker pick a new address for every attempt.
+
+</Callout>
+
+### Sessions
+
+Signing in starts a session that lasts 7 days. Profilarr extends it while you keep using it: once less than half of the 7 days is left, your next visit resets it to a full 7 days. A session you stop using expires, and you'll have to sign in again. Log Out ends a session straight away.
+
+<Callout type="info">
+
+When you sign in, Profilarr gives your browser a [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies) that it sends with every request, so you don't have to type your password each time. That cookie works like a temporary password: anyone who copies it is signed in as you until the session ends. Revoking a session makes its cookie useless.
+
+</Callout>
+
+Settings > Security lists every active session with its browser, operating system, device, IP address, and when it was last active. Your own session is marked Current. You can revoke any other session on its own, or use Revoke Others to end every session except yours.
+
+## Single Sign-On
+
+Single sign-on (SSO) lets you sign in to Profilarr with an account from a provider you already run, like [Authentik](https://docs.goauthentik.io/add-secure-apps/providers/oauth2/), [Authelia](https://www.authelia.com/configuration/identity-providers/openid-connect/clients/), or [Keycloak](https://www.keycloak.org/docs/latest/server_admin/index.html#proc-creating-oidc-client_server_administration_guide), instead of a Profilarr password. Profilarr works with any provider that supports [OpenID Connect](https://openid.net/developers/how-connect-works/) (OIDC).
+
+### Setting Up Your Provider
+
+In your provider, create an OIDC client (some providers call it an application) with these settings:
+
+- **Client type:** confidential, so the provider gives you a client secret.
+- **Redirect URL:** your Profilarr address followed by `/auth/oidc/callback`, like `https://profilarr.example.com/auth/oidc/callback`. The address has to match [`ORIGIN`](/docs/installation#authentication) exactly.
+- **Scopes:** `openid`, `email`, and `profile`.
+- **Token endpoint authentication:** `client_secret_post`. Authelia expects `client_secret_basic` unless you set `token_endpoint_auth_method: client_secret_post` on the client.
+
+Keep the client ID and client secret. You'll give both to Profilarr in the next step.
+
+<Callout type="warning">
+
+Profilarr lets in anyone your provider signs in for this client, and every SSO account can change everything. Profilarr has no allowlist of its own, so limit who can use the client in your provider, for example by restricting it to a group.
+
+</Callout>
+
+### Configuring Profilarr
+
+Set these three variables, along with [`ORIGIN`](/docs/installation#authentication), and restart Profilarr:
+
+- [`OIDC_DISCOVERY_URL`](/docs/installation#authentication): your provider's discovery URL, which ends in `/.well-known/openid-configuration`. In Authentik, for example, it's `https://authentik.example.com/application/o/<application slug>/.well-known/openid-configuration`.
+- [`OIDC_CLIENT_ID`](/docs/installation#authentication): the client ID from your provider.
+- [`OIDC_CLIENT_SECRET`](/docs/installation#authentication): the client secret from your provider. To keep it out of your compose file, read it from a file instead. See [Secrets from Files](/docs/installation#secrets-from-files).
+
+Once all three are set, SSO is on and the login page shows a Sign in with SSO button. If you set only some of them, Profilarr won't start. See [Startup Errors](#startup-errors). To keep or add a password account, see [Password and SSO Together](#password-and-sso-together).
+
+<Callout type="info">
+
+Older setups turned on SSO with `AUTH=oidc`. It still works as an alias for `AUTH=on`, but it's deprecated, and Profilarr logs a warning at startup.
+
+</Callout>
+
+### Password and SSO Together
+
+SSO doesn't replace password login. The login page shows the password form when a password account exists, and the Sign in with SSO button when SSO is on. If you have both, either one signs you in.
+
+To use SSO only, set the `OIDC_` variables before you start Profilarr for the first time. With SSO on, Profilarr never opens the setup page, so no password account gets created and the login page shows only the SSO button. Everyone who signs in through your provider gets their own Profilarr account.
+
+To add a password account later, sign in with SSO, open Settings > Security, and use Create Local Account. The password account is your way in if your provider goes down. Profilarr allows only one, and its username can't start with `oidc:`, because that prefix marks SSO accounts. Once it exists, you change its password by signing in with it, not from an SSO session.
+
+To stop using SSO, create a password account first, then remove the `OIDC_` variables. Without a password account, Profilarr won't start once SSO is gone. See [Startup Errors](#startup-errors).
+
+<Callout type="warning">
+
+The password account isn't linked to anyone's SSO account. Removing someone's access in your provider doesn't stop them from signing in with the password if they know it, and you can't delete the password account from the web UI.
+
+</Callout>
+
+## Turning Login Off
+
+If a reverse proxy already makes everyone sign in, for example with Authelia or Authentik in front of Profilarr, signing in to Profilarr as well is just a second login. Set [`AUTH=off`](/docs/installation#authentication) to turn Profilarr's login off. The setup and login pages redirect to the home page, Log Out disappears, and Profilarr ignores the `OIDC_` variables.
+
+<Callout type="danger">
+
+Only turn login off if you know exactly what you're doing. With login off, Profilarr lets every request through, including API requests that don't have a key. Anyone who reaches Profilarr without going through your proxy gets full access. Make sure the proxy is the only way in, and keep Profilarr on a network that only the proxy can reach.
+
+</Callout>
+
+## API Keys
+
+[API keys](https://en.wikipedia.org/wiki/API_key) let scripts and other apps use [Profilarr's API](/api/v1) without signing in. Send the key in the `X-Api-Key` header. A key only works on `/api/v1/` paths. It can't load pages or submit the web UI's forms, so a key can't create more keys or change how you sign in.
+
+### Creating a Key
+
+Open Settings > Security and create a new API key. Give it:
+
+- **Name:** so you can tell your keys apart.
+- **Expires After:** 30 days, 90 days (the default), 1 year, or never. Once a key expires, requests that use it get a 401 `API key has expired`.
+- **Access:** full access, or access per area of the API. Each area can be No access, Read, or Read & write, and some areas only offer Read. Full access also covers areas added in future versions. A request the key doesn't have access for gets a 403.
+
+Profilarr shows the key once, right after you create it, so copy it then. Profilarr only stores a hash of the key and can't show it to you again. The key list shows the last 4 characters of each key to help you tell them apart.
+
+You can't edit a key after you create it. To change its access or expiry, create a new key and delete the old one. A deleted key stops working straight away.
+
+### Environment Key
+
+[`PROFILARR_API_KEY`](/docs/installation#authentication) sets an API key from the environment instead of Settings > Security. It suits scripts and automated deployments that need a key before anyone has signed in.
+
+- It must be at least 32 characters long, or Profilarr won't start. `openssl rand -hex 32` generates one.
+- It always has full access and never expires.
+- Profilarr doesn't store it in the database. To revoke it, remove the variable and restart Profilarr.
+- It works alongside the keys you create in Settings > Security. It shows up in the key list as Environment, but you can't delete it there.
+
+To keep the key out of your compose file, see [Secrets from Files](/docs/installation#secrets-from-files).
+
+## Startup Errors
+
+Some combinations of settings would leave Profilarr open to anyone, or leave nobody able to sign in. Instead of guessing what you meant, Profilarr [fails closed](https://en.wikipedia.org/wiki/Fail-safe#Fail_safe_and_fail_secure): it refuses to start and logs an error that says why. Fix the setting and restart.
+
+<div class="mb-5">
+<AdaptiveList
+	data={startupErrors}
+	columns={startupErrorColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'error'}
+			<code>{row.error}</code>
+		{:else if col.key === 'fix'}
+			{row.fix}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{:else}
+			{row.cause}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div><code>{row.error}</code></div>
+			<div class="font-medium">{row.cause}</div>
+			<div class="text-sm">{row.fix} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>

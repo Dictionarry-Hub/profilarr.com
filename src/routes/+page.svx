@@ -22,22 +22,22 @@ next:
 
 ## Don't Repeat Yourself
 
-_Don't Repeat Yourself_ (DRY) is a software engineering principle that I learned in my first semester of computer science. Andy Hunt and Dave Thomas formulated it in [_The Pragmatic Programmer_](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/):
+[_Don't Repeat Yourself_](https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/) is a software engineering principle that I learned in my first semester of computer science:
 
 > Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
 
-When the same thing is written in several places, every change has to be made in each copy, and sooner or later the copies drift apart.
+Software changes constantly. When the same thing is written in several places, every change has to be made in each copy, and sooner or later the copies drift apart. DRY means each change happens exactly once, in one place, with nothing to keep in sync. Homelab configuration is software in everything but name, so the same rule applies. My homelab ignored DRY completely.
 
-I kept breaking that rule while building my own Arr configs. I wrote the same _quality profiles_ and _custom formats_ by hand in every Radarr and Sonarr instance I ran. A custom format can't share a regex with another, so I repeated the same regular expressions across slightly different custom formats. Then I'd forget to update one of them and wonder why things weren't matching properly. If I had a dollar for every time someone posted "How do I prefer x265 encodes" in r/radarr, I probably wouldn't need to be a software engineer.
+I wrote the same _quality profiles_ and _custom formats_ by hand in every Radarr and Sonarr instance I ran. A custom format can't share a regex with another, so I repeated the same regular expressions across slightly different custom formats. Then I'd forget to update one of them and wonder why things weren't matching properly. I have seen "How do I prefer x265 encodes?" posted in r/radarr more times than I can count.
 
 
-Profilarr is my attempt to follow DRY. Each quality profile, custom format, and regular expression is written once, in a _database_, and every instance syncs from it. When a regex changes, every custom format that uses it picks up the change. Databases are shared, so the next person who wants x265 encodes can link one instead of building it from scratch.
+Profilarr is my attempt to fix this. Each quality profile, custom format, and regular expression is written once, in a _database_, and every instance syncs from it. When a regex changes, every custom format that uses it picks up the change. Databases are shared, so the next person who wants x265 encodes can link one instead of building it from scratch.
 
 ## So What Even Is Profilarr?
 
 Profilarr is a self-hosted web app that manages the configuration of your Radarr and Sonarr instances. It runs alongside them, pulls configuration from one or more databases, and syncs it to your instances through their APIs. You can change anything a database gives you, and Profilarr keeps your changes when the database updates.
 
-Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
+> Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
 
 ## How It Works
 
