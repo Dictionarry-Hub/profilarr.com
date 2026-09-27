@@ -829,17 +829,21 @@ driven by the `--theme-image-*` tokens each theme declares; the component never 
 `src/lib/client/ui/markdown/video/Video.svelte`
 
 Video player powered by Plyr. Lazy-loads Plyr and its CSS on mount. Renders a `<figure>` with an
-optional caption.
+optional caption. `description` says what happens in the video: it's rendered as screen-reader-only
+text linked to the player with `aria-describedby`, and it replaces the video in the Markdown
+mirrors. The `require-media-alt` lint rule requires it on every authored page.
 
-| Prop    | Type     | Required | Default |
-| ------- | -------- | -------- | ------- |
-| `src`   | `string` | yes      |         |
-| `title` | `string` | no       |         |
+| Prop          | Type     | Required | Default |
+| ------------- | -------- | -------- | ------- |
+| `src`         | `string` | yes      |         |
+| `title`       | `string` | no       |         |
+| `description` | `string` | no       |         |
 
 ```svelte
 <Video
 	src="/video/clip.mp4"
-	title="Caption text" />
+	title="Caption text"
+	description="What happens in the clip, described as fully as possible." />
 ```
 
 ## Semantic Tokens

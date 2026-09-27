@@ -86,6 +86,29 @@ export function markdownCallout(type: string, body: string): string {
 const WRAPPED_LIST = /<div class="mb-5">\s*(<AdaptiveList\b[\s\S]*?<\/AdaptiveList>)\s*<\/div>/g;
 const BARE_LIST = /<AdaptiveList\b[\s\S]*?<\/AdaptiveList>/g;
 
+function attributes(tag: string): Record<string, string> {
+	return Object.fromEntries([...tag.matchAll(/(\w+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
+}
+
+/** Replaces ThemeImage and Video tags with Markdown a model can read: an
+    image becomes its alt text linked to the light version of the file, and a
+    video becomes its title, description, and a link. Used by every article
+    mirror (docs, dev logs, wiki), since it needs no page data. */
+export function mediaToMarkdown(body: string): string {
+	return body
+		.replace(/<ThemeImage\b[\s\S]*?\/>/g, (tag) => {
+			const { alt = '', light, dark } = attributes(tag);
+			const src = light ?? dark;
+			return src ? `![${alt}](${src})` : tag;
+		})
+		.replace(/<Video\b[\s\S]*?\/>/g, (tag) => {
+			const { src, title, description } = attributes(tag);
+			if (!src) return tag;
+			const parts = [title ? `**Video: ${title}.**` : '**Video.**', description ?? ''];
+			return `${parts.filter(Boolean).join(' ')} [Watch the video](${src})`;
+		});
+}
+
 function isRowList(value: unknown): value is Record<string, unknown>[] {
 	return Array.isArray(value);
 }

@@ -17,6 +17,7 @@
 		"lint:ui": "tsx tooling/lint/index.ts --category ui",
 		"lint:llm": "tsx tooling/lint/index.ts --category llm",
 		"lint:exports": "tsx tooling/lint/index.ts --category exports",
+		"lint:media": "tsx tooling/lint/index.ts --category media",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "vitest run",

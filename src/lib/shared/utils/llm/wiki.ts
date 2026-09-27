@@ -1,5 +1,6 @@
 import { SITE_URL } from './site.js';
 import { join, isoDate, articleBody } from './md.js';
+import { mediaToMarkdown } from './components.js';
 
 // Markdown serializers for wiki article artifacts. Same shape as the dev log
 // serializers: the source .svx files are already markdown, so the body ships
@@ -33,7 +34,7 @@ export function wikiToMarkdown(meta: WikiMeta, source: string, slug: string): st
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		context,
-		articleBody(source)
+		mediaToMarkdown(articleBody(source))
 	]);
 }
 

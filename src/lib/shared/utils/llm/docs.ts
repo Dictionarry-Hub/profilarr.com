@@ -1,6 +1,6 @@
 import { SITE_URL } from './site.js';
 import { join, articleBody } from './md.js';
-import { componentsToMarkdown } from './components.js';
+import { componentsToMarkdown, mediaToMarkdown } from './components.js';
 
 // Markdown serializers for Profilarr docs artifacts. Same shape as the wiki
 // serializers, minus author and date: docs pages are ordered by `order`, not
@@ -49,7 +49,7 @@ export function docToMarkdown(
 		`# ${meta.title}`,
 		meta.blurb ? `> ${meta.blurb}` : '',
 		`A page from the Profilarr documentation. Web version: ${SITE_URL}${docPath(slug)}`,
-		componentsToMarkdown(articleBody(source), data)
+		mediaToMarkdown(componentsToMarkdown(articleBody(source), data))
 	]);
 }
 

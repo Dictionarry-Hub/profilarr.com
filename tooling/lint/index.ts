@@ -9,6 +9,7 @@ import requireMdMirror from './rules/require-md-mirror.js';
 import requirePcdHtml from './rules/require-pcd-html.js';
 import requireYamlArtifact from './rules/require-yaml-artifact.js';
 import themeSync from './rules/theme-sync.js';
+import requireMediaAlt from './rules/require-media-alt.js';
 
 const rules: LintRule[] = [
 	requireSeo,
@@ -17,7 +18,8 @@ const rules: LintRule[] = [
 	requireMdMirror,
 	requirePcdHtml,
 	requireYamlArtifact,
-	themeSync
+	themeSync,
+	requireMediaAlt
 ];
 
 function run(): void {

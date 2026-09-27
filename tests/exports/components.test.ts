@@ -4,7 +4,8 @@ import {
 	markdownCallout,
 	markdownCode,
 	markdownTable,
-	markdownTree
+	markdownTree,
+	mediaToMarkdown
 } from '$lib/shared/utils/llm/components';
 
 type Row = { name: string; note: string; flag?: boolean };
@@ -112,5 +113,23 @@ describe('componentsToMarkdown', () => {
 		const body = '<CodeBlock items={missing} />';
 
 		expect(componentsToMarkdown(body, data)).toBe(body);
+	});
+});
+
+describe('mediaToMarkdown', () => {
+	it('turns images into linked alt text and videos into their text and a link', () => {
+		const body = [
+			'<ThemeImage',
+			'\tdark="/images/a[style=dark].png"',
+			'\tlight="/images/a[style=light].png"',
+			'\talt="The scoring table" />',
+			'',
+			'<Video src="/video/clip.mp4" title="Molten" description="A cake is cut open." />'
+		].join('\n');
+
+		expect(mediaToMarkdown(body)).toBe(
+			'![The scoring table](/images/a[style=light].png)\n\n' +
+				'**Video: Molten.** A cake is cut open. [Watch the video](/video/clip.mp4)'
+		);
 	});
 });

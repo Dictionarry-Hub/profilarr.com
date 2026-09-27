@@ -3,11 +3,16 @@
 
 	interface Props {
 		src: string;
+		/** Visible caption under the video. */
 		title?: string;
+		/** What happens in the video, for screen readers and the Markdown mirror. */
+		description?: string;
 		class?: string;
 	}
 
-	let { src, title, class: className }: Props = $props();
+	let { src, title, description, class: className }: Props = $props();
+
+	const descriptionId = $props.id();
 
 	let videoEl: HTMLVideoElement | undefined = $state();
 
@@ -22,6 +27,7 @@
 	<div class="video-wrapper">
 		<video
 			bind:this={videoEl}
+			aria-describedby={description ? descriptionId : undefined}
 			playsinline
 			controls>
 			<source
@@ -29,6 +35,13 @@
 				type="video/mp4" />
 		</video>
 	</div>
+	{#if description}
+		<p
+			id={descriptionId}
+			class="sr-only">
+			{description}
+		</p>
+	{/if}
 	{#if title}
 		<figcaption class="mt-2 text-center text-sm text-text-muted">{title}</figcaption>
 	{/if}
