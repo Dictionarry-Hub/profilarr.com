@@ -86,7 +86,7 @@ The parser was built mostly for the development side of Profilarr: building and 
 
 ## Release Channels
 
-Profilarr is published under a few tags, so you can choose how it updates. New features land on `develop` first for beta testers, and a batch becomes a stable release once it's verified. How you keep Profilarr up to date depends on how you installed it. For Docker, see [Automatic updates](/docs/docker#automatic-updates).
+Profilarr is published under a few tags, so you can choose how it updates. New features land on `develop` first for beta testers, and a batch becomes a stable release once it's verified. How you keep Profilarr up to date depends on how you installed it. For Docker, see [Updating](/docs/docker#updating).
 
 <div class="mb-5">
 <AdaptiveList
