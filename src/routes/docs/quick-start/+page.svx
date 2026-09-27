@@ -42,6 +42,8 @@ Open Profilarr at `http://localhost:6868`. On a new install, the first visit goe
 
 Profilarr links the [Dictionarry](/pcd/dictionarry) database on first start. Its card on the **Databases** page shows the repository it pulls from and how often Profilarr checks it for updates. Its quality profiles, custom formats, and the rest appear under their own sections in the sidebar. You can change anything it gives you, and your changes are kept when the database updates.
 
+We maintain Dictionarry and think it's a sensible default for everyone, but Profilarr doesn't mind which configurations you use. You can link any other database alongside it, or instead of it, from the same page.
+
 <ThemeImage
 	light="/images/quickstart_database[style=light].png"
 	dark="/images/quickstart_database[style=dark].png"
