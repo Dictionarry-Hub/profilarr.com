@@ -1,12 +1,23 @@
 ---
 layout: docs
-title: Introduction
+title: Profilarr
 blurb: What Profilarr is and where it fits alongside Radarr and Sonarr.
 order: 1
-next: [quick-start, installation]
+next:
+  - quick-start
+  - installation
+  - title: Database Browser
+    href: /pcd/dictionarry
+    blurb: Every quality profile, custom format, and regular expression in the Dictionarry database.
+  - title: API Reference
+    href: /api/v1
+    blurb: Every endpoint in Profilarr's REST API, with examples.
 ---
 
-> This guide assumes you understand the basics of media automation and already run Radarr or Sonarr. If you're new to them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides.
+<script>
+	import Screenshots from '$lib/client/ui/markdown/screenshots/Screenshots.svelte';
+	import { screenshots } from './data';
+</script>
 
 ## Don't Repeat Yourself
 
@@ -48,6 +59,8 @@ flowchart LR
   B --> T --> D
   D -->|sync| A
 ```
+
+<Screenshots items={screenshots} />
 
 ## Supported Apps
 

@@ -6,6 +6,12 @@ export function join(blocks: (string | null)[]): string {
 		.join('\n\n');
 }
 
+/** Site-relative path of a page's Markdown version: the page path with `.md`
+    appended, or `/index.md` for the home page. */
+export function markdownPath(pathname: string): string {
+	return pathname === '/' ? '/index.md' : `${pathname}.md`;
+}
+
 /** Closing line of every Markdown artifact, so a reader of one page can find the rest. */
 export function withIndexFooter(markdown: string, siteUrl: string): string {
 	return `${markdown.trimEnd()}\n\n---\n\nIndex of this site's Markdown pages: ${siteUrl}/llms.txt\n`;

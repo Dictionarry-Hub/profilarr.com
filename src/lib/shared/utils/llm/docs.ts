@@ -14,8 +14,9 @@ export interface DocMeta {
 	parent?: string;
 	/** Extra search terms that don't appear in the title, blurb, or headings. */
 	keywords?: string[];
-	/** Slugs of the pages to point readers at next, in the page footer. */
-	next?: string[];
+	/** Pages to point readers at next, in the page footer: docs slugs, or links
+	    to other pages on the site. */
+	next?: (string | DocLink)[];
 }
 
 export interface DocIndexEntry extends DocMeta {
@@ -30,14 +31,20 @@ export interface DocLink {
 }
 
 /** Slug of a docs page from the path of any file in its route directory, such
-    as `+page.svx` or `data.ts`: the directory name, or '' for the root page. */
+    as `+page.svx` or `data.ts`: the directory name under `src/routes/docs/`, or
+    '' for the root page, which is the site's home page at `src/routes/`. */
 export function docSlugFromPath(path: string): string {
-	return path.replace(/^\/src\/routes\/docs\/?/, '').replace(/\/?[^/]+$/, '');
+	return path.replace(/^\/src\/routes\/(docs\/)?/, '').replace(/\/?[^/]+$/, '');
 }
 
-/** Web path of a docs page: `/docs` for the root page, `/docs/{slug}` otherwise. */
+/** Web path of a docs page: `/` for the root page, `/docs/{slug}` otherwise. */
 export function docPath(slug: string): string {
-	return slug === '' ? '/docs' : `/docs/${slug}`;
+	return slug === '' ? '/' : `/docs/${slug}`;
+}
+
+/** Path of a docs page's Markdown mirror: `/index.md` for the root page. */
+export function docMarkdownPath(slug: string): string {
+	return slug === '' ? '/index.md' : `${docPath(slug)}.md`;
 }
 
 /** Title with its parent's in front ("Test: Custom Formats"), so child pages
@@ -68,14 +75,27 @@ export function docToMarkdown(
 	]);
 }
 
-/** Resolves a page's `next` slugs to the pages they name, in the order given.
-    Child pages get their parent's title in front, as in search results. Throws
-    on an unknown slug so a typo fails the build instead of dropping a link. */
+/** Resolves a page's `next` entries to links, in the order given. A slug names
+    a docs page, and child pages get their parent's title in front, as in
+    search results. A link to another page on the site, such as the database
+    browser, passes through as written. Throws on an unknown slug or a link
+    that leaves the site, so a typo fails the build instead of dropping a
+    link. */
 export function docNext(doc: DocIndexEntry, docs: DocIndexEntry[]): DocLink[] {
-	return (doc.next ?? []).map((slug) => {
+	return (doc.next ?? []).map((entry) => {
+		if (typeof entry !== 'string') {
+			if (!entry.title || !entry.href?.startsWith('/')) {
+				throw new Error(
+					`Docs page "${doc.slug || 'home'}" has a next link without a title or a site-relative href`
+				);
+			}
+			return { title: entry.title, blurb: entry.blurb, href: entry.href };
+		}
+
+		const slug = entry;
 		const target = docs.find((candidate) => candidate.slug === slug);
 		if (!target) {
-			throw new Error(`Docs page "${doc.slug || 'docs'}" has unknown next page "${slug}"`);
+			throw new Error(`Docs page "${doc.slug || 'home'}" has unknown next page "${slug}"`);
 		}
 		const parent = docs.find((candidate) => candidate.slug === target.parent);
 		return {

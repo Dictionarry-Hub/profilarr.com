@@ -7,3 +7,5 @@ order: 2
 ---
 
 TODO: A first setup from start to finish. Walks through installing Profilarr, logging in, checking the Dictionarry database that is linked on first start, adding a Radarr or Sonarr instance, and running a first sync, with links to the detailed pages for each step. Ends by pointing to the guided tours under Settings > Onboarding for a walkthrough inside the app, and mentions the interface preferences under Settings > General, such as fonts and alert position.
+
+> This guide assumes you understand the basics of media automation and already run Radarr or Sonarr. If you're new to them, start with the [Radarr](https://wiki.servarr.com/radarr/quick-start-guide) and [Sonarr](https://wiki.servarr.com/sonarr/quick-start-guide) quick start guides.

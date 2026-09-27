@@ -9,6 +9,7 @@
 		Library,
 		BookText,
 		Wrench,
+		House,
 		BookOpen,
 		Trash2,
 		Flame,
@@ -196,9 +197,9 @@
 		</div>
 
 		<NavGroupLabel
-			label="Docs"
-			href="/docs"
-			icon={BookText}>
+			label="Home"
+			href="/"
+			icon={House}>
 			{#each data.docs as doc (doc.href)}
 				<!-- NavGroup shows a chevron whenever it has children, so pages
 				     without child pages render without the block. -->

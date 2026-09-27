@@ -7,6 +7,7 @@
 	import Author from '$lib/client/ui/author/Author.svelte';
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
 	import { docFullTitle, type DocLink } from '$lib/shared/utils/llm/docs.js';
+	import { markdownPath } from '$lib/shared/utils/llm/md.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
@@ -42,7 +43,8 @@
 	}
 
 	// Docs only: the pages this one points readers at, resolved from its `next`
-	// frontmatter by src/routes/docs/+layout.server.ts.
+	// frontmatter by src/routes/+page.server.ts for the home page and
+	// src/routes/docs/+layout.server.ts for the rest.
 	const next = $derived((page.data.docNext as DocLink[] | undefined) ?? []);
 
 	const authors = $derived.by(() => {
@@ -55,7 +57,7 @@
 <SEO
 	title={documentTitle}
 	description={blurb}
-	markdown="{page.url.pathname}.md" />
+	markdown={markdownPath(page.url.pathname)} />
 
 <article>
 	<PageHeader
@@ -63,7 +65,7 @@
 		{tags}>
 		{#snippet actions()}
 			<PageActionsMenu
-				artifactPath="{page.url.pathname}.md"
+				artifactPath={markdownPath(page.url.pathname)}
 				pagePath={page.url.pathname} />
 		{/snippet}
 		{#snippet meta()}

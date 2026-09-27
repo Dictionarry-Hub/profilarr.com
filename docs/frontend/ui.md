@@ -298,6 +298,26 @@ it out.
 | ------- | ----------- | -------- | ------- |
 | `links` | `DocLink[]` | yes      |         |
 
+### Tabs
+
+#### `Tabs`
+
+`src/lib/client/ui/tabs/Tabs.svelte`
+
+A tab bar above one panel, styled like the tabs in Profilarr's own UI: labels with optional icons on
+a bottom border, with the selected tab underlined in the accent color. It follows the WAI-ARIA tabs
+pattern: `tablist`, `tab`, and `tabpanel` roles, arrow keys to move between tabs, and Home and End
+to jump to the ends. The `panel` snippet receives the selected tab and renders its content. `value`
+is bindable.
+
+| Prop    | Type                                                | Required | Default         |
+| ------- | --------------------------------------------------- | -------- | --------------- |
+| `items` | `{ id: string; label: string; icon?: Component }[]` | yes      |                 |
+| `label` | `string`                                            | yes      |                 |
+| `panel` | `Snippet<[TabItem]>`                                | yes      |                 |
+| `value` | `string`                                            | no       | first item's id |
+| `class` | `string`                                            | no       |                 |
+
 ### Kbd
 
 #### `Kbd`
@@ -338,6 +358,7 @@ scroll-proof).
 | `open`      | `boolean` (bindable) | no       | `false` |
 | `onclose`   | `() => void`         | no       |         |
 | `ariaLabel` | `string`             | no       |         |
+| `bare`      | `boolean`            | no       | `false` |
 | `class`     | `string`             | no       | `''`    |
 | `header`    | `Snippet`            | no       |         |
 | `footer`    | `Snippet`            | no       |         |
@@ -345,6 +366,9 @@ scroll-proof).
 `header` and `footer` render as fixed regions above and below the content, separated by borders
 (unpadded; the snippet provides its own padding). When height is constrained via `class` (e.g.
 `max-h-[60vh]`), the children region scrolls between them.
+
+`bare` drops the panel surface (border, background, shadow) and strengthens the backdrop to a heavy
+blur, for content that floats over the page, like `ImagePreview`.
 
 Opens with a 150ms fade and rise (via `@starting-style`; browsers without support snap, and reduced
 motion is respected). Close is instant by design.
@@ -834,11 +858,56 @@ Renders two images and uses CSS to show the correct one based on the active them
 because the inline script in `app.html` sets `data-theme` before first paint. Which image shows is
 driven by the `--theme-image-*` tokens each theme declares; the component never enumerates themes.
 
-| Prop    | Type     | Required | Default |
-| ------- | -------- | -------- | ------- |
-| `dark`  | `string` | yes      |         |
-| `light` | `string` | yes      |         |
-| `alt`   | `string` | yes      |         |
+| Prop        | Type         | Required | Default |
+| ----------- | ------------ | -------- | ------- |
+| `dark`      | `string`     | yes      |         |
+| `light`     | `string`     | yes      |         |
+| `alt`       | `string`     | yes      |         |
+| `border`    | `boolean`    | no       | `false` |
+| `preview`   | `boolean`    | no       | `true`  |
+| `onpreview` | `() => void` | no       |         |
+
+`border` outlines the image with the border token. Profilarr's UI uses the same background colors as
+this site, so screenshots of it blend into the page without one.
+
+With `preview` on, the image is a button with a zoom-in cursor, labeled "View larger: {alt}", that
+opens it in an `ImagePreview`. Set `preview={false}` for an image that shouldn't open. `onpreview`
+replaces the built-in preview, for components that preview a set of images together, like
+`Screenshots`.
+
+#### `ImagePreview`
+
+`src/lib/client/ui/markdown/image/ImagePreview.svelte`
+
+A larger view of one image or a set, built on a `bare` `Dialog`, so Escape, backdrop click, the
+focus trap, and scroll locking come from there. The image fills most of the viewport in the active
+theme's version, with its title and icon (such as the Screenshots tab) in the top left, a close
+button in the top right, and its caption below, lined up with the image's edges. A set adds previous
+and next buttons on the sides, arrow-key navigation that wraps around, and an "n / total" counter.
+It renders only while open, so an image inside a paragraph never puts a `<dialog>` in the
+server-rendered HTML.
+
+| Prop     | Type                                                                                                                   | Required | Default |
+| -------- | ---------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| `images` | `{ light: string; dark: string; alt: string; title?: string; icon?: Component; caption?: string; border?: boolean }[]` | yes      |         |
+| `open`   | `boolean` (bindable)                                                                                                   | no       | `false` |
+| `index`  | `number` (bindable)                                                                                                    | no       | `0`     |
+
+#### `Screenshots`
+
+`src/lib/client/ui/markdown/screenshots/Screenshots.svelte`
+
+Tabbed screenshots: one tab per image, each a `ThemeImage` with an optional caption and an optional
+`icon` beside the tab label. An item without both `light` and `dark` shows a dashed placeholder
+labeled with the tab name, so a page can lay out its screenshots before the images exist. Pages keep
+the items in `data.ts` as `Screenshot[]` (from `src/lib/shared/utils/llm/components.ts`), and the
+Markdown mirror lists each image and caption. Clicking an image opens an `ImagePreview` of the whole
+set, and stepping through the preview switches the tab underneath.
+
+| Prop    | Type           | Required | Default         |
+| ------- | -------------- | -------- | --------------- |
+| `items` | `Screenshot[]` | yes      |                 |
+| `label` | `string`       | no       | `'Screenshots'` |
 
 #### `Video`
 

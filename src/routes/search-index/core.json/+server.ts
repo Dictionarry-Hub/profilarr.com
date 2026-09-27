@@ -13,16 +13,22 @@ export const prerender = true;
 // Database-independent search entries: Profilarr docs, dev logs, wiki
 // articles, and API endpoints. See docs/backend/search.md.
 
-const docModules = import.meta.glob<{ metadata: DocMeta }>('/src/routes/docs/**/+page.svx', {
-	eager: true
-});
+const docModules = import.meta.glob<{ metadata: DocMeta }>(
+	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	{
+		eager: true
+	}
+);
 
 // Raw sources, for the section headings each docs page adds to the index.
-const docSources = import.meta.glob<string>('/src/routes/docs/**/+page.svx', {
-	eager: true,
-	query: '?raw',
-	import: 'default'
-});
+const docSources = import.meta.glob<string>(
+	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	{
+		eager: true,
+		query: '?raw',
+		import: 'default'
+	}
+);
 
 const devLogModules = import.meta.glob<{ metadata: DevLogMeta }>(
 	'/src/routes/dev-logs/**/+page.svx',
