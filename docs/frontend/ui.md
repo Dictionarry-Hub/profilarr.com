@@ -968,10 +968,14 @@ available via the `@theme inline` bridge in `layout.css` (e.g., `bg-bg`, `text-t
 | Token                         | Role                |
 | ----------------------------- | ------------------- |
 | `--theme-bg`                  | Page background     |
+| `--theme-bg-image`            | Page pattern        |
 | `--theme-surface`             | Card / panel fill   |
 | `--theme-surface-muted`       | Subdued surface     |
 | `--theme-surface-hover`       | Surface hover state |
 | `--theme-surface-hover-muted` | Subdued hover state |
+
+`--theme-bg-image` is painted on every `bg-bg` element, pinned to the viewport so a pattern lines up
+across the sidebar, banner, and content. Most themes set it to `none`.
 
 ### Text
 
@@ -1064,16 +1068,20 @@ token) so native scrollbars and form controls match.
 
 ## Theming
 
-Five themes, each defining the complete token set. No base+override layering. Theme files live in
+Nine themes, each defining the complete token set. No base+override layering. Theme files live in
 `src/styles/themes/`.
 
 ```
 src/styles/themes/
 ├── light.css      # :root selector (default)
 ├── dark.css       # [data-theme="dark"]
+├── classic.css    # [data-theme="classic"]
+├── nostromo.css   # [data-theme="nostromo"]
+├── sumi.css       # [data-theme="sumi"]
 ├── retro.css      # [data-theme="retro"]
 ├── roswell.css    # [data-theme="roswell"]
-└── voyager.css    # [data-theme="voyager"]
+├── voyager.css    # [data-theme="voyager"]
+└── sketchbook.css # [data-theme="sketchbook"]
 ```
 
 ### Switching

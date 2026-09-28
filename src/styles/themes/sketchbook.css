@@ -1,0 +1,222 @@
+/*
+ * Sketchbook
+ *
+ * Every interface starts as a drawing. Before the grid system and
+ * the component library there was a pencil, a ruled notebook, and
+ * someone trying to work out where the button goes.
+ *
+ * This theme never leaves that page. The background is notebook
+ * paper with faint blue rules. Boxes are drawn freehand: each
+ * corner takes a different radius, so no two edges agree on where
+ * the rectangle ends, and every card sits on a slightly smudged
+ * pencil shadow. Borders are graphite. Primary actions are in
+ * blue ballpoint, selections are run over with a yellow
+ * highlighter, and errors are marked in red pen, the way a
+ * teacher would.
+ *
+ * Caveat writes the headings in a quick, confident hand. Patrick
+ * Hand keeps body text legible, neat handwriting for someone who
+ * knows other people will read it. Code stays typed, in IBM Plex
+ * Mono, because nobody hand-writes a regex twice.
+ */
+
+/*
+ * Freehand corners. A drawn box is never the same box twice, so each
+ * corner's radius lives in its own variable, and the rules at the end
+ * of this file nudge different corners on sibling cycles of 2, 3, 5
+ * and 7. Neighbouring cards and buttons get different combinations,
+ * and the pattern only repeats every 210 siblings. It is deterministic,
+ * so an element keeps its shape between renders.
+ *
+ * The variables do not inherit: an element that matches no rule draws
+ * the default shape instead of copying its parent's. Horizontal radii
+ * alternate large and small around the box (h1 to h4, clockwise from
+ * top left), and vertical radii do the opposite (v1 to v4).
+ */
+
+@property --sketch-h1 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 255px;
+}
+
+@property --sketch-h2 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 15px;
+}
+
+@property --sketch-h3 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 225px;
+}
+
+@property --sketch-h4 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 15px;
+}
+
+@property --sketch-v1 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 15px;
+}
+
+@property --sketch-v2 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 225px;
+}
+
+@property --sketch-v3 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 15px;
+}
+
+@property --sketch-v4 {
+	syntax: '<length>';
+	inherits: false;
+	initial-value: 255px;
+}
+
+[data-theme='sketchbook'] {
+	--theme-font-sans: 'Patrick Hand', ui-sans-serif, system-ui, sans-serif;
+	--theme-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+	--theme-font-accent: 'Caveat', cursive;
+
+	color-scheme: light;
+	--theme-image-light: inline;
+	--theme-image-dark: none;
+
+	--theme-bg: #fbf8f1;
+	--theme-bg-image: repeating-linear-gradient(
+		0deg,
+		transparent 0 31px,
+		rgb(96 165 250 / 0.14) 31px 32px
+	);
+	--theme-surface: #fffdf8;
+	--theme-surface-muted: #f6f1e6;
+	--theme-surface-hover: #f1ead9;
+	--theme-surface-hover-muted: #f6f0e2;
+
+	--theme-text: #2b2b2b;
+	--theme-text-soft: #444444;
+	--theme-text-muted: #616161;
+	--theme-text-subtle: #a8a29e;
+
+	--theme-border: #3a3a3a;
+	--theme-border-muted: rgb(58 58 58 / 0.45);
+	--theme-border-subtle: rgb(58 58 58 / 0.2);
+
+	--theme-accent-solid: #2f6fdf;
+	--theme-accent-solid-hover: #255bb8;
+	--theme-on-accent: #ffffff;
+	--theme-accent-bg: rgb(253 224 71 / 0.45);
+	--theme-accent-text: #1f4fb0;
+	--theme-accent-border: #2f6fdf;
+	--theme-accent-hover: rgb(253 224 71 / 0.6);
+
+	--theme-danger-solid: #c92a2a;
+	--theme-danger-solid-hover: #a61e1e;
+	--theme-on-danger: #ffffff;
+	--theme-danger-hover: rgb(201 42 42 / 0.12);
+
+	--theme-flush-bg: var(--theme-bg);
+	--theme-flush-hover: var(--theme-surface-hover);
+
+	--theme-ghost-bg: transparent;
+	--theme-ghost-border: transparent;
+	--theme-ghost-label-bg: rgb(58 58 58 / 0.06);
+	--theme-ghost-label-text: #5c5c5c;
+
+	--theme-success-bg: #e6f4d7;
+	--theme-success-text: #2f6b12;
+	--theme-success-border: rgb(47 107 18 / 0.45);
+	--theme-success-icon: #4d9a1f;
+
+	--theme-warning-bg: #fff3bf;
+	--theme-warning-text: #7a4d00;
+	--theme-warning-border: rgb(180 120 0 / 0.45);
+	--theme-warning-icon: #e67700;
+
+	--theme-danger-bg: #ffe3e3;
+	--theme-danger-text: #a61e1e;
+	--theme-danger-border: rgb(201 42 42 / 0.45);
+	--theme-danger-icon: #e03131;
+
+	--theme-info-bg: #e3eeff;
+	--theme-info-text: #1f4fb0;
+	--theme-info-border: rgb(47 111 223 / 0.45);
+	--theme-info-icon: #2f6fdf;
+
+	--theme-link-text: #1f5fcf;
+
+	/* Control, card and xl radii are declared per element below. */
+	--theme-radius-pill: 9999px;
+
+	--theme-shadow-card: 1px 2px 0 rgb(43 43 43 / 0.7), 3px 4px 0 rgb(43 43 43 / 0.15);
+	--theme-shadow-control: 1px 2px 0 rgb(43 43 43 / 0.6);
+	--theme-shadow-control-active: inset 1px 1px 0 rgb(43 43 43 / 0.3);
+
+	/* Code syntax: pens in the pencil case */
+	--theme-code-foreground: #2b2b2b;
+	--theme-code-background: transparent;
+	--theme-code-token-keyword: #c92a2a;
+	--theme-code-token-string: #2f6b12;
+	--theme-code-token-string-expression: #2f6b12;
+	--theme-code-token-comment: #6f6f6f;
+	--theme-code-token-function: #1f5fcf;
+	--theme-code-token-constant: #9c36b5;
+	--theme-code-token-parameter: #444444;
+	--theme-code-token-punctuation: #616161;
+	--theme-code-token-link: #1f5fcf;
+}
+
+/* Radius tokens resolve on each element, so every box reads its own
+   corner variables instead of inheriting one shape from the root. The
+   small and xl sizes are scaled from the same corners. */
+[data-theme='sketchbook'],
+[data-theme='sketchbook'] * {
+	--theme-radius-control-sm: calc(var(--sketch-h1) / 17) calc(var(--sketch-h2) / 3)
+		calc(var(--sketch-h3) / 19) calc(var(--sketch-h4) / 3) / calc(var(--sketch-v1) / 3)
+		calc(var(--sketch-v2) / 19) calc(var(--sketch-v3) / 3) calc(var(--sketch-v4) / 17);
+	--theme-radius-control: var(--sketch-h1) var(--sketch-h2) var(--sketch-h3) var(--sketch-h4) /
+		var(--sketch-v1) var(--sketch-v2) var(--sketch-v3) var(--sketch-v4);
+	--theme-radius-card: var(--sketch-h1) var(--sketch-h2) var(--sketch-h3) var(--sketch-h4) /
+		var(--sketch-v1) var(--sketch-v2) var(--sketch-v3) var(--sketch-v4);
+	--theme-radius-xl: var(--sketch-h1) calc(var(--sketch-h2) * 5 / 3) var(--sketch-h3)
+		calc(var(--sketch-h4) * 5 / 3) / calc(var(--sketch-v1) * 5 / 3) var(--sketch-v2)
+		calc(var(--sketch-v3) * 5 / 3) var(--sketch-v4);
+}
+
+[data-theme='sketchbook'] :nth-child(2n + 1) {
+	--sketch-h1: 190px;
+	--sketch-v2: 290px;
+	--sketch-h4: 30px;
+}
+
+[data-theme='sketchbook'] :nth-child(3n + 2) {
+	--sketch-h3: 300px;
+	--sketch-v1: 5px;
+	--sketch-v4: 170px;
+}
+
+[data-theme='sketchbook'] :nth-child(5n + 3) {
+	--sketch-h2: 35px;
+	--sketch-v3: 32px;
+	--sketch-h1: 160px;
+}
+
+[data-theme='sketchbook'] :nth-child(7n + 4) {
+	--sketch-v2: 160px;
+	--sketch-h3: 150px;
+	--sketch-h4: 5px;
+}
+
+[data-theme='sketchbook'] :nth-of-type(2n) {
+	--sketch-v1: 32px;
+	--sketch-h2: 6px;
+}

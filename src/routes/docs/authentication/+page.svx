@@ -18,7 +18,7 @@ Profilarr implements its own authentication for one simple reason: _to protect y
 
 Profilarr stores the API key for every Radarr and Sonarr instance you connect, and anyone who gets into Profilarr can use them. An Arr API key can do anything the Arr can: search every indexer you've added, change any setting, and download .torrent files from your private trackers. Each of those files carries your personal passkey, and anything someone does with that passkey counts against your account.
 
-Ideally, you never touch Profilarr's authentication at all, and I'd rather you didn't. Connect to your server over a VPN like [WireGuard](https://www.wireguard.com/), or through [Tailscale](https://tailscale.com/). If Profilarr has to be reachable from outside your network, put it behind a [reverse proxy](/docs/reverse-proxy) and have [Authelia](https://www.authelia.com/) or [Authentik](https://goauthentik.io/) make everyone sign in before the proxy lets a request through. Protecting your services is the whole point of those tools, and they're _much_ better at it than Profilarr will ever be.
+Ideally, you never touch Profilarr's authentication at all. Connect to your server over a VPN like [WireGuard](https://www.wireguard.com/), or through [Tailscale](https://tailscale.com/). If Profilarr has to be reachable from outside your network, put it behind a [reverse proxy](/docs/reverse-proxy) and have [Authelia](https://www.authelia.com/) or [Authentik](https://goauthentik.io/) make everyone sign in before the proxy lets a request through. Protecting your services is the whole point of those tools, and they're _much_ better at it than Profilarr will ever be.
 
 So Profilarr's goal is not to make itself safe to expose to the internet, but to make sure one stupid mistake doesn't give a stranger access to your entire media stack.
 
@@ -135,16 +135,6 @@ The password account isn't linked to anyone's SSO account. Removing someone's ac
 
 </Callout>
 
-## Turning Login Off
-
-If a reverse proxy already makes everyone sign in, for example with Authelia or Authentik in front of Profilarr, signing in to Profilarr as well is just a second login. Set [`AUTH=off`](/docs/installation#authentication) to turn Profilarr's login off. The setup and login pages redirect to the home page, Log Out disappears, and Profilarr ignores the `OIDC_` variables.
-
-<Callout type="danger">
-
-Only turn login off if you know exactly what you're doing. With login off, Profilarr lets every request through, including API requests that don't have a key. Anyone who reaches Profilarr without going through your proxy gets full access. Make sure the proxy is the only way in, and keep Profilarr on a network that only the proxy can reach.
-
-</Callout>
-
 ## API Keys
 
 [API keys](https://en.wikipedia.org/wiki/API_key) let scripts and other apps use [Profilarr's API](/api/v1) without signing in. Send the key in the `X-Api-Key` header. A key only works on `/api/v1/` paths. It can't load pages or submit the web UI's forms, so a key can't create more keys or change how you sign in.
@@ -199,3 +189,13 @@ Some combinations of settings would leave Profilarr open to anyone, or leave nob
 	{/snippet}
 </AdaptiveList>
 </div>
+
+## Turning Login Off
+
+If a reverse proxy already makes everyone sign in, for example with Authelia or Authentik in front of Profilarr, signing in to Profilarr as well is just a second login. Set [`AUTH=off`](/docs/installation#authentication) to turn Profilarr's login off. The setup and login pages redirect to the home page, Log Out disappears, and Profilarr ignores the `OIDC_` variables.
+
+<Callout type="danger">
+
+Only turn login off if you know exactly what you're doing. With login off, Profilarr lets every request through, including API requests that don't have a key. Anyone who reaches Profilarr without going through your proxy gets full access. Make sure the proxy is the only way in, and keep Profilarr on a network that only the proxy can reach.
+
+</Callout>

@@ -1,0 +1,121 @@
+/*
+ * Classic
+ *
+ * Profilarr v1 shipped with a light mode toggle and nobody used
+ * it. The app booted dark, stayed dark, and the React state that
+ * could have changed that defaulted to true. This theme is that
+ * interface, lifted token by token from the v1-develop branch.
+ *
+ * Its palette was never really designed. It was Tailwind's stock
+ * gray, which in v3 carried a quiet blue cast: slate pretending to
+ * be neutral. Night-sky navy for the page, a lighter slab for
+ * every card and navbar, borders one step up again. Stack enough
+ * of those and you get something that reads as Nordic by
+ * accident, cold and even, a fjord at four in the afternoon.
+ *
+ * The accent is v1's primary button, a plain confident blue, with
+ * the translucent blue-900 washes it used for selected rows and
+ * info banners. Status colors are the same washes in green, amber
+ * and red. Corners are v1's small radii, rounded-md on controls
+ * and rounded-lg on cards, and shadows sit low and dark.
+ *
+ * v1 never had a code theme of its own, so syntax borrows Nord's
+ * aurora: frost blue keywords, moss green strings, lilac constants.
+ * It is the one place the theme leans into what the rest only
+ * resembles.
+ *
+ * Schibsted Grotesk and Fira Code are the fonts v1 loaded, so
+ * those come back too.
+ */
+
+[data-theme='classic'] {
+	--theme-font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+	--theme-font-mono: 'Fira Code', ui-monospace, monospace;
+	--theme-font-accent: 'Schibsted Grotesk', sans-serif;
+
+	color-scheme: dark;
+	--theme-image-light: none;
+	--theme-image-dark: inline;
+
+	--theme-bg: #111827;
+	--theme-bg-image: none;
+	--theme-surface: #1f2937;
+	--theme-surface-muted: rgb(31 41 55 / 0.5);
+	--theme-surface-hover: #374151;
+	--theme-surface-hover-muted: rgb(55 65 81 / 0.5);
+
+	--theme-text: #f3f4f6;
+	--theme-text-soft: #d1d5db;
+	--theme-text-muted: #9ca3af;
+	--theme-text-subtle: #4b5563;
+
+	--theme-border: #374151;
+	--theme-border-muted: rgb(55 65 81 / 0.5);
+	--theme-border-subtle: rgb(55 65 81 / 0.3);
+
+	--theme-accent-solid: #2563eb;
+	--theme-accent-solid-hover: #3b82f6;
+	--theme-on-accent: #ffffff;
+	--theme-accent-bg: rgb(30 58 138 / 0.3);
+	--theme-accent-text: #93c5fd;
+	--theme-accent-border: #1e40af;
+	--theme-accent-hover: rgb(30 58 138 / 0.5);
+
+	--theme-danger-solid: #dc2626;
+	--theme-danger-solid-hover: #ef4444;
+	--theme-on-danger: #ffffff;
+	--theme-danger-hover: rgb(127 29 29 / 0.5);
+
+	--theme-flush-bg: var(--theme-bg);
+	--theme-flush-hover: var(--theme-surface-hover);
+
+	--theme-ghost-bg: transparent;
+	--theme-ghost-border: transparent;
+	--theme-ghost-label-bg: rgb(31 41 55 / 0.6);
+	--theme-ghost-label-text: #9ca3af;
+
+	--theme-success-bg: rgb(20 83 45 / 0.3);
+	--theme-success-text: #4ade80;
+	--theme-success-border: #15803d;
+	--theme-success-icon: #86efac;
+
+	--theme-warning-bg: rgb(120 53 15 / 0.3);
+	--theme-warning-text: #fde68a;
+	--theme-warning-border: #92400e;
+	--theme-warning-icon: #fbbf24;
+
+	--theme-danger-bg: rgb(127 29 29 / 0.3);
+	--theme-danger-text: #f87171;
+	--theme-danger-border: #991b1b;
+	--theme-danger-icon: #fca5a5;
+
+	--theme-info-bg: rgb(30 58 138 / 0.3);
+	--theme-info-text: #bfdbfe;
+	--theme-info-border: #1e40af;
+	--theme-info-icon: #60a5fa;
+
+	--theme-link-text: #60a5fa;
+
+	--theme-radius-control-sm: 0.25rem;
+	--theme-radius-control: 0.375rem;
+	--theme-radius-card: 0.5rem;
+	--theme-radius-xl: 0.75rem;
+	--theme-radius-pill: 9999px;
+
+	--theme-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3), 0 1px 2px rgb(0 0 0 / 0.2);
+	--theme-shadow-control: 0 1px 2px rgb(0 0 0 / 0.2);
+	--theme-shadow-control-active: inset 0 1px 2px rgb(0 0 0 / 0.3);
+
+	/* Code syntax: Nord aurora */
+	--theme-code-foreground: #d8dee9;
+	--theme-code-background: transparent;
+	--theme-code-token-keyword: #81a1c1;
+	--theme-code-token-string: #a3be8c;
+	--theme-code-token-string-expression: #a3be8c;
+	--theme-code-token-comment: #6b7280;
+	--theme-code-token-function: #88c0d0;
+	--theme-code-token-constant: #b48ead;
+	--theme-code-token-parameter: #d8dee9;
+	--theme-code-token-punctuation: #9ca3af;
+	--theme-code-token-link: #88c0d0;
+}
