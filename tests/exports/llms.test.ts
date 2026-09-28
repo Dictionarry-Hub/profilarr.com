@@ -42,7 +42,9 @@ describe('llmsTxt', () => {
 		docs: [
 			{ title: 'Docker', slug: 'docker', parent: 'installation', order: 1 },
 			{ title: 'Introduction', slug: 'introduction', blurb: 'What Profilarr is.', order: 1 },
-			{ title: 'Installation', slug: 'installation', order: 2 }
+			{ title: 'Installation', slug: 'installation', order: 2 },
+			{ title: 'Reverse Proxies', slug: 'reverse-proxy', parent: 'installation', order: 2 },
+			{ title: 'Traefik', slug: 'traefik', parent: 'reverse-proxy', order: 1 }
 		],
 		devLogs: [{ title: 'Rebirth', slug: 'rebirth', blurb: 'Starting over.' }],
 		wiki: [{ title: 'Anatomy of a Profile', slug: 'anatomy-of-a-profile' }],
@@ -62,7 +64,9 @@ describe('llmsTxt', () => {
 			'## Docs\n\n' +
 				'- [Introduction](https://profilarr.com/docs/introduction.md): What Profilarr is.\n' +
 				'- [Installation](https://profilarr.com/docs/installation.md)\n' +
-				'  - [Docker](https://profilarr.com/docs/docker.md)\n'
+				'  - [Docker](https://profilarr.com/docs/docker.md)\n' +
+				'  - [Reverse Proxies](https://profilarr.com/docs/reverse-proxy.md)\n' +
+				'    - [Traefik](https://profilarr.com/docs/traefik.md)\n'
 		);
 	});
 

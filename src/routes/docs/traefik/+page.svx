@@ -1,0 +1,16 @@
+---
+layout: docs
+title: Traefik
+slug: traefik
+blurb: Serving Profilarr through Traefik with Docker labels.
+parent: reverse-proxy
+order: 1
+---
+
+## Before You Start
+
+## Compose Example
+
+## Redirecting HTTP to HTTPS
+
+## Forward Auth

@@ -52,18 +52,19 @@ doesn't change its date.
 
 The Home section header links to the root page. Below it the sidebar lists the other top-level pages
 in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page
-with `parent` set is listed under that page instead, one level deep; `docTree` in
-`src/lib/shared/utils/llm/docs.ts` builds the nesting and fails the build on an unknown parent. URLs
-stay flat (`/docs/docker`, not `/docs/installation/docker`), so moving a page to another section
-does not change its URL. The sidebar nav, search index, sitemap, `llms.txt`, and the Markdown
-mirrors (`/index.md` for the root, `/docs/<slug>.md` for the rest) all glob the same two paths,
-`src/routes/+page.svx` and `src/routes/docs/**/+page.svx`, and `docSlugFromPath`, `docPath`, and
-`docMarkdownPath` in the same file map between source paths, slugs, and URLs. Titles repeat across
-sections (Build and Test both have a Custom Formats page), so search results and the document title
-put the parent's title in front of a child page's (`Test: Custom Formats`, built by `docFullTitle`);
-the sidebar and page heading keep the short title. A page that embeds components with data
-(AdaptiveList rows, CodeBlock examples) keeps that data in a `data.ts` next to its `+page.svx`, so
-the Markdown mirror can serialize it (see [llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
+with `parent` set is listed under that page instead, and a child page can have children of its own,
+as Installation > Reverse Proxies > Traefik does; `docTree` in `src/lib/shared/utils/llm/docs.ts`
+builds the nesting and fails the build on an unknown parent. URLs stay flat (`/docs/docker`, not
+`/docs/installation/docker`), so moving a page to another section does not change its URL. The
+sidebar nav, search index, sitemap, `llms.txt`, and the Markdown mirrors (`/index.md` for the root,
+`/docs/<slug>.md` for the rest) all glob the same two paths, `src/routes/+page.svx` and
+`src/routes/docs/**/+page.svx`, and `docSlugFromPath`, `docPath`, and `docMarkdownPath` in the same
+file map between source paths, slugs, and URLs. Titles repeat across sections (Build and Test both
+have a Custom Formats page), so search results and the document title put the parent's title in
+front of a child page's (`Test: Custom Formats`, built by `docFullTitle`); the sidebar and page
+heading keep the short title. A page that embeds components with data (AdaptiveList rows, CodeBlock
+examples) keeps that data in a `data.ts` next to its `+page.svx`, so the Markdown mirror can
+serialize it (see [llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
 
 ### PCD Entity Browser
 

@@ -14,6 +14,9 @@
 		/** Pages that count as inside the group without sharing its `href`
 		    prefix, such as docs pages with flat URLs. */
 		childHrefs?: string[];
+		/** A group inside another group. Its header takes NavItem's colors so
+		    it reads as one of the items beside it. */
+		nested?: boolean;
 		class?: string;
 		children?: Snippet;
 	}
@@ -25,6 +28,7 @@
 		badge = 0,
 		open = 'auto',
 		childHrefs = [],
+		nested = false,
 		class: className,
 		children
 	}: Props = $props();
@@ -78,7 +82,11 @@
 			onclick={clearToggle}
 			class="flex flex-1 items-center gap-2 py-1.5 pr-2 pl-3 text-sm font-semibold transition-colors
 				{hasItems ? 'rounded-l-control' : 'rounded-control'}
-				{isActive ? 'text-text' : 'text-text-soft group-hover/header:bg-surface-hover'}">
+				{isActive
+				? 'text-text'
+				: nested
+					? 'text-text-muted group-hover/header:bg-surface-hover group-hover/header:text-text'
+					: 'text-text-soft group-hover/header:bg-surface-hover'}">
 			{#if icon}
 				{@const Icon = icon}
 				<Icon

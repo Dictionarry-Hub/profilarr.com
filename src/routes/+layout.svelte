@@ -53,6 +53,14 @@
 
 	let { children, data } = $props();
 
+	type DocNavEntry = (typeof data.docs)[number];
+
+	// Docs URLs are flat, so a group counts every page below it as inside,
+	// which keeps it open on a grandchild's page too.
+	function descendantHrefs(doc: DocNavEntry): string[] {
+		return doc.children.flatMap((child) => [child.href, ...descendantHrefs(child)]);
+	}
+
 	// Build-time switch: set PUBLIC_WIP_BANNER=false to hide the banner.
 	const showWipBanner = import.meta.env.PUBLIC_WIP_BANNER !== 'false';
 
@@ -196,6 +204,26 @@
 			<SearchPalette database={databaseValue} />
 		</div>
 
+		<!-- Child pages with children of their own nest as groups. -->
+		{#snippet docChildren(docs: DocNavEntry[])}
+			{#each docs as doc (doc.href)}
+				{#if doc.children.length > 0}
+					<NavGroup
+						label={doc.title}
+						href={doc.href}
+						childHrefs={descendantHrefs(doc)}
+						nested
+						class="">
+						{@render docChildren(doc.children)}
+					</NavGroup>
+				{:else}
+					<NavItem
+						label={doc.title}
+						href={doc.href} />
+				{/if}
+			{/each}
+		{/snippet}
+
 		<NavGroupLabel
 			label="Home"
 			href="/"
@@ -208,13 +236,9 @@
 						label={doc.title}
 						href={doc.href}
 						icon={docIcons[doc.slug]}
-						childHrefs={doc.children.map((child) => child.href)}
+						childHrefs={descendantHrefs(doc)}
 						class="mb-1">
-						{#each doc.children as child (child.href)}
-							<NavItem
-								label={child.title}
-								href={child.href} />
-						{/each}
+						{@render docChildren(doc.children)}
 					</NavGroup>
 				{:else}
 					<NavGroup

@@ -550,6 +550,7 @@ connector line and a slide transition.
 | `badge`      | `number`                                            | no       | `0`      |
 | `open`       | `boolean \| 'auto'`                                 | no       | `'auto'` |
 | `childHrefs` | `string[]`                                          | no       | `[]`     |
+| `nested`     | `boolean`                                           | no       | `false`  |
 | `class`      | `string` (replaces the default `mb-4` root spacing) | no       |          |
 
 `open` defaults to `'auto'`: the group is open while the current page is inside it (its `href`, a
@@ -560,7 +561,10 @@ starting state instead, and a toggle then sticks. Every group in the sidebar use
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside
-`NavGroupLabel` pass `class="mb-1"` for tighter spacing.
+`NavGroupLabel` pass `class="mb-1"` for tighter spacing. A group inside another group, like a docs
+page with its own child pages, sets `nested` so its inactive header takes `NavItem`'s colors
+(`text-text-muted`, `text-text` on hover) and only the chevron sets it apart from the items beside
+it.
 
 #### `NavItem`
 

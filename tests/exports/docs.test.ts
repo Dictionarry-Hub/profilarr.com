@@ -207,6 +207,17 @@ describe('docTree', () => {
 		]);
 	});
 
+	it('nests a child page under a child page', () => {
+		const tree = docTree([
+			{ title: 'Traefik', slug: 'traefik', parent: 'reverse-proxy', order: 1 },
+			{ title: 'Installation', slug: 'installation', order: 1 },
+			{ title: 'Reverse Proxies', slug: 'reverse-proxy', parent: 'installation', order: 1 }
+		]);
+
+		expect(tree[0].children[0].slug).toBe('reverse-proxy');
+		expect(tree[0].children[0].children.map((child) => child.slug)).toEqual(['traefik']);
+	});
+
 	it('throws on an unknown parent', () => {
 		const build = () => docTree([{ title: 'Docker', slug: 'docker', parent: 'instalation' }]);
 

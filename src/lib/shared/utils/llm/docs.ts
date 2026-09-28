@@ -189,10 +189,29 @@ export function byDocOrder<T extends DocMeta>(a: T, b: T): number {
 	return a.title.localeCompare(b.title);
 }
 
+/** A docs page with its child pages, which carry their own children. */
+export type DocNode<T> = T & { children: DocNode<T>[] };
+
+/** A page in the root layout's sidebar data. */
+export interface DocNavNode {
+	title: string;
+	slug: string;
+	children: DocNavNode[];
+}
+
+/** Every page in the sidebar data as a flat list, each with `parent` set from
+    where it sits in the tree. */
+export function docNavEntries(nodes: DocNavNode[], parent?: string): DocIndexEntry[] {
+	return nodes.flatMap((node) => [
+		{ title: node.title, slug: node.slug, ...(parent ? { parent } : {}) },
+		...docNavEntries(node.children, node.slug)
+	]);
+}
+
 /** Top-level pages in reading order, each with its child pages in reading
-    order. One level deep: a child's own children are not collected. Throws
-    on an unknown `parent` so a typo fails the build instead of hiding a page. */
-export function docTree<T extends DocIndexEntry>(docs: T[]): (T & { children: T[] })[] {
+    order, nested as deep as `parent` goes. Throws on an unknown `parent` so a
+    typo fails the build instead of hiding a page. */
+export function docTree<T extends DocIndexEntry>(docs: T[]): DocNode<T>[] {
 	const slugs = new Set(docs.map((doc) => doc.slug));
 	for (const doc of docs) {
 		if (doc.parent && !slugs.has(doc.parent)) {
@@ -200,11 +219,11 @@ export function docTree<T extends DocIndexEntry>(docs: T[]): (T & { children: T[
 		}
 	}
 
-	return docs
-		.filter((doc) => !doc.parent)
-		.sort(byDocOrder)
-		.map((doc) => ({
-			...doc,
-			children: docs.filter((child) => child.parent === doc.slug).sort(byDocOrder)
-		}));
+	const childrenOf = (parent: string | undefined): DocNode<T>[] =>
+		docs
+			.filter((doc) => (doc.parent || undefined) === parent)
+			.sort(byDocOrder)
+			.map((doc) => ({ ...doc, children: childrenOf(doc.slug) }));
+
+	return childrenOf(undefined);
 }
