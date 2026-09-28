@@ -1,0 +1,119 @@
+/*
+ * Nostromo
+ *
+ * A commercial towing vehicle, seven crew, twenty million tonnes
+ * of mineral ore, and a ship's cat. The Nostromo was not a
+ * starship in the heroic sense. It was a refinery with engines,
+ * lit like a basement, run by people who wanted their bonuses and
+ * a computer that answered in capital letters.
+ *
+ * This is a dark theme in the way a cargo hold is dark. The
+ * background is warm black, the scorched brown of old bulkheads
+ * rather than the blue of space. Surfaces are panels bolted over
+ * it, a shade lighter, their borders the dull bronze of hull
+ * plating under work lights.
+ *
+ * Text is phosphor. Amber was the cheap, durable colour of the
+ * terminals that ran the industrial world, and it glows here in
+ * cream for reading and full amber for everything you should
+ * press. Status colors are the other lamps on the console: green
+ * for systems nominal, orange for attention, red for the alarm
+ * nobody wants to hear, and a pale cyan readout for information.
+ * Corners are nearly square. Nothing on this ship was designed to
+ * be friendly.
+ *
+ * IBM Plex is typography from the company that built the
+ * mainframes; Martian Mono sets the headings wide and blocky, the
+ * way a system prints a warning it does not intend to repeat.
+ */
+
+[data-theme='nostromo'] {
+	--theme-font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+	--theme-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+	--theme-font-accent: 'Martian Mono', ui-monospace, monospace;
+
+	color-scheme: dark;
+	--theme-image-light: none;
+	--theme-image-dark: inline;
+
+	--theme-bg: #0d0b08;
+	--theme-surface: #17130d;
+	--theme-surface-muted: #120f0a;
+	--theme-surface-hover: #221b12;
+	--theme-surface-hover-muted: rgb(34 27 18 / 0.6);
+
+	--theme-text: #f5d9a8;
+	--theme-text-soft: #e0bb7e;
+	--theme-text-muted: #a88652;
+	--theme-text-subtle: #5c4a2e;
+
+	--theme-border: #3a2e1c;
+	--theme-border-muted: rgb(58 46 28 / 0.6);
+	--theme-border-subtle: rgb(58 46 28 / 0.35);
+
+	--theme-accent-solid: #ffb000;
+	--theme-accent-solid-hover: #ffc233;
+	--theme-on-accent: #0d0b08;
+	--theme-accent-bg: rgb(255 176 0 / 0.12);
+	--theme-accent-text: #ffc44d;
+	--theme-accent-border: rgb(255 176 0 / 0.4);
+	--theme-accent-hover: rgb(255 176 0 / 0.2);
+
+	--theme-danger-solid: #c93b24;
+	--theme-danger-solid-hover: #b3331e;
+	--theme-on-danger: #fff3e0;
+	--theme-danger-hover: rgb(224 68 43 / 0.25);
+
+	--theme-flush-bg: var(--theme-bg);
+	--theme-flush-hover: var(--theme-surface-hover);
+
+	--theme-ghost-bg: transparent;
+	--theme-ghost-border: transparent;
+	--theme-ghost-label-bg: rgb(34 27 18 / 0.6);
+	--theme-ghost-label-text: #a88652;
+
+	--theme-success-bg: rgb(120 160 60 / 0.12);
+	--theme-success-text: #b5d67a;
+	--theme-success-border: rgb(120 160 60 / 0.4);
+	--theme-success-icon: #9ccc65;
+
+	--theme-warning-bg: rgb(255 120 0 / 0.12);
+	--theme-warning-text: #ffa94d;
+	--theme-warning-border: rgb(255 120 0 / 0.4);
+	--theme-warning-icon: #ff8c1a;
+
+	--theme-danger-bg: rgb(224 68 43 / 0.14);
+	--theme-danger-text: #ff7a5c;
+	--theme-danger-border: rgb(224 68 43 / 0.45);
+	--theme-danger-icon: #ff6b4a;
+
+	--theme-info-bg: rgb(94 170 180 / 0.12);
+	--theme-info-text: #9fd4d9;
+	--theme-info-border: rgb(94 170 180 / 0.4);
+	--theme-info-icon: #7cc4cc;
+
+	--theme-link-text: #ffc44d;
+
+	--theme-radius-control-sm: 0.125rem;
+	--theme-radius-control: 0.125rem;
+	--theme-radius-card: 0.25rem;
+	--theme-radius-xl: 0.375rem;
+	--theme-radius-pill: 9999px;
+
+	--theme-shadow-card: 0 0 0 1px rgb(0 0 0 / 0.4), 0 0 16px rgb(255 176 0 / 0.04);
+	--theme-shadow-control: 0 0 8px rgb(255 176 0 / 0.06);
+	--theme-shadow-control-active: inset 0 0 6px rgb(255 176 0 / 0.15);
+
+	/* Code syntax: console lamps */
+	--theme-code-foreground: #f5d9a8;
+	--theme-code-background: transparent;
+	--theme-code-token-keyword: #ffb000;
+	--theme-code-token-string: #b5d67a;
+	--theme-code-token-string-expression: #b5d67a;
+	--theme-code-token-comment: #7a6440;
+	--theme-code-token-function: #ffd27a;
+	--theme-code-token-constant: #ff8c5a;
+	--theme-code-token-parameter: #e0bb7e;
+	--theme-code-token-punctuation: #a88652;
+	--theme-code-token-link: #ffc44d;
+}

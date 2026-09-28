@@ -1,0 +1,120 @@
+/*
+ * Sumi
+ *
+ * Sumi is the black ink of East Asian brush painting: pine soot
+ * bound with animal glue, pressed into a stick, and ground
+ * against a wet stone until it gives up its colour. How long you
+ * grind decides how dark it gets. The blackest ink is never quite
+ * black; held to the light it goes blue, or brown, or violet,
+ * depending on the soot.
+ *
+ * This theme is that ink at full strength. The background is
+ * ink-black with a violet-blue undertone, surfaces are thinner
+ * washes of it, and borders are the faint grey lines the brush
+ * leaves when it runs dry. Text is aged paper, the warm off-white
+ * of a scroll that has been unrolled for a century.
+ *
+ * The accent is gold leaf, used sparingly the way a screen
+ * painter uses it: on what matters and nowhere else. Status
+ * colors come from the woodblock printer's palette: moss green,
+ * persimmon orange, the red of a seal stamp, and the Prussian blue
+ * that Hokusai made famous in The Great Wave off Kanagawa. The
+ * palette owes a direct debt to rebelot's Kanagawa colour scheme,
+ * which did the hard work of making those pigments behave on a
+ * screen.
+ *
+ * Karla is quiet and legible for long reading. EB Garamond sets
+ * the headings with a calligrapher's contrast, and Geist Mono
+ * keeps the code upright.
+ */
+
+[data-theme='sumi'] {
+	--theme-font-sans: 'Karla', ui-sans-serif, system-ui, sans-serif;
+	--theme-font-mono: 'Geist Mono', ui-monospace, monospace;
+	--theme-font-accent: 'EB Garamond', ui-serif, Georgia, serif;
+
+	color-scheme: dark;
+	--theme-image-light: none;
+	--theme-image-dark: inline;
+
+	--theme-bg: #1f1f28;
+	--theme-surface: #2a2a37;
+	--theme-surface-muted: #1a1a22;
+	--theme-surface-hover: #363646;
+	--theme-surface-hover-muted: rgb(54 54 70 / 0.5);
+
+	--theme-text: #dcd7ba;
+	--theme-text-soft: #c8c093;
+	--theme-text-muted: #a09d8a;
+	--theme-text-subtle: #54546d;
+
+	--theme-border: #363646;
+	--theme-border-muted: rgb(54 54 70 / 0.6);
+	--theme-border-subtle: rgb(54 54 70 / 0.35);
+
+	--theme-accent-solid: #e6c384;
+	--theme-accent-solid-hover: #f0d49e;
+	--theme-on-accent: #1f1f28;
+	--theme-accent-bg: rgb(230 195 132 / 0.12);
+	--theme-accent-text: #e6c384;
+	--theme-accent-border: rgb(230 195 132 / 0.4);
+	--theme-accent-hover: rgb(230 195 132 / 0.2);
+
+	--theme-danger-solid: #b53a3d;
+	--theme-danger-solid-hover: #a33336;
+	--theme-on-danger: #f2ecd3;
+	--theme-danger-hover: rgb(195 64 67 / 0.25);
+
+	--theme-flush-bg: var(--theme-bg);
+	--theme-flush-hover: var(--theme-surface-hover);
+
+	--theme-ghost-bg: transparent;
+	--theme-ghost-border: transparent;
+	--theme-ghost-label-bg: rgb(42 42 55 / 0.6);
+	--theme-ghost-label-text: #a09d8a;
+
+	--theme-success-bg: #2b3328;
+	--theme-success-text: #98bb6c;
+	--theme-success-border: rgb(118 148 106 / 0.5);
+	--theme-success-icon: #98bb6c;
+
+	--theme-warning-bg: #49443c;
+	--theme-warning-text: #ffa066;
+	--theme-warning-border: rgb(255 158 59 / 0.35);
+	--theme-warning-icon: #ff9e3b;
+
+	--theme-danger-bg: #43242b;
+	--theme-danger-text: #ec7a86;
+	--theme-danger-border: rgb(195 64 67 / 0.5);
+	--theme-danger-icon: #ff5d62;
+
+	--theme-info-bg: #252535;
+	--theme-info-text: #7fb4ca;
+	--theme-info-border: #2d4f67;
+	--theme-info-icon: #7e9cd8;
+
+	--theme-link-text: #7e9cd8;
+
+	--theme-radius-control-sm: 0.375rem;
+	--theme-radius-control: 0.5rem;
+	--theme-radius-card: 0.625rem;
+	--theme-radius-xl: 0.875rem;
+	--theme-radius-pill: 9999px;
+
+	--theme-shadow-card: 0 1px 2px rgb(0 0 0 / 0.25), 0 4px 12px rgb(0 0 0 / 0.15);
+	--theme-shadow-control: 0 1px 2px rgb(0 0 0 / 0.2);
+	--theme-shadow-control-active: inset 0 1px 2px rgb(0 0 0 / 0.3);
+
+	/* Code syntax: woodblock pigments */
+	--theme-code-foreground: #dcd7ba;
+	--theme-code-background: transparent;
+	--theme-code-token-keyword: #957fb8;
+	--theme-code-token-string: #98bb6c;
+	--theme-code-token-string-expression: #98bb6c;
+	--theme-code-token-comment: #727169;
+	--theme-code-token-function: #7e9cd8;
+	--theme-code-token-constant: #ffa066;
+	--theme-code-token-parameter: #b8b4d0;
+	--theme-code-token-punctuation: #9cabca;
+	--theme-code-token-link: #7fb4ca;
+}

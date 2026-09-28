@@ -14,7 +14,7 @@
 // CSS file.
 
 import type { Component } from 'svelte';
-import { Laptop, Moon, Sun } from '@lucide/svelte';
+import { Cat, Laptop, Moon, Sun, WavesHorizontal } from '@lucide/svelte';
 import AstronautHelmet from './icons/AstronautHelmet.svelte';
 import FloppyDisk2 from './icons/FloppyDisk2.svelte';
 import Ufo from './icons/Ufo.svelte';
@@ -31,6 +31,8 @@ export const THEME_DEFINITIONS = [
 	{ id: 'light', label: 'Light', icon: Sun },
 	{ id: 'dark', label: 'Dark', icon: Moon },
 	{ id: 'classic', label: 'Classic', icon: WhaleNarwhal },
+	{ id: 'nostromo', label: 'Nostromo', icon: Cat },
+	{ id: 'sumi', label: 'Sumi', icon: WavesHorizontal },
 	{ id: 'retro', label: 'Retro', icon: FloppyDisk2 },
 	{ id: 'roswell', label: 'Roswell', icon: Ufo },
 	{ id: 'voyager', label: 'Voyager', icon: AstronautHelmet }
