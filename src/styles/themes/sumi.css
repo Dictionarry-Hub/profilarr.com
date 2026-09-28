@@ -38,6 +38,7 @@
 	--theme-image-dark: inline;
 
 	--theme-bg: #1f1f28;
+	--theme-bg-image: none;
 	--theme-surface: #2a2a37;
 	--theme-surface-muted: #1a1a22;
 	--theme-surface-hover: #363646;

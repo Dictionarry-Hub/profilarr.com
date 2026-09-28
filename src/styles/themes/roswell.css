@@ -39,6 +39,7 @@
 
 	/* Desert light through classified glass */
 	--theme-bg: #f8f6fc;
+	--theme-bg-image: none;
 
 	/* Facility walls: clean, clinical, unremarkable */
 	--theme-surface: #ffffff;

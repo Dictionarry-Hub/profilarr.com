@@ -8,6 +8,7 @@
 	--theme-image-dark: inline;
 
 	--theme-bg: #171717;
+	--theme-bg-image: none;
 	--theme-surface: rgb(38 38 38 / 0.5);
 	--theme-surface-muted: #171717;
 	--theme-surface-hover: rgb(38 38 38 / 0.6);

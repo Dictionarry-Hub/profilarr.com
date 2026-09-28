@@ -11,6 +11,7 @@ html {
 @import '../styles/themes/retro.css';
 @import '../styles/themes/roswell.css';
 @import '../styles/themes/voyager.css';
+@import '../styles/themes/sketchbook.css';
 @import '../styles/prose.css';
 
 /* Anchor jumps from the table of contents land with breathing room.
@@ -20,6 +21,15 @@ article h1,
 article h2,
 article h3 {
 	scroll-margin-top: 2rem;
+}
+
+/* Themes can paint a pattern or gradient behind the page (--theme-bg-image).
+   bg-bg is used by several panels (sidebar, header, content), so the image
+   is pinned to the viewport: it lines up across all of them instead of
+   restarting inside each one. */
+.bg-bg {
+	background-image: var(--theme-bg-image);
+	background-attachment: fixed;
 }
 
 @theme inline {

@@ -14,7 +14,7 @@
 // CSS file.
 
 import type { Component } from 'svelte';
-import { Cat, Laptop, Moon, Sun, WavesHorizontal } from '@lucide/svelte';
+import { Cat, Laptop, Moon, Pencil, Sun, WavesHorizontal } from '@lucide/svelte';
 import AstronautHelmet from './icons/AstronautHelmet.svelte';
 import FloppyDisk2 from './icons/FloppyDisk2.svelte';
 import Ufo from './icons/Ufo.svelte';
@@ -35,7 +35,8 @@ export const THEME_DEFINITIONS = [
 	{ id: 'sumi', label: 'Sumi', icon: WavesHorizontal },
 	{ id: 'retro', label: 'Retro', icon: FloppyDisk2 },
 	{ id: 'roswell', label: 'Roswell', icon: Ufo },
-	{ id: 'voyager', label: 'Voyager', icon: AstronautHelmet }
+	{ id: 'voyager', label: 'Voyager', icon: AstronautHelmet },
+	{ id: 'sketchbook', label: 'Sketchbook', icon: Pencil }
 ] as const satisfies readonly ThemeDefinition[];
 
 export type Theme = (typeof THEME_DEFINITIONS)[number]['id'];
