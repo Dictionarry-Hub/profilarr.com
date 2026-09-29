@@ -102,6 +102,6 @@ Profilarr checks which website each form came from and rejects forms from any ot
 
 <Callout type="info">
 
-If you'd like to help write the Caddy or nginx guide, please feel free to contribute [here](/docs/contributing#these-docs).
+If you'd like to help write the Caddy or nginx (including SWAG and Nginx Proxy Manager) guide, please feel free to contribute [here](/docs/contributing#these-docs).
 
 </Callout>

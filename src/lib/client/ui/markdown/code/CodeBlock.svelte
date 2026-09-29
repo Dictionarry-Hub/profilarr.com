@@ -3,6 +3,7 @@
 	import { Copy, Check } from '@lucide/svelte';
 	import Button from '$lib/client/ui/button/Button.svelte';
 	import { highlight } from './highlight.js';
+	import { wrapIndents } from './indent.js';
 
 	interface CodeItem {
 		title: string;
@@ -44,7 +45,7 @@
 		const request = ++highlightRequest;
 		if (highlighted[index]?.key === key) return;
 
-		void highlight(code, item.language)
+		void highlight(code, item.language, wrapIndents(code, item.language))
 			.then((html) => {
 				if (!html || request !== highlightRequest) return;
 				highlighted[index] = { key, html };
@@ -139,7 +140,13 @@
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -- highlighted code from Shiki -->
 					{@html rendered.html}
 				{:else}
-					<pre><code>{code}</code></pre>
+					{@const indents = wrapIndents(code, item.language)}
+					<pre><code
+							>{#each code.split('\n') as line, i (i)}{#if i > 0}{'\n'}{/if}<span
+									class="line"
+									style:--indent={indents[i]}>{line}</span
+								>{/each}</code
+						></pre>
 				{/if}
 			</div>
 		{/each}
@@ -266,9 +273,18 @@
 		border-radius: 0;
 	}
 
+	/* Wrap at spaces, and break a word only when it can't fit on a line of its
+	   own. Each line hangs its continuation at --indent, set per line from
+	   wrapIndents. */
 	.code-body.wrap .code-panel :global(pre) {
 		white-space: pre-wrap;
-		word-break: break-all;
 		overflow-wrap: anywhere;
+	}
+
+	.code-body.wrap .code-panel :global(.line) {
+		display: inline-block;
+		width: 100%;
+		padding-left: calc(var(--indent, 0) * 1ch);
+		text-indent: calc(var(--indent, 0) * -1ch);
 	}
 </style>

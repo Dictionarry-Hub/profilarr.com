@@ -840,7 +840,10 @@ Components for use inside mdsvex content (`.svx` files).
 
 Renders code as pre-rendered plain HTML, then lazy-loads Shiki and the active tab's language grammar
 after hydration. Inactive tab grammars load when selected. Plain-text and unsupported languages stay
-unhighlighted, and highlighting failures leave the readable plain code in place.
+unhighlighted, and highlighting failures leave the readable plain code in place. Long lines scroll
+by default; `overflow="wrap"` wraps them at spaces instead. A wrapped line continues at its own
+indentation, or just after the comment marker and its space when the line has a comment, so a long
+comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that column per line.
 
 #### `FileTree`
 

@@ -90,11 +90,26 @@ async function loadLanguage(language: HighlightLanguage): Promise<HighlighterCor
 	return promise;
 }
 
-/** Highlight code on demand. Plain and unsupported languages return no highlighted HTML. */
-export async function highlight(code: string, language: string): Promise<string | null> {
+/** Highlight code on demand. Plain and unsupported languages return no highlighted HTML.
+    `indents` sets each line's `--indent`, which CodeBlock's wrap mode reads. */
+export async function highlight(
+	code: string,
+	language: string,
+	indents: number[] = []
+): Promise<string | null> {
 	const resolved = resolveLanguage(language);
 	if (!resolved) return null;
 
 	const highlighter = await loadLanguage(resolved);
-	return highlighter.codeToHtml(code, { lang: resolved, theme: 'css-variables' });
+	return highlighter.codeToHtml(code, {
+		lang: resolved,
+		theme: 'css-variables',
+		transformers: [
+			{
+				line(node, line) {
+					node.properties.style = `--indent: ${indents[line - 1] ?? 0}`;
+				}
+			}
+		]
+	});
 }
