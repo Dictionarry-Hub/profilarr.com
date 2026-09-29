@@ -3,6 +3,7 @@ layout: docs
 title: Traefik
 slug: traefik
 blurb: Serving Profilarr through Traefik with Docker labels.
+author: https://github.com/santiagosayshey
 parent: reverse-proxy
 order: 1
 ---

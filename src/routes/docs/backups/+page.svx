@@ -3,8 +3,83 @@ layout: docs
 title: Backups
 slug: backups
 blurb: Keeping backups of Profilarr and restoring them, on the same machine or a new one.
+author: https://github.com/santiagosayshey
 parent: installation
 order: 4
 ---
 
-TODO: Backing up, restoring, and moving Profilarr. Covers scheduled backups and retention (set under Settings > General), restoring from Settings > Backups, why downloaded backups leave out Arr instances, accounts, and secrets, and how to move to a new machine with everything intact.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+</script>
+
+Profilarr can back itself up on a schedule or manually. Each backup is a single archive that holds:
+
+- Profilarr's database, with your settings, Arr instances, notification services, accounts, and API keys.
+- Your linked databases.
+
+Profilarr keeps the archives in the `backups` folder inside its [config folder](/docs/docker#the-config-folder). You can restore any archive from `Settings > Backups` on the same machine or on a new one.
+
+## Automatic Backups
+
+Profilarr backs itself up every day by default. The Backups card in `Settings > General` has three settings:
+
+- **Automatic Backups**: turns scheduled backups on or off. On by default.
+- **Schedule**: how often Profilarr backs up, from hourly to monthly. Daily by default. Daily, weekly, and monthly backups run at midnight in Profilarr's [timezone](/docs/installation#general).
+- **Retention Period (days)**: how long Profilarr keeps backups, from 1 to 365 days. 30 by default.
+
+<Callout type="info">
+
+Profilarr deletes every archive older than the retention period, including backups you created manually or uploaded. To keep a backup for longer, copy it out of the `backups` folder.
+
+</Callout>
+
+## Creating and Downloading
+
+`Settings > Backups` lists every archive and lets you download, restore, or delete each one from its row. **Create Backup** starts a new backup, which appears in the list once it finishes.
+
+When you download a backup, Profilarr removes its secrets first, so you can share the downloaded file safely, for example in a bug report. The downloaded file leaves out:
+
+- Arr instances, with their URLs, API keys, and sync settings.
+- Notification services.
+- Accounts and sessions.
+- API keys.
+- Credentials for linked databases, such as personal access tokens.
+- AI and TMDB API keys.
+
+### Keeping Copies Elsewhere
+
+Profilarr keeps its archives on the same disk as everything else, so a failed disk takes Profilarr and its backups together. Keep at least one copy on another drive or machine. A common rule is [3-2-1](https://www.backblaze.com/blog/the-3-2-1-backup-strategy/): three copies of your data, on two kinds of storage, with one of them off-site.
+
+Copy the archives from the `backups` folder, not the live database next to them. Each archive is a complete snapshot, so you can copy it while Profilarr runs. A copy of `profilarr.db` taken while Profilarr runs can catch it halfway through a write, so stop Profilarr first if you back up the whole config folder.
+
+Tools like [restic](https://restic.net/), [Backrest](https://backrest.org/) (a web interface for restic), [Borg](https://www.borgbackup.org/), [Kopia](https://kopia.io/), and [rclone](https://rclone.org/) can copy the folder to another drive or a cloud service on a schedule.
+
+<Callout type="info">
+
+Test a backup now and then by restoring it on a spare Profilarr instance. A backup you've never restored might not work when you need it.
+
+</Callout>
+
+## Restoring
+
+To restore an archive, click its **Restore** button. Profilarr applies the archive the next time it starts, so restart Profilarr to finish, for example with `docker restart profilarr`. Until then, a banner at the top of every page names the archive and lets you cancel the restore. Anything you change before the restart is lost.
+
+Restoring replaces all of Profilarr's data with the archive, and you can't undo it once Profilarr restarts. Profilarr doesn't back up your current data first, so click **Create Backup** before you restore if you might want it back. Archives from older versions of Profilarr restore too, and Profilarr upgrades them as it starts.
+
+**Upload Backup** adds an archive from another Profilarr instance to the list so you can restore it here. It accepts `.tar.gz` files up to 1 GB.
+
+<Callout type="info">
+
+A downloaded backup restores without the items it left out, so you'll need to add your Arr instances, notification services, and API keys again. If you sign in with a password, Profilarr also sends you to the setup page to create a new account.
+
+</Callout>
+
+### Moving to a New Machine
+
+To move Profilarr with everything intact, use an archive from the old machine's `backups` folder, not a downloaded one:
+
+1. Install Profilarr on the new machine and create an account. The restore replaces it with your old accounts.
+2. Copy an archive from the old machine's `backups` folder into the new machine's `backups` folder.
+3. Open `Settings > Backups` on the new machine, restore the archive, and restart Profilarr.
+
+Backups don't include the settings in your compose file, like `ORIGIN`, `AUTH`, and the `OIDC_` variables. Copy your compose file to the new machine too. If your old setup signed in only with single sign-on and the new one doesn't set the `OIDC_` variables, Profilarr won't start. See [Startup Errors](/docs/authentication#startup-errors).
