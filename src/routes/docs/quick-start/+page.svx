@@ -79,6 +79,12 @@ Open your instance under **Arrs** and go to its **Sync** tab. Work through its s
 - **Delay Profiles**: how long the Arr waits before grabbing a release, and whether it prefers Usenet or torrents.
 - **Quality Profiles**: the profiles to sync. Each one brings along the custom formats it scores.
 
+<Callout type="info">
+
+Custom formats don't need to be synced separately; Profilarr syncs them along with the quality profiles that use them.
+
+</Callout>
+
 <ThemeImage
 	light="/images/quickstart_sync[style=light].png"
 	dark="/images/quickstart_sync[style=dark].png"
