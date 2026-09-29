@@ -95,6 +95,12 @@ describe('componentsToMarkdown', () => {
 		);
 	});
 
+	it('replaces a CodeBlock tag that has other props', () => {
+		const body = '<CodeBlock items={example} overflow="wrap" />';
+
+		expect(componentsToMarkdown(body, data)).toBe('`crontab`\n\n```sh\necho hi\n```');
+	});
+
 	it('replaces CodeBlock and Callout tags', () => {
 		const body = '<CodeBlock items={example} />\n\n<Callout type="info">\nNote.\n</Callout>';
 

@@ -550,6 +550,7 @@ connector line and a slide transition.
 | `badge`      | `number`                                            | no       | `0`      |
 | `open`       | `boolean \| 'auto'`                                 | no       | `'auto'` |
 | `childHrefs` | `string[]`                                          | no       | `[]`     |
+| `nested`     | `boolean`                                           | no       | `false`  |
 | `class`      | `string` (replaces the default `mb-4` root spacing) | no       |          |
 
 `open` defaults to `'auto'`: the group is open while the current page is inside it (its `href`, a
@@ -560,7 +561,10 @@ starting state instead, and a toggle then sticks. Every group in the sidebar use
 
 Active state: exact match when children exist, prefix match otherwise. Active renders with
 `bg-surface border-border shadow-control` (Button default treatment). Groups nested inside
-`NavGroupLabel` pass `class="mb-1"` for tighter spacing.
+`NavGroupLabel` pass `class="mb-1"` for tighter spacing. A group inside another group, like a docs
+page with its own child pages, sets `nested` so its inactive header takes `NavItem`'s colors
+(`text-text-muted`, `text-text` on hover) and only the chevron sets it apart from the items beside
+it.
 
 #### `NavItem`
 
@@ -836,7 +840,10 @@ Components for use inside mdsvex content (`.svx` files).
 
 Renders code as pre-rendered plain HTML, then lazy-loads Shiki and the active tab's language grammar
 after hydration. Inactive tab grammars load when selected. Plain-text and unsupported languages stay
-unhighlighted, and highlighting failures leave the readable plain code in place.
+unhighlighted, and highlighting failures leave the readable plain code in place. Long lines scroll
+by default; `overflow="wrap"` wraps them at spaces instead. A wrapped line continues at its own
+indentation, or just after the comment marker and its space when the line has a comment, so a long
+comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that column per line.
 
 #### `FileTree`
 

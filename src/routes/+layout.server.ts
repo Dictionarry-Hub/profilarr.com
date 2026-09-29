@@ -1,5 +1,12 @@
 import type { PcdNavIndex } from '$lib/types/pcd';
-import { docPath, docSlugFromPath, docTree, type DocMeta } from '$lib/shared/utils/llm/docs.js';
+import {
+	docPath,
+	docSlugFromPath,
+	docTree,
+	type DocIndexEntry,
+	type DocMeta,
+	type DocNode
+} from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
@@ -22,24 +29,31 @@ function articleNav(files: Record<string, { metadata: ArticleMeta }>, base: stri
 		.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 }
 
-// Docs follow reading order, not publish date, and nest one level under a
-// `parent` page. The root page is the home page and the Home header's link,
-// not an entry.
+interface DocNavEntry {
+	title: string;
+	slug: string;
+	href: string;
+	children: DocNavEntry[];
+}
+
+function docNavEntry(doc: DocNode<DocIndexEntry>): DocNavEntry {
+	return {
+		title: doc.title,
+		slug: doc.slug,
+		href: docPath(doc.slug),
+		children: doc.children.map(docNavEntry)
+	};
+}
+
+// Docs follow reading order, not publish date, and nest under a `parent`
+// page. The root page is the home page and the Home header's link, not an
+// entry.
 function docsNav(files: Record<string, { metadata: DocMeta }>) {
 	const docs = Object.entries(files)
 		.map(([path, module]) => ({ ...module.metadata, slug: docSlugFromPath(path) }))
 		.filter((doc) => doc.slug !== '');
 
-	return docTree(docs).map((doc) => ({
-		title: doc.title,
-		slug: doc.slug,
-		href: docPath(doc.slug),
-		children: doc.children.map((child) => ({
-			title: child.title,
-			slug: child.slug,
-			href: docPath(child.slug)
-		}))
-	}));
+	return docTree(docs).map(docNavEntry);
 }
 
 export async function load() {

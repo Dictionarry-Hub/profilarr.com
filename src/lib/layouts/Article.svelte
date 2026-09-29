@@ -6,7 +6,13 @@
 	import PageFooter from '$lib/client/ui/footer/PageFooter.svelte';
 	import Author from '$lib/client/ui/author/Author.svelte';
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
-	import { docFullTitle, type DocLink, type DocSource } from '$lib/shared/utils/llm/docs.js';
+	import {
+		docFullTitle,
+		docNavEntries,
+		type DocLink,
+		type DocNavNode,
+		type DocSource
+	} from '$lib/shared/utils/llm/docs.js';
 	import { markdownPath } from '$lib/shared/utils/llm/md.js';
 	import type { Snippet } from 'svelte';
 
@@ -24,11 +30,11 @@
 	let { title, blurb, author, created, tags, parent, children }: Props = $props();
 
 	// Docs child pages put their section in the document title, since titles
-	// repeat across sections. The sidebar data holds the top-level page titles.
+	// repeat across sections. The sidebar data holds every page's title.
 	const documentTitle = $derived.by(() => {
 		if (!parent) return title;
-		const docs = page.data.docs as { slug: string; title: string }[] | undefined;
-		return docFullTitle(title, docs?.find((doc) => doc.slug === parent)?.title);
+		const docs = docNavEntries((page.data.docs as DocNavNode[] | undefined) ?? []);
+		return docFullTitle(title, docs.find((doc) => doc.slug === parent)?.title);
 	});
 
 	function parseAuthor(value: string) {

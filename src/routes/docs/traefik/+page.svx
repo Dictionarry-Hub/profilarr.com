@@ -1,0 +1,90 @@
+---
+layout: docs
+title: Traefik
+slug: traefik
+blurb: Serving Profilarr through Traefik with Docker labels.
+parent: reverse-proxy
+order: 1
+---
+
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+	import { compose, redirect, forwardAuth, apiRouter, fileProvider } from './data';
+</script>
+
+[Traefik](https://traefik.io/traefik/) is a reverse proxy that reads its routes from the apps behind it. With Docker, you describe how to reach Profilarr in labels on Profilarr's own container, and Traefik picks them up when the container starts.
+
+A Traefik config has three parts:
+
+- **Entrypoints**: the ports Traefik listens on, like 80 for HTTP and 443 for HTTPS.
+- **Routers**: rules that match a request, like ``Host(`profilarr.example.com`)``, and send it to a service.
+- **Services**: where a matched request goes, like Profilarr on port 6868.
+
+<Callout type="info">
+
+We recommend Traefik if you run Profilarr with Docker, because it keeps everything about Profilarr in one place. The labels sit in the same compose file as Profilarr's image, ports, and variables, so you don't keep a separate proxy config in sync. When you remove Profilarr, its proxy config goes with it.
+
+</Callout>
+
+## Before You Start
+
+> New to Traefik? Follow Traefik's [Docker setup guide](https://doc.traefik.io/traefik/setup/docker/) first, then come back here.
+
+The example on this page assumes your Traefik setup has:
+
+- Traefik v3, running in Docker.
+- A Docker network that Traefik and Profilarr both join. The example calls it `proxy`.
+- An entrypoint named `web` on port 80, and one named `websecure` on port 443.
+- A certificate resolver named `letsencrypt`.
+
+Traefik's defaults already cover most of what your proxy must allow in [Requirements](/docs/reverse-proxy#requirements): it doesn't buffer `/jobs/events`, and it doesn't limit upload size. It does stop reading a request after 60 seconds, which can cut off a large backup upload. To allow longer uploads, raise `entryPoints.websecure.transport.respondingTimeouts.readTimeout` in Traefik's static config, for example to `10m`.
+
+## Example
+
+This example builds on the compose file in [Installing Profilarr](/docs/docker#installing-profilarr). It sets `ORIGIN` and adds the labels Traefik reads. It doesn't publish port 6868, so Traefik is the only way in.
+
+<CodeBlock items={compose} overflow="wrap" />
+
+### Redirecting HTTP to HTTPS
+
+The router above only listens on `websecure`, so a visit to `http://profilarr.example.com` finds nothing and gets a 404. A redirect on the `web` entrypoint sends every HTTP request to HTTPS instead, for Profilarr and every other app behind Traefik. Add it to Traefik's static config:
+
+<CodeBlock items={redirect} />
+
+### Forward Auth
+
+With forward auth, Traefik sends every request to a sign-in service like [Authelia](https://www.authelia.com/) or [Authentik](https://goauthentik.io/) first, to check whether you're signed in. If you are, Traefik passes the request on to Profilarr. If you aren't, Traefik redirects you to the sign-in service's login page. To create the middleware, follow your sign-in service's guide, like [Authelia's Traefik guide](https://www.authelia.com/integration/proxies/traefik/). Then add it to Profilarr's router:
+
+<CodeBlock items={forwardAuth} overflow="wrap" />
+
+Use the middleware's name from your setup. `@docker` means you defined it in labels, and `@file` means you defined it in Traefik's file provider.
+
+Scripts and apps that call [Profilarr's API](/api/v1) with an API key can't sign in to your sign-in service, so the middleware blocks them too. To let them through, add a second router for `/api/v1` without the middleware. Traefik picks the router with the longer rule, so API requests use this one:
+
+<CodeBlock items={apiRouter} />
+
+<Callout type="danger">
+
+Only add the API router while Profilarr's own login is on. With [`AUTH=off`](/docs/authentication#turning-login-off), Profilarr accepts API requests without a key, so this router would open the API to anyone who can reach Traefik.
+
+</Callout>
+
+Once forward auth works, Profilarr's own login is a second sign-in. See [Turning Login Off](/docs/authentication#turning-login-off) before you turn it off.
+
+## Without Docker
+
+If Profilarr doesn't run in Docker, Traefik can't read labels from it. Describe the router and service in a file instead, and point the service at Profilarr's address. Traefik's [file provider](https://doc.traefik.io/traefik/reference/install-configuration/providers/others/file/) reads it from the folder set in `providers.file.directory`, and picks up changes without a restart.
+
+<CodeBlock items={fileProvider} />
+
+<Callout type="info">
+
+We recommend Traefik because it follows [locality of behaviour](https://htmx.org/essays/locality-of-behaviour/): the config for something lives next to that thing. For Profilarr, that means:
+
+- You can see how Profilarr is served by reading its compose file alone.
+- Changing Profilarr's routing can't break another app's.
+- Removing Profilarr removes its routing too, so nothing stale is left behind.
+- Copying Profilarr's compose file to another machine brings its routing with it.
+
+</Callout>

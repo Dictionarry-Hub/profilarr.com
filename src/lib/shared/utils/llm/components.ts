@@ -169,7 +169,7 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 	return body
 		.replace(WRAPPED_LIST, (_, list: string) => adaptiveList(list))
 		.replace(BARE_LIST, adaptiveList)
-		.replace(/<CodeBlock\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
+		.replace(/<CodeBlock\s+items=\{(\w+)\}[^>]*\/>/g, (tag, name) => {
 			const items = data[name];
 			return isCodeList(items) ? markdownCode(items) : tag;
 		})

@@ -79,6 +79,12 @@ Open your instance under **Arrs** and go to its **Sync** tab. Work through its s
 - **Delay Profiles**: how long the Arr waits before grabbing a release, and whether it prefers Usenet or torrents.
 - **Quality Profiles**: the profiles to sync. Each one brings along the custom formats it scores.
 
+<Callout type="info">
+
+Custom formats don't need to be synced separately; Profilarr syncs them along with the quality profiles that use them.
+
+</Callout>
+
 <ThemeImage
 	light="/images/quickstart_sync[style=light].png"
 	dark="/images/quickstart_sync[style=dark].png"
@@ -105,7 +111,7 @@ Syncing doesn't assign the profile to anything, so your library keeps the profil
 
 ## That's It
 
-Profilarr can look intimidating at first, with words like databases, syncs, and triggers thrown at you. But what you just did comes down to a few steps: you connected your Arr, picked the profiles you wanted from a database, told Profilarr when to sync, and put a profile to use. With On Pull, Dictionarry's updates now reach your Arr on their own.
+Profilarr can look intimidating at first, with words like databases, syncs, and triggers thrown at you. But what you just did comes down to a few steps: you connected your Arr, picked the profiles you wanted from a database, told Profilarr when to sync, and put a profile to use. With `On Pull`, Dictionarry's updates now reach your Arr on their own.
 
 Everything else in Profilarr builds on what you've set up:
 
@@ -115,4 +121,4 @@ Everything else in Profilarr builds on what you've set up:
 - [Cleanup](/docs/cleanup) removes what Profilarr no longer manages.
 - [Build](/docs/build) and [Test](/docs/test) cover changing configurations and checking them against real releases.
 
-For a walkthrough inside Profilarr itself, guided tours can be found under Settings > Onboarding.
+For a walkthrough inside Profilarr itself, guided tours can be found under `Settings > Onboarding`.

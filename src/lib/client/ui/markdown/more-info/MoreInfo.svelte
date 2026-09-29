@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { moreInfoLinks, type DocIndexEntry } from '$lib/shared/utils/llm/docs.js';
+	import {
+		docNavEntries,
+		moreInfoLinks,
+		type DocIndexEntry,
+		type DocNavNode
+	} from '$lib/shared/utils/llm/docs.js';
 
 	interface Props {
 		/** Comma-separated docs slugs, each with an optional `#anchor` and an
@@ -10,20 +15,11 @@
 
 	let { pages }: Props = $props();
 
-	interface NavDoc {
-		title: string;
-		slug: string;
-		children: { title: string; slug: string }[];
-	}
-
 	// The sidebar data in the root layout has every docs page's title, so links
 	// resolve without data of their own. An unknown slug throws while the page
 	// prerenders, which fails the build.
 	const docs = $derived.by((): DocIndexEntry[] =>
-		((page.data.docs as NavDoc[] | undefined) ?? []).flatMap((doc) => [
-			{ title: doc.title, slug: doc.slug },
-			...doc.children.map((child) => ({ ...child, parent: doc.slug }))
-		])
+		docNavEntries((page.data.docs as DocNavNode[] | undefined) ?? [])
 	);
 
 	const links = $derived(moreInfoLinks(pages, docs));
