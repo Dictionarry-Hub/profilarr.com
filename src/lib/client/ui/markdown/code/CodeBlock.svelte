@@ -142,11 +142,10 @@
 				{:else}
 					{@const indents = wrapIndents(code, item.language)}
 					<pre><code
-							>{#each code.split('\n') as line, i (i)}{#if i > 0}{'\n'}{/if}<span
+							>{#each code.split('\n') as line, i (i)}{i > 0 ? '\n' : ''}<span
 									class="line"
 									style:--indent={indents[i]}>{line}</span
-								>{/each}</code
-						></pre>
+								>{/each}</code></pre>
 				{/if}
 			</div>
 		{/each}

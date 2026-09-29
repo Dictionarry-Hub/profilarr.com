@@ -63,7 +63,9 @@ export const requirementColumns: MarkdownColumn<Requirement>[] = [
 		key: 'without',
 		header: 'Without it',
 		markdown: (row) =>
-			row.seeAlso ? `${row.without} See [${row.seeAlso.label}](${row.seeAlso.href}).` : row.without
+			row.seeAlso
+				? `${row.without} See [${row.seeAlso.label}](${row.seeAlso.href}).`
+				: row.without
 	}
 ];
 
