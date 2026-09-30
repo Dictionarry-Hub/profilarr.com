@@ -888,9 +888,14 @@ driven by the `--theme-image-*` tokens each theme declares; the component never 
 | `dark`      | `string`     | yes      |         |
 | `light`     | `string`     | yes      |         |
 | `alt`       | `string`     | yes      |         |
+| `caption`   | `string`     | no       |         |
 | `border`    | `boolean`    | no       | `false` |
 | `preview`   | `boolean`    | no       | `true`  |
 | `onpreview` | `() => void` | no       |         |
+
+`caption` shows centered muted text below the image, and below the image in the preview.
+`Screenshots` renders its captions this way too. A captioned image renders as a `<figure>`, so it
+can't sit inside a paragraph; one without a caption stays inline.
 
 `border` outlines the image with the border token. Profilarr's UI uses the same background colors as
 this site, so screenshots of it blend into the page without one.

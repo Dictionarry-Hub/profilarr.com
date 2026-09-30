@@ -5,6 +5,8 @@
 		dark: string;
 		light: string;
 		alt: string;
+		/** Shown below the image, and below it in the preview. */
+		caption?: string;
 		/** Outlines the image, for screenshots whose background matches the page. */
 		border?: boolean;
 		/** Opens a larger preview on click. */
@@ -19,6 +21,7 @@
 		dark,
 		light,
 		alt,
+		caption,
 		border = false,
 		preview = true,
 		onpreview,
@@ -54,21 +57,36 @@
 		class="theme-img theme-img-dark {classes}" />
 {/snippet}
 
-{#if preview}
-	<button
-		type="button"
-		aria-label="View larger: {alt}"
-		class="theme-img-button cursor-zoom-in rounded-card focus-visible:ring-2 focus-visible:ring-accent-solid focus-visible:outline-none"
-		onclick={openPreview}>
+{#snippet image()}
+	{#if preview}
+		<button
+			type="button"
+			aria-label="View larger: {alt}"
+			class="theme-img-button cursor-zoom-in rounded-card focus-visible:ring-2 focus-visible:ring-accent-solid focus-visible:outline-none"
+			onclick={openPreview}>
+			{@render images()}
+		</button>
+		{#if !onpreview}
+			<ImagePreview
+				bind:open
+				images={[{ light, dark, alt, caption, border }]} />
+		{/if}
+	{:else}
 		{@render images()}
-	</button>
-	{#if !onpreview}
-		<ImagePreview
-			bind:open
-			images={[{ light, dark, alt, border }]} />
 	{/if}
+{/snippet}
+
+<!--
+	Without a caption the image stays inline, so it can sit inside a paragraph.
+	A caption needs a figure, which can't.
+-->
+{#if caption}
+	<figure class="theme-figure my-6">
+		{@render image()}
+		<figcaption class="mt-3 text-center text-xs text-text-muted">{caption}</figcaption>
+	</figure>
 {:else}
-	{@render images()}
+	{@render image()}
 {/if}
 
 <style>

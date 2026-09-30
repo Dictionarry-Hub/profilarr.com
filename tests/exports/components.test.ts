@@ -152,4 +152,18 @@ describe('mediaToMarkdown', () => {
 				'**Video: Molten.** A cake is cut open. [Watch the video](/video/clip.mp4)'
 		);
 	});
+
+	it('puts an image caption after the image', () => {
+		const body = [
+			'<ThemeImage',
+			'\tdark="/images/a[style=dark].png"',
+			'\tlight="/images/a[style=light].png"',
+			'\talt="The scoring table"',
+			'\tcaption="Scores add up across formats." />'
+		].join('\n');
+
+		expect(mediaToMarkdown(body)).toBe(
+			'![The scoring table](/images/a[style=light].png)\n\nScores add up across formats.'
+		);
+	});
 });

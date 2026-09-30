@@ -218,8 +218,10 @@
 }
 
 /* Screenshots sit in a tab panel that already spaces them from the tabs and
-   caption, and the image preview (ImagePreview) spaces its own image. */
+   caption, a captioned ThemeImage's figure spaces its image, and the image
+   preview (ImagePreview) spaces its own image. */
 .prose .screenshots img,
+.prose .theme-figure img,
 .prose .image-preview img {
 	margin: 0;
 }

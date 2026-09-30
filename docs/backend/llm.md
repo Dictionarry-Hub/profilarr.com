@@ -169,9 +169,9 @@ form. A tag that names data the module doesn't export, and any other component, 
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
-`![alt](light image)`, so a model can read the alt text or fetch the image, and a `Video` becomes
-its title and `description` followed by a link to the file. The `require-media-alt` lint rule makes
-sure that text exists.
+`![alt](light image)` followed by its caption, so a model can read the alt text or fetch the image,
+and a `Video` becomes its title and `description` followed by a link to the file. The
+`require-media-alt` lint rule makes sure that text exists.
 
 A docs page with `next` frontmatter ends its mirror with a `## Next` list of those pages, each a
 link with its blurb, matching the footer on the web page.

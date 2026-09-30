@@ -113,15 +113,18 @@ function attributes(tag: string): Record<string, string> {
 }
 
 /** Replaces ThemeImage and Video tags with Markdown a model can read: an
-    image becomes its alt text linked to the light version of the file, and a
-    video becomes its title, description, and a link. Used by every article
-    mirror (docs, dev logs, wiki), since it needs no page data. */
+    image becomes its alt text linked to the light version of the file,
+    followed by its caption, and a video becomes its title, description, and
+    a link. Used by every article mirror (docs, dev logs, wiki), since it needs
+    no page data. */
 export function mediaToMarkdown(body: string): string {
 	return body
 		.replace(/<ThemeImage\b[\s\S]*?\/>/g, (tag) => {
-			const { alt = '', light, dark } = attributes(tag);
+			const { alt = '', caption, light, dark } = attributes(tag);
 			const src = light ?? dark;
-			return src ? `![${alt}](${src})` : tag;
+			if (!src) return tag;
+			const image = `![${alt}](${src})`;
+			return caption ? `${image}\n\n${caption}` : image;
 		})
 		.replace(/<Video\b[\s\S]*?\/>/g, (tag) => {
 			const { src, title, description } = attributes(tag);
