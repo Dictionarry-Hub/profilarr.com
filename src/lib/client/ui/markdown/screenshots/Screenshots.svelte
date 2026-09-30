@@ -69,10 +69,11 @@
 					Screenshot: {item.label}
 				</div>
 				{#if item.caption}
-					<p class="mt-3 text-center text-xs text-text-muted"
-						>{#each captionParts(item.caption) as part, i (i)}{#if part.code}<code
+					<p class="mt-3 text-center text-xs text-text-muted">
+						{#each captionParts(item.caption) as part, i (i)}{#if part.code}<code
 									>{part.text}</code
-								>{:else}{part.text}{/if}{/each}</p>
+								>{:else}{part.text}{/if}{/each}
+					</p>
 				{/if}
 			{/if}
 		{/snippet}

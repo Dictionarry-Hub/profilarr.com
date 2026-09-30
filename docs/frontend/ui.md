@@ -846,10 +846,10 @@ indentation, or just after the comment marker and its space when the line has a 
 comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that column per line.
 
 With `marks`, `[text]` in the code renders as a `<mark>` in the success tokens, square-cornered,
-without the brackets, for showing what a pattern matched in a list of strings. Marked code renders as plain text
-and skips Shiki, and the copy button copies the code without the brackets. `markSegments` and
-`stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the brackets as written and
-adds a line after the block saying what they mean.
+without the brackets, for showing what a pattern matched in a list of strings. Marked code renders
+as plain text and skips Shiki, and the copy button copies the code without the brackets.
+`markSegments` and `stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the
+brackets as written and adds a line after the block saying what they mean.
 
 | Prop            | Type                 | Required | Default    |
 | --------------- | -------------------- | -------- | ---------- |
@@ -998,11 +998,12 @@ as hidden.
 
 Edges and dots use `accent-solid`, faces `accent-bg`, and hidden edges and dots `border`, so it
 follows the theme. As the camera turns in stage 3, the dots fade into spheres: a radial gradient
-from the accent mixed toward white to the accent mixed toward black, lit from the top left. The shape is drawn at the same scale on every page, so the line, square, and cube
-share an edge length. Prerendered HTML shows the finished shape; after hydration the animation plays
-once, when the figure scrolls into view. With reduced motion, it stays on the finished shape.
-`description` is its accessible name and replaces it in the Markdown mirrors, and the
-`require-media-alt` lint rule requires it.
+from the accent mixed toward white to the accent mixed toward black, lit from the top left. The
+shape is drawn at the same scale on every page, so the line, square, and cube share an edge length.
+Prerendered HTML shows the finished shape; after hydration the animation plays once, when the figure
+scrolls into view. With reduced motion, it stays on the finished shape. `description` is its
+accessible name and replaces it in the Markdown mirrors, and the `require-media-alt` lint rule
+requires it.
 
 `from` plays every stage from that one up to `stage`, pausing briefly between them, so
 `from={1} stage={3}` runs the whole sequence from dot to cube. `loop` plays it forwards, holds,
@@ -1026,9 +1027,9 @@ plays it backwards, and repeats, pausing while the figure is out of view.
 `src/lib/client/ui/markdown/icon/InlineIcon.svelte`
 
 A Lucide icon inside a sentence, for naming a Profilarr control by the icon it shows, like the
-sliders on the profile menu. `icon` picks one from `INLINE_ICONS` in `icons.ts` next to it, so a page
-can only use icons added there, and an unknown name fails the build. The icon is `1em` square and
-takes the text color, so it matches the text around it. It renders as a `<span>`, so it can sit
+sliders on the profile menu. `icon` picks one from `INLINE_ICONS` in `icons.ts` next to it, so a
+page can only use icons added there, and an unknown name fails the build. The icon is `1em` square
+and takes the text color, so it matches the text around it. It renders as a `<span>`, so it can sit
 inside a paragraph. `label` is its accessible name and replaces it in the Markdown mirrors, and the
 `require-media-alt` lint rule requires it.
 

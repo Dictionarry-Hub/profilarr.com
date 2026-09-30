@@ -85,9 +85,10 @@
 {#if caption}
 	<figure class="theme-figure my-6">
 		{@render image()}
-		<figcaption class="mt-3 text-center text-xs text-text-muted"
-			>{#each captionParts(caption) as part, i (i)}{#if part.code}<code>{part.text}</code
-					>{:else}{part.text}{/if}{/each}</figcaption>
+		<figcaption class="mt-3 text-center text-xs text-text-muted">
+			{#each captionParts(caption) as part, i (i)}{#if part.code}<code>{part.text}</code
+					>{:else}{part.text}{/if}{/each}
+		</figcaption>
 	</figure>
 {:else}
 	{@render image()}

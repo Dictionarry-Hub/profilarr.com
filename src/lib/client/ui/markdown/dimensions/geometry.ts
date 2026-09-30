@@ -69,9 +69,7 @@ function rotate([x, y, z]: Vec, yaw: number, pitch: number): Vec {
 }
 
 // Vertex i sits on the positive side of axis a when bit a of i is set.
-const VERTICES = Array.from({ length: 8 }, (_, i) =>
-	[0, 1, 2].map((a) => ((i >> a) & 1 ? 1 : -1))
-);
+const VERTICES = Array.from({ length: 8 }, (_, i) => [0, 1, 2].map((a) => ((i >> a) & 1 ? 1 : -1)));
 const OTHERS: [number, number][] = [
 	[1, 2],
 	[0, 2],

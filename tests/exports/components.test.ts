@@ -40,7 +40,10 @@ describe('markdownCode', () => {
 	});
 
 	it('explains the brackets of a marked block', () => {
-		const markdown = markdownCode([{ title: 'DTS', language: 'text', code: 'x.[DTS].y' }], true);
+		const markdown = markdownCode(
+			[{ title: 'DTS', language: 'text', code: 'x.[DTS].y' }],
+			true
+		);
 
 		expect(markdown).toBe(
 			'`DTS`\n\n```text\nx.[DTS].y\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
@@ -168,7 +171,8 @@ describe('mediaToMarkdown', () => {
 	});
 
 	it('turns an animation into its description', () => {
-		const body = '<Dimensions\n\tstage={1}\n\tdescription="A dot stretches out into a line." />';
+		const body =
+			'<Dimensions\n\tstage={1}\n\tdescription="A dot stretches out into a line." />';
 
 		expect(mediaToMarkdown(body)).toBe('**Animation.** A dot stretches out into a line.');
 	});
