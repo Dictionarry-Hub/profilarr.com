@@ -166,4 +166,10 @@ describe('mediaToMarkdown', () => {
 			'![The scoring table](/images/a[style=light].png)\n\nScores add up across formats.'
 		);
 	});
+
+	it('turns an animation into its description', () => {
+		const body = '<Dimensions\n\tstage={1}\n\tdescription="A dot stretches out into a line." />';
+
+		expect(mediaToMarkdown(body)).toBe('**Animation.** A dot stretches out into a line.');
+	});
 });

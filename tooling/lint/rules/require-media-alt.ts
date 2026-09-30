@@ -1,7 +1,7 @@
 import type { LintRule, Violation } from '../types.js';
 
-// Images and videos in authored pages need text versions: screen readers read
-// them, and the Markdown mirrors replace the media with them (see
+// Images, videos, and animations in authored pages need text versions: screen
+// readers read them, and the Markdown mirrors replace the media with them (see
 // mediaToMarkdown in src/lib/shared/utils/llm/components.ts). The minimum
 // lengths only catch placeholders; they can't judge a description.
 
@@ -62,6 +62,18 @@ const rule: LintRule = {
 						content,
 						match.index,
 						`Video description is ${description ? 'too short' : 'missing'}. Describe what happens in the video as fully as you can, in at least ${MIN_VIDEO_DESCRIPTION_LENGTH} characters. Screen readers read it, and it replaces the video in the Markdown mirror.`
+					);
+				}
+			}
+
+			for (const match of content.matchAll(/<Dimensions\b[\s\S]*?\/>/g)) {
+				const description = attribute(match[0], 'description')?.trim() ?? '';
+				if (description.length < MIN_ALT_LENGTH) {
+					report(
+						path,
+						content,
+						match.index,
+						`Dimensions description is ${description ? 'too short' : 'missing'}. Describe what the animation shows in at least ${MIN_ALT_LENGTH} characters.`
 					);
 				}
 			}

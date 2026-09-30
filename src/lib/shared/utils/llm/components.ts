@@ -112,11 +112,11 @@ function attributes(tag: string): Record<string, string> {
 	return Object.fromEntries([...tag.matchAll(/(\w+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
 }
 
-/** Replaces ThemeImage and Video tags with Markdown a model can read: an
-    image becomes its alt text linked to the light version of the file,
-    followed by its caption, and a video becomes its title, description, and
-    a link. Used by every article mirror (docs, dev logs, wiki), since it needs
-    no page data. */
+/** Replaces ThemeImage, Video, and Dimensions tags with Markdown a model can
+    read: an image becomes its alt text linked to the light version of the
+    file, followed by its caption, a video becomes its title, description, and
+    a link, and an animation becomes its description. Used by every article
+    mirror (docs, dev logs, wiki), since it needs no page data. */
 export function mediaToMarkdown(body: string): string {
 	return body
 		.replace(/<ThemeImage\b[\s\S]*?\/>/g, (tag) => {
@@ -131,6 +131,10 @@ export function mediaToMarkdown(body: string): string {
 			if (!src) return tag;
 			const parts = [title ? `**Video: ${title}.**` : '**Video.**', description ?? ''];
 			return `${parts.filter(Boolean).join(' ')} [Watch the video](${src})`;
+		})
+		.replace(/<Dimensions\b[\s\S]*?\/>/g, (tag) => {
+			const { description } = attributes(tag);
+			return description ? `**Animation.** ${description}` : tag;
 		});
 }
 

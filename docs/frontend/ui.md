@@ -984,6 +984,43 @@ mirrors. The `require-media-alt` lint rule requires it on every authored page.
 	description="What happens in the clip, described as fully as possible." />
 ```
 
+#### `Dimensions`
+
+`src/lib/client/ui/markdown/dimensions/Dimensions.svelte`
+
+An animated SVG of a shape gaining a dimension, for the testing pages: regular expressions test
+along a line, custom formats across a square, and quality profiles through a cube. `stage` sets what
+it draws, and each stage starts where the one before it ends: `1` draws a dot out into a line, `2`
+sweeps the line into a square, and `3` turns the camera and extrudes the square into a cube. The
+geometry lives in `geometry.ts` next to it: a box whose width, height, and depth grow from zero,
+projected through a camera that can turn, with faces and edges that point away from the camera drawn
+as hidden.
+
+Edges and dots use `accent-solid`, faces `accent-bg`, and hidden edges and dots `border`, so it
+follows the theme. As the camera turns in stage 3, the dots fade into spheres: a radial gradient
+from the accent mixed toward white to the accent mixed toward black, lit from the top left. The shape is drawn at the same scale on every page, so the line, square, and cube
+share an edge length. Prerendered HTML shows the finished shape; after hydration the animation plays
+once, when the figure scrolls into view. With reduced motion, it stays on the finished shape.
+`description` is its accessible name and replaces it in the Markdown mirrors, and the
+`require-media-alt` lint rule requires it.
+
+`from` plays every stage from that one up to `stage`, pausing briefly between them, so
+`from={1} stage={3}` runs the whole sequence from dot to cube. `loop` plays it forwards, holds,
+plays it backwards, and repeats, pausing while the figure is out of view.
+
+| Prop          | Type          | Required | Default |
+| ------------- | ------------- | -------- | ------- |
+| `stage`       | `1 \| 2 \| 3` | yes      |         |
+| `from`        | `1 \| 2 \| 3` | no       | `stage` |
+| `loop`        | `boolean`     | no       | `false` |
+| `description` | `string`      | yes      |         |
+
+```svelte
+<Dimensions
+	stage={1}
+	description="A dot stretches out into a horizontal line." />
+```
+
 ## Semantic Tokens
 
 All tokens use the `--theme-*` prefix. Components never use raw color values. Tailwind utilities are
