@@ -5,13 +5,13 @@ slug: test
 blurb: Checking your configuration before it reaches Radarr or Sonarr.
 author: https://github.com/santiagosayshey
 order: 5
+next: [regular-expression-testing]
 ---
 
 <script>
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
-	import Dimensions from '$lib/client/ui/markdown/dimensions/Dimensions.svelte';
 	import { firstDay, weeksLater, regression, entityTests, entityTestColumns } from './data';
 </script>
 
@@ -65,9 +65,3 @@ Testing takes those decisions out of your head. You write down a release and wha
 Every test in this section runs through the [parser](/docs/installation#the-parser), so set it up before you start.
 
 </Callout>
-
-<Dimensions
-	from={1}
-	stage={3}
-	loop
-	description="A dot stretches out into a line, the line sweeps into a square, and the square extrudes into a cube, then the animation plays in reverse and repeats." />

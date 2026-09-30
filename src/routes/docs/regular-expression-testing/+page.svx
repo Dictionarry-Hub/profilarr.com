@@ -6,11 +6,11 @@ blurb: Running Regex101 unit tests against the regex engine Radarr and Sonarr us
 author: https://github.com/santiagosayshey
 parent: test
 order: 1
+next: [custom-format-testing]
 ---
 
 <script>
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
-	import Dimensions from '$lib/client/ui/markdown/dimensions/Dimensions.svelte';
 	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
 </script>
 
@@ -69,8 +69,3 @@ Open **Save & Share** at the top left of regex101 and save the entry. Copy its a
 A saved version never changes. Anyone can open `LDsZXA/1` and edit it, but saving their edits creates a separate copy. Profilarr fetches a version's tests and runs them through the parser once, then keeps the results instead of fetching them again. When you change your tests or your pattern, save a new version and link that one instead. Profilarr tests the pattern saved on regex101, not the one saved in Profilarr, so the two need to match.
 
 </Callout>
-
-<Dimensions
-	stage={1}
-	loop
-	description="A dot stretches out into a horizontal line, then shrinks back into a dot, and repeats." />
