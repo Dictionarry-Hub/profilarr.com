@@ -37,7 +37,7 @@ Set these two options so regex101 matches the same way Radarr and Sonarr do:
 
 Let's walk through adding the tests from the DTS example on the [Test](/docs/test) page. The expression should match lossless DTS, and there are four releases to check it against.
 
-Open a new entry on regex101, set the flavor and flag, and enter the pattern `DTS-HD(?![ .-]?HRA)`, which matches `DTS-HD` unless `HRA` follows it. Then, for each release, press `+` beside Unit Tests, paste the release into the test string, add the description, and set the assertion.
+Open a new entry on regex101, set the flavor and flag, and enter the pattern `DTS-HD(?![ .-]?HRA)`, which matches `DTS-HD` unless `HRA` follows it. Then, for each release, press `+` beside Unit Tests, paste the release into the test string, add the description, and set the assertion. [Open the finished entry](https://regex101.com/r/LDsZXA/1/unit-tests) to see it for yourself.
 
 <ThemeImage
 	dark="/images/docs_regex_testing_dts[style=dark].png"
@@ -60,7 +60,7 @@ Open **Save & Share** at the top left of regex101 and save the entry. Copy its a
 	dark="/images/docs_regex_testing_profilarr[style=dark].png"
 	light="/images/docs_regex_testing_profilarr[style=light].png"
 	alt="Profilarr's New Regular Expression page for DTS Example, with the Audio tag, the pattern DTS-HD(?![ .-]?HRA) marked valid, the Regex101 ID LDsZXA/1, and a Unit Tests table where all four DTS releases pass."
-	caption="The DTS example in Profilarr, linked to LDsZXA/1, with all four tests passing."
+	caption="The DTS example in Profilarr, linked to `LDsZXA/1`, with all four tests passing."
 	border />
 
 <Callout type="info">
