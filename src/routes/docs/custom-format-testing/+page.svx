@@ -20,7 +20,7 @@ A regular expression test asks one question: does this title match? A custom for
 
 ## How Custom Formats Match
 
-As we covered in [building](docs/custom-formats), custom formats are just a collection of conditions: release titles, sources, resolutions, and so on. For a custom format to match, every condition type it uses has to pass. Within a type, at least one condition has to pass, and so does every condition marked `required`.
+As we covered in [building](/docs/custom-formats), custom formats are just a collection of conditions: release titles, sources, resolutions, and so on. For a custom format to match, every condition type it uses has to pass. Within a type, at least one condition has to pass, and so does every condition marked `required`.
 
 This is easier to see with an example, so let's build on our DTS regular expression. We've created a custom format called `DTS Example` with a Release Title condition, which checks each release's title against the DTS regular expression. It then adds two more condition types: a Resolution condition for `1080p`, and two Source conditions, one for `Bluray` and one for `WEB-DL`.
 
