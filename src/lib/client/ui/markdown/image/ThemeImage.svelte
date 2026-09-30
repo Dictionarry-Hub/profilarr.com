@@ -1,11 +1,13 @@
 <script lang="ts">
 	import ImagePreview from './ImagePreview.svelte';
+	import { captionParts } from './caption';
 
 	interface Props {
 		dark: string;
 		light: string;
 		alt: string;
-		/** Shown below the image, and below it in the preview. */
+		/** Shown below the image, and below it in the preview. Backticks mark
+		    inline code, as in Markdown. */
 		caption?: string;
 		/** Outlines the image, for screenshots whose background matches the page. */
 		border?: boolean;
@@ -83,7 +85,9 @@
 {#if caption}
 	<figure class="theme-figure my-6">
 		{@render image()}
-		<figcaption class="mt-3 text-center text-xs text-text-muted">{caption}</figcaption>
+		<figcaption class="mt-3 text-center text-xs text-text-muted"
+			>{#each captionParts(caption) as part, i (i)}{#if part.code}<code>{part.text}</code
+					>{:else}{part.text}{/if}{/each}</figcaption>
 	</figure>
 {:else}
 	{@render image()}

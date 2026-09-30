@@ -893,7 +893,8 @@ driven by the `--theme-image-*` tokens each theme declares; the component never 
 | `preview`   | `boolean`    | no       | `true`  |
 | `onpreview` | `() => void` | no       |         |
 
-`caption` shows centered muted text below the image, and below the image in the preview.
+`caption` shows centered muted text below the image, and below the image in the preview. Backticks
+mark inline code, as in Markdown, so the Markdown mirror can pass the caption through unchanged.
 `Screenshots` renders its captions this way too. A captioned image renders as a `<figure>`, so it
 can't sit inside a paragraph; one without a caption stays inline.
 
