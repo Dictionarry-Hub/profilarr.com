@@ -150,7 +150,8 @@ architecture and the list semantics.
 
 Every image and video in an authored page (`src/routes/**/*.svx`) needs a text version: `ThemeImage`
 and Markdown images need `alt` text of at least 15 characters, and `Video` needs a `description` of
-at least 50. Screen readers read the text, and the Markdown mirrors replace the media with it (see
+at least 50. `InlineIcon` needs a `label`, of any length, since it stands in for a word or two.
+Screen readers read the text, and the Markdown mirrors replace the media with it (see
 [backend/llm.md](../backend/llm.md)). The minimums only catch placeholders like `alt="cf"`; they
 can't judge whether a description is good. Reports the line each tag starts on. Reads source files,
 so it doesn't need a build.

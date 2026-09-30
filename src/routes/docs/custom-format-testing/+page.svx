@@ -3,8 +3,104 @@ layout: docs
 title: Custom Formats
 slug: custom-format-testing
 blurb: Testing release titles against a custom format.
+author: https://github.com/santiagosayshey
 parent: test
 order: 2
+next: [quality-profile-testing]
 ---
 
-TODO: Testing custom formats against release titles. Covers adding test cases (a release title, whether it's a movie or a series, and whether it should match), reading the breakdown of which conditions passed for each result, and one limitation: the Testing tab checks every condition, including ones that only apply to Radarr or only to Sonarr, while sync leaves those out.
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import { breakdown, breakdownColumns } from './data';
+</script>
+
+A regular expression test asks one question: does this title match? A custom format test asks several at once, such as whether the title matches, whether the release is 1080p, or whether it came from a Bluray. You write these tests in Profilarr, on the custom format's **Testing** tab. Each test is a release title, marked as a movie or series, and whether it should match.
+
+## How Custom Formats Match
+
+As we covered in [building](/docs/custom-formats), custom formats are just a collection of conditions: release titles, sources, resolutions, and so on. For a custom format to match, every condition type it uses has to pass. Within a type, at least one condition has to pass, and so does every condition marked `required`.
+
+This is easier to see with an example, so let's build on our DTS regular expression. We've created a custom format called `DTS Example` with a Release Title condition, which checks each release's title against the DTS regular expression. It then adds two more condition types: a Resolution condition for `1080p`, and two Source conditions, one for `Bluray` and one for `WEB-DL`.
+
+<ThemeImage
+	dark="/images/docs_cf_testing_conditions[style=dark].png"
+	light="/images/docs_cf_testing_conditions[style=light].png"
+	alt="The Conditions tab of the DTS Example custom format in Profilarr, with four conditions: 1080p Resolution, Bluray Source, WEB-DL Source, and a Release Title condition using the DTS Example regular expression, all applying to both Radarr and Sonarr."
+	caption="The `DTS Example` custom format's four conditions, across three types."
+	border />
+
+So we have 3 condition *types*: release title, resolution and source. The first two are straightforward: each has a single condition, so a release needs `DTS-HD` in its title without `HRA` after it, and a resolution of 1080p. Source has two conditions, so remember the rule from earlier:
+
+> Within a type, at least one condition has to pass, and so does every condition marked `required`.
+
+Neither Source condition is required, so a release passes the Source type if it's either Bluray or WEB-DL. So for `DTS Example` to match a release, the release must:
+
+- Have `DTS-HD` in its title, without `HRA` after it
+- Be 1080p
+- Come from either a Bluray or WEB-DL source.
+
+Let's turn these requirements into tests on the custom format's **Testing** tab.
+
+## Writing Tests
+
+Open the **Testing** tab and press **Add Test**. Paste in a release title, set whether it's a movie or a series so the parser reads it correctly, choose **Should Match** or **Should NOT Match**, and describe what the test covers. A good test breaks one requirement at a time, so when it fails you know which condition to look at.
+
+<ThemeImage
+	dark="/images/docs_cf_testing_add[style=dark].png"
+	light="/images/docs_cf_testing_add[style=light].png"
+	alt="Profilarr's Edit Test Case form for the DTS Example custom format, with the release title Movie.2019.1080p.BluRay.DTS-HD.MA.5.1-GROUP, the media type set to Movie, the expected result set to Should Match, and the description 1080p Bluray, lossless DTS."
+	caption="The 1080p Bluray test, parsed as a movie and set to Should Match."
+	border />
+
+## Reading Results
+
+<ThemeImage
+	dark="/images/docs_cf_testing_tests[style=dark].png"
+	light="/images/docs_cf_testing_tests[style=light].png"
+	alt="The Testing tab of the DTS Example custom format with five tests, all passing. The 1080p Bluray and WEBRip tests are expanded: for the Bluray release the Source type passes through its Bluray condition and the format matches, and for the WEBRip release both Source conditions fail, the Source type fails, and the format doesn't match."
+	caption="The five tests for `DTS Example`, all passing, with the Bluray and WEBRip tests expanded."
+	border />
+
+Expanding a test shows how Profilarr reached its result, from left to right:
+
+<div class="mb-5">
+<AdaptiveList
+	data={breakdown}
+	columns={breakdownColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'column'}
+			<span class="font-medium">{row.column}</span>
+		{:else}
+			{row.meaning}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="font-medium">{row.column}</div>
+			<div class="text-sm text-text-muted">{row.meaning}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+Remember the rule from earlier:
+
+> For a custom format to match, every condition type it uses has to pass. Within a type, at least one condition has to pass, and so does every condition marked `required`.
+
+Take the Bluray release expanded above:
+
+- **Resolution:** the parser reads `1080p`, so the `1080p` condition passes.
+- **Source:** the parser reads `bluray`. The `Bluray` condition passes and the `WEB-DL` condition fails, but one passing condition is enough, so the type passes.
+- **Release Title:** the title contains `DTS-HD` without `HRA` after it, so the `DTS Example` condition passes.
+
+Every type passes, so the custom format matches, which is what the test expected.
+
+Now the WEBRip release:
+
+- **Resolution:** the parser reads `1080p`, so the `1080p` condition passes.
+- **Source:** the parser reads `webrip`. Neither the `Bluray` nor the `WEB-DL` condition matches that, so both fail, and with no passing condition, the type fails.
+- **Release Title:** the title contains `DTS-HD` without `HRA` after it, so the `DTS Example` condition passes.
+
+One type fails, so the custom format doesn't match. The test expected it not to match, so it passes as well.

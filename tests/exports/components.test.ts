@@ -38,6 +38,17 @@ describe('markdownCode', () => {
 
 		expect(markdown).toBe('`compose.yml`\n\n```yaml\na: 1\n```');
 	});
+
+	it('explains the brackets of a marked block', () => {
+		const markdown = markdownCode(
+			[{ title: 'DTS', language: 'text', code: 'x.[DTS].y' }],
+			true
+		);
+
+		expect(markdown).toBe(
+			'`DTS`\n\n```text\nx.[DTS].y\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
+		);
+	});
 });
 
 describe('markdownCallout', () => {
@@ -101,6 +112,14 @@ describe('componentsToMarkdown', () => {
 		expect(componentsToMarkdown(body, data)).toBe('`crontab`\n\n```sh\necho hi\n```');
 	});
 
+	it('adds the brackets note for a marked CodeBlock', () => {
+		const body = '<CodeBlock items={example} marks />';
+
+		expect(componentsToMarkdown(body, data)).toBe(
+			'`crontab`\n\n```sh\necho hi\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
+		);
+	});
+
 	it('replaces CodeBlock and Callout tags', () => {
 		const body = '<CodeBlock items={example} />\n\n<Callout type="info">\nNote.\n</Callout>';
 
@@ -135,5 +154,32 @@ describe('mediaToMarkdown', () => {
 			'![The scoring table](/images/a[style=light].png)\n\n' +
 				'**Video: Molten.** A cake is cut open. [Watch the video](/video/clip.mp4)'
 		);
+	});
+
+	it('puts an image caption after the image', () => {
+		const body = [
+			'<ThemeImage',
+			'\tdark="/images/a[style=dark].png"',
+			'\tlight="/images/a[style=light].png"',
+			'\talt="The scoring table"',
+			'\tcaption="Scores add up across formats." />'
+		].join('\n');
+
+		expect(mediaToMarkdown(body)).toBe(
+			'![The scoring table](/images/a[style=light].png)\n\nScores add up across formats.'
+		);
+	});
+
+	it('turns an animation into its description', () => {
+		const body =
+			'<Dimensions\n\tstage={1}\n\tdescription="A dot stretches out into a line." />';
+
+		expect(mediaToMarkdown(body)).toBe('**Animation.** A dot stretches out into a line.');
+	});
+
+	it('turns an inline icon into its label', () => {
+		const body = 'Open the profile menu (<InlineIcon icon="sliders" label="sliders icon" />).';
+
+		expect(mediaToMarkdown(body)).toBe('Open the profile menu (sliders icon).');
 	});
 });

@@ -845,6 +845,20 @@ by default; `overflow="wrap"` wraps them at spaces instead. A wrapped line conti
 indentation, or just after the comment marker and its space when the line has a comment, so a long
 comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that column per line.
 
+With `marks`, `[text]` in the code renders as a `<mark>` in the success tokens, square-cornered,
+without the brackets, for showing what a pattern matched in a list of strings. Marked code renders
+as plain text and skips Shiki, and the copy button copies the code without the brackets.
+`markSegments` and `stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the
+brackets as written and adds a line after the block saying what they mean.
+
+| Prop            | Type                 | Required | Default    |
+| --------------- | -------------------- | -------- | ---------- |
+| `items`         | `CodeItem[]`         | yes      |            |
+| `overflow`      | `'scroll' \| 'wrap'` | no       | `'scroll'` |
+| `marks`         | `boolean`            | no       | `false`    |
+| `footer`        | `Snippet<[number]>`  | no       |            |
+| `headerActions` | `Snippet`            | no       |            |
+
 #### `FileTree`
 
 `src/lib/client/ui/markdown/tree/FileTree.svelte`
@@ -874,9 +888,15 @@ driven by the `--theme-image-*` tokens each theme declares; the component never 
 | `dark`      | `string`     | yes      |         |
 | `light`     | `string`     | yes      |         |
 | `alt`       | `string`     | yes      |         |
+| `caption`   | `string`     | no       |         |
 | `border`    | `boolean`    | no       | `false` |
 | `preview`   | `boolean`    | no       | `true`  |
 | `onpreview` | `() => void` | no       |         |
+
+`caption` shows centered muted text below the image, and below the image in the preview. Backticks
+mark inline code, as in Markdown, so the Markdown mirror can pass the caption through unchanged.
+`Screenshots` renders its captions this way too. A captioned image renders as a `<figure>`, so it
+can't sit inside a paragraph; one without a caption stays inline.
 
 `border` outlines the image with the border token. Profilarr's UI uses the same background colors as
 this site, so screenshots of it blend into the page without one.
@@ -962,6 +982,64 @@ mirrors. The `require-media-alt` lint rule requires it on every authored page.
 	src="/video/clip.mp4"
 	title="Caption text"
 	description="What happens in the clip, described as fully as possible." />
+```
+
+#### `Dimensions`
+
+`src/lib/client/ui/markdown/dimensions/Dimensions.svelte`
+
+An animated SVG of a shape gaining a dimension, for the testing pages: regular expressions test
+along a line, custom formats across a square, and quality profiles through a cube. `stage` sets what
+it draws, and each stage starts where the one before it ends: `1` draws a dot out into a line, `2`
+sweeps the line into a square, and `3` turns the camera and extrudes the square into a cube. The
+geometry lives in `geometry.ts` next to it: a box whose width, height, and depth grow from zero,
+projected through a camera that can turn, with faces and edges that point away from the camera drawn
+as hidden.
+
+Edges and dots use `accent-solid`, faces `accent-bg`, and hidden edges and dots `border`, so it
+follows the theme. As the camera turns in stage 3, the dots fade into spheres: a radial gradient
+from the accent mixed toward white to the accent mixed toward black, lit from the top left. The
+shape is drawn at the same scale on every page, so the line, square, and cube share an edge length.
+Prerendered HTML shows the finished shape; after hydration the animation plays once, when the figure
+scrolls into view. With reduced motion, it stays on the finished shape. `description` is its
+accessible name and replaces it in the Markdown mirrors, and the `require-media-alt` lint rule
+requires it.
+
+`from` plays every stage from that one up to `stage`, pausing briefly between them, so
+`from={1} stage={3}` runs the whole sequence from dot to cube. `loop` plays it forwards, holds,
+plays it backwards, and repeats, pausing while the figure is out of view.
+
+| Prop          | Type          | Required | Default |
+| ------------- | ------------- | -------- | ------- |
+| `stage`       | `1 \| 2 \| 3` | yes      |         |
+| `from`        | `1 \| 2 \| 3` | no       | `stage` |
+| `loop`        | `boolean`     | no       | `false` |
+| `description` | `string`      | yes      |         |
+
+```svelte
+<Dimensions
+	stage={1}
+	description="A dot stretches out into a horizontal line." />
+```
+
+#### `InlineIcon`
+
+`src/lib/client/ui/markdown/icon/InlineIcon.svelte`
+
+A Lucide icon inside a sentence, for naming a Profilarr control by the icon it shows, like the
+sliders on the profile menu. `icon` picks one from `INLINE_ICONS` in `icons.ts` next to it, so a
+page can only use icons added there, and an unknown name fails the build. The icon is `1em` square
+and takes the text color, so it matches the text around it. It renders as a `<span>`, so it can sit
+inside a paragraph. `label` is its accessible name and replaces it in the Markdown mirrors, and the
+`require-media-alt` lint rule requires it.
+
+| Prop    | Type             | Required | Default |
+| ------- | ---------------- | -------- | ------- |
+| `icon`  | `InlineIconName` | yes      |         |
+| `label` | `string`         | yes      |         |
+
+```md
+Choose a profile from the profile menu (<InlineIcon icon="sliders" label="sliders icon" />).
 ```
 
 ## Semantic Tokens

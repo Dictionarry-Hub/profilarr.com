@@ -2,6 +2,7 @@
 	import Tabs from '$lib/client/ui/tabs/Tabs.svelte';
 	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
 	import ImagePreview from '$lib/client/ui/markdown/image/ImagePreview.svelte';
+	import { captionParts } from '$lib/client/ui/markdown/image/caption';
 	import type { Screenshot } from '$lib/shared/utils/llm/components.js';
 
 	interface Props {
@@ -59,6 +60,7 @@
 					light={item.light}
 					dark={item.dark}
 					alt={item.alt}
+					caption={item.caption}
 					border={item.border}
 					onpreview={() => openPreview(item.label)} />
 			{:else}
@@ -66,9 +68,13 @@
 					class="flex aspect-video items-center justify-center rounded-xl border border-dashed border-border bg-surface-muted font-mono text-xs text-text-muted">
 					Screenshot: {item.label}
 				</div>
-			{/if}
-			{#if item.caption}
-				<p class="mt-3 text-center text-xs text-text-muted">{item.caption}</p>
+				{#if item.caption}
+					<p class="mt-3 text-center text-xs text-text-muted">
+						{#each captionParts(item.caption) as part, i (i)}{#if part.code}<code
+									>{part.text}</code
+								>{:else}{part.text}{/if}{/each}
+					</p>
+				{/if}
 			{/if}
 		{/snippet}
 	</Tabs>
@@ -78,3 +84,11 @@
 		bind:index={previewIndex}
 		images={previewable} />
 </div>
+
+<style>
+	/* The tab panel already spaces its content, so a captioned image's figure
+	   drops its own margin. */
+	.screenshots :global(.theme-figure) {
+		margin-block: 0;
+	}
+</style>

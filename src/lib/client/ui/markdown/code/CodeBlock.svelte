@@ -4,6 +4,7 @@
 	import Button from '$lib/client/ui/button/Button.svelte';
 	import { highlight } from './highlight.js';
 	import { wrapIndents } from './indent.js';
+	import { markSegments, stripMarks } from './marks.js';
 
 	interface CodeItem {
 		title: string;
@@ -15,6 +16,9 @@
 	interface Props {
 		items: CodeItem[];
 		overflow?: 'scroll' | 'wrap';
+		/** Render `[text]` in the code as a highlighted range, without the
+		    brackets. Marked code renders as plain text, without Shiki. */
+		marks?: boolean;
 		footer?: Snippet<[number]>;
 		headerActions?: Snippet;
 	}
@@ -24,7 +28,7 @@
 		html: string;
 	}
 
-	let { items, overflow = 'scroll', footer, headerActions }: Props = $props();
+	let { items, overflow = 'scroll', marks = false, footer, headerActions }: Props = $props();
 
 	let activeTab = $state(0);
 	let copied = $state(false);
@@ -36,6 +40,7 @@
 	}
 
 	$effect(() => {
+		if (marks) return;
 		const index = activeTab;
 		const item = items[index];
 		if (!item) return;
@@ -59,7 +64,7 @@
 	async function copyToClipboard() {
 		const code = items[activeTab].code.trim();
 		try {
-			await navigator.clipboard.writeText(code);
+			await navigator.clipboard.writeText(marks ? stripMarks(code) : code);
 			copied = true;
 			setTimeout(() => {
 				copied = false;
@@ -136,7 +141,17 @@
 			<div
 				class="code-panel"
 				class:hidden={index !== activeTab}>
-				{#if rendered?.key === highlightKey(code, item.language)}
+				{#if marks}
+					{@const indents = wrapIndents(stripMarks(code), item.language)}
+					<pre><code
+							>{#each code.split('\n') as line, i (i)}{i > 0 ? '\n' : ''}<span
+									class="line"
+									style:--indent={indents[i]}
+									>{#each markSegments(line) as segment, j (j)}{#if segment.marked}<mark
+												>{segment.text}</mark
+											>{:else}{segment.text}{/if}{/each}</span
+								>{/each}</code></pre>
+				{:else if rendered?.key === highlightKey(code, item.language)}
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -- highlighted code from Shiki -->
 					{@html rendered.html}
 				{:else}
@@ -270,6 +285,14 @@
 		background: none;
 		padding: 0;
 		border-radius: 0;
+	}
+
+	/* A marked range, from `marks` mode. */
+	.code-panel mark {
+		background: var(--theme-success-bg);
+		color: var(--theme-success-text);
+		padding: 0.0625rem 0.125rem;
+		margin: 0 -0.125rem;
 	}
 
 	/* Wrap at spaces, and break a word only when it can't fit on a line of its

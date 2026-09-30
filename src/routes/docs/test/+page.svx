@@ -3,7 +3,65 @@ layout: docs
 title: Test
 slug: test
 blurb: Checking your configuration before it reaches Radarr or Sonarr.
+author: https://github.com/santiagosayshey
 order: 5
+next: [regular-expression-testing]
 ---
 
-TODO: Checking your configuration before it reaches Radarr or Sonarr. Covers what each kind of test checks, that every test needs the optional parser service (the Docker page covers running it), that saving test cases needs a database you maintain, and links to each page in this section.
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+	import { firstDay, weeksLater, regression, entityTests, entityTestColumns } from './data';
+</script>
+
+<Callout type="info">
+
+Testing is optional. It's most useful if you maintain your own configuration, because every change you make can break something you decided earlier. If you sync a database and only make the occasional change, you can skip this section and come back when you need it.
+
+</Callout>
+
+[Building](/docs/build) a configuration means making lots of small decisions: which release groups you trust, which sources you prefer, how much lossless audio is worth, and so on. The regular expressions, custom formats, and quality profiles you end up with are the results of those decisions. But a result can't tell you why it looks the way it does, or which releases you had in mind when you made it. That part stays in your head.
+
+Consider an example; you want a regular expression that matches lossless DTS audio. You have three releases in front of you, one lossless and two lossy, and you write `DTS-HD.MA`, the label you've seen on *most* lossless DTS releases. It matches the first and not the other two, which is what you want.
+
+<CodeBlock items={firstDay} marks />
+
+Weeks later a lossless release comes through labelled just `DTS-HD`, with no `MA`, and your expression misses it. You look at that release, shorten the expression to `DTS-HD`, and check it matches.
+
+<CodeBlock items={weeksLater} marks />
+
+What you didn't check was the lossy release from the first day. `DTS-HD.HRA` contains `DTS-HD`, so it matches now too.
+
+<CodeBlock items={regression} marks />
+
+This is a [_regression_](https://en.wikipedia.org/wiki/Software_regression): something you had right, broken by a later change made while you were looking at something else. Nothing told you, because the decision that HRA must not match only ever existed in your head.
+
+Testing takes those decisions out of your head. You write down a release and what should happen to it, and re-run that check after every change, so a regression shows up as a failed test instead of a wrong download weeks later. Each kind of entity has its own kind of test:
+
+<div class="mb-5">
+<AdaptiveList
+	data={entityTests}
+	columns={entityTestColumns}
+	href={(row) => row.href}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'entity'}
+			<span class="font-medium text-link-text group-hover/row:underline">{row.entity}</span>
+		{:else}
+			{row.test}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="font-medium text-link-text group-hover/row:underline">{row.entity}</div>
+			<div class="text-sm text-text-muted">{row.test}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="info">
+
+Every test in this section runs through the [parser](/docs/installation#the-parser), so set it up before you start.
+
+</Callout>

@@ -10,7 +10,9 @@ describe('require-media-alt', () => {
 		const content = [
 			'<ThemeImage dark="/a.png" light="/b.png" alt="The quality profile scoring table" />',
 			'![The custom format testing tab](/images/test.png)',
-			'<Video src="/v.mp4" description="A release is grabbed, then upgraded twice as better ones appear." />'
+			'<Video src="/v.mp4" description="A release is grabbed, then upgraded twice as better ones appear." />',
+			'<Dimensions stage={1} description="A dot stretches out into a line." />',
+			'Open the menu (<InlineIcon icon="sliders" label="sliders icon" />).'
 		].join('\n');
 
 		expect(check(content)).toEqual([]);
@@ -30,5 +32,19 @@ describe('require-media-alt', () => {
 		expect(violations[0].message).toContain('too short');
 		expect(violations[1].message).toContain('missing');
 		expect(violations[2].message).toContain('Video description is missing');
+	});
+
+	it('flags an animation without a description', () => {
+		const violations = check('<Dimensions stage={2} />');
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0].message).toContain('Dimensions description is missing');
+	});
+
+	it('flags an inline icon without a label', () => {
+		const violations = check('Open the menu (<InlineIcon icon="sliders" label=" " />).');
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0].message).toContain('InlineIcon label is missing');
 	});
 });

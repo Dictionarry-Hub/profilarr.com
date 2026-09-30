@@ -3,6 +3,7 @@
 	import Button from '$lib/client/ui/button/Button.svelte';
 	import Dialog from '$lib/client/ui/dialog/Dialog.svelte';
 	import ThemeImage from './ThemeImage.svelte';
+	import { captionParts } from './caption';
 	import type { Component } from 'svelte';
 
 	interface PreviewImage {
@@ -93,7 +94,10 @@
 				{#if image.caption || many}
 					<figcaption
 						class="mt-3 flex w-0 min-w-full items-start justify-between gap-4 text-sm text-text-soft">
-						<span>{image.caption ?? ''}</span>
+						<span
+							>{#each captionParts(image.caption ?? '') as part, i (i)}{#if part.code}<code
+										>{part.text}</code
+									>{:else}{part.text}{/if}{/each}</span>
 						{#if many}
 							<span class="shrink-0 font-mono">{index + 1} / {images.length}</span>
 						{/if}

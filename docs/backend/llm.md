@@ -160,17 +160,19 @@ to `+page.svx` instead of in its `<script>` block. The page imports that module 
 docs mirror routes import the same module and pass it to `componentsToMarkdown`
 (`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
 `AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
-fenced block per tab under its title, a `FileTree` becomes a plain-text tree like the `tree` command
-prints, a `Screenshots` becomes each image with its caption, and a `Callout` becomes a blockquote
-led by its type. Columns are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a
-cell for the mirror, so styling the page adds in snippets (badges, links, placeholders) has a text
-form. A tag that names data the module doesn't export, and any other component, stays as it is.
+fenced block per tab under its title (a `marks` block gets a line after it saying the square
+brackets mark matched text), a `FileTree` becomes a plain-text tree like the `tree` command prints,
+a `Screenshots` becomes each image with its caption, and a `Callout` becomes a blockquote led by its
+type. Columns are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a cell for the
+mirror, so styling the page adds in snippets (badges, links, placeholders) has a text form. A tag
+that names data the module doesn't export, and any other component, stays as it is.
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
-`![alt](light image)`, so a model can read the alt text or fetch the image, and a `Video` becomes
-its title and `description` followed by a link to the file. The `require-media-alt` lint rule makes
-sure that text exists.
+`![alt](light image)` followed by its caption, so a model can read the alt text or fetch the image,
+a `Video` becomes its title and `description` followed by a link to the file, a `Dimensions`
+animation becomes its `description`, and an `InlineIcon` becomes its `label`. The
+`require-media-alt` lint rule makes sure that text exists.
 
 A docs page with `next` frontmatter ends its mirror with a `## Next` list of those pages, each a
 link with its blurb, matching the footer on the web page.
