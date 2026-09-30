@@ -845,6 +845,20 @@ by default; `overflow="wrap"` wraps them at spaces instead. A wrapped line conti
 indentation, or just after the comment marker and its space when the line has a comment, so a long
 comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that column per line.
 
+With `marks`, `[text]` in the code renders as a `<mark>` in the success tokens, square-cornered,
+without the brackets, for showing what a pattern matched in a list of strings. Marked code renders as plain text
+and skips Shiki, and the copy button copies the code without the brackets. `markSegments` and
+`stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the brackets as written, so
+the plain-text form still shows the ranges.
+
+| Prop            | Type                 | Required | Default    |
+| --------------- | -------------------- | -------- | ---------- |
+| `items`         | `CodeItem[]`         | yes      |            |
+| `overflow`      | `'scroll' \| 'wrap'` | no       | `'scroll'` |
+| `marks`         | `boolean`            | no       | `false`    |
+| `footer`        | `Snippet<[number]>`  | no       |            |
+| `headerActions` | `Snippet`            | no       |            |
+
 #### `FileTree`
 
 `src/lib/client/ui/markdown/tree/FileTree.svelte`
