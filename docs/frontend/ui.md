@@ -1021,6 +1021,26 @@ plays it backwards, and repeats, pausing while the figure is out of view.
 	description="A dot stretches out into a horizontal line." />
 ```
 
+#### `InlineIcon`
+
+`src/lib/client/ui/markdown/icon/InlineIcon.svelte`
+
+A Lucide icon inside a sentence, for naming a Profilarr control by the icon it shows, like the
+sliders on the profile menu. `icon` picks one from `INLINE_ICONS` in `icons.ts` next to it, so a page
+can only use icons added there, and an unknown name fails the build. The icon is `1em` square and
+takes the text color, so it matches the text around it. It renders as a `<span>`, so it can sit
+inside a paragraph. `label` is its accessible name and replaces it in the Markdown mirrors, and the
+`require-media-alt` lint rule requires it.
+
+| Prop    | Type             | Required | Default |
+| ------- | ---------------- | -------- | ------- |
+| `icon`  | `InlineIconName` | yes      |         |
+| `label` | `string`         | yes      |         |
+
+```md
+Choose a profile from the profile menu (<InlineIcon icon="sliders" label="sliders icon" />).
+```
+
 ## Semantic Tokens
 
 All tokens use the `--theme-*` prefix. Components never use raw color values. Tailwind utilities are

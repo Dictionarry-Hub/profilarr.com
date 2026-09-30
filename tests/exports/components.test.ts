@@ -172,4 +172,10 @@ describe('mediaToMarkdown', () => {
 
 		expect(mediaToMarkdown(body)).toBe('**Animation.** A dot stretches out into a line.');
 	});
+
+	it('turns an inline icon into its label', () => {
+		const body = 'Open the profile menu (<InlineIcon icon="sliders" label="sliders icon" />).';
+
+		expect(mediaToMarkdown(body)).toBe('Open the profile menu (sliders icon).');
+	});
 });

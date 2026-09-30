@@ -1,9 +1,10 @@
 import type { LintRule, Violation } from '../types.js';
 
-// Images, videos, and animations in authored pages need text versions: screen
-// readers read them, and the Markdown mirrors replace the media with them (see
-// mediaToMarkdown in src/lib/shared/utils/llm/components.ts). The minimum
-// lengths only catch placeholders; they can't judge a description.
+// Images, videos, animations, and inline icons in authored pages need text
+// versions: screen readers read them, and the Markdown mirrors replace the media
+// with them (see mediaToMarkdown in src/lib/shared/utils/llm/components.ts). The
+// minimum lengths only catch placeholders; they can't judge a description. An
+// icon's label only has to exist, since it stands in for a word or two.
 
 export const MIN_ALT_LENGTH = 15;
 export const MIN_VIDEO_DESCRIPTION_LENGTH = 50;
@@ -74,6 +75,17 @@ const rule: LintRule = {
 						content,
 						match.index,
 						`Dimensions description is ${description ? 'too short' : 'missing'}. Describe what the animation shows in at least ${MIN_ALT_LENGTH} characters.`
+					);
+				}
+			}
+
+			for (const match of content.matchAll(/<InlineIcon\b[\s\S]*?\/>/g)) {
+				if (!attribute(match[0], 'label')?.trim()) {
+					report(
+						path,
+						content,
+						match.index,
+						'InlineIcon label is missing. Say what the icon stands for, as in label="sliders icon". Screen readers read it, and it replaces the icon in the Markdown mirror.'
 					);
 				}
 			}

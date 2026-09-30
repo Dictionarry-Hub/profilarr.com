@@ -11,7 +11,8 @@ describe('require-media-alt', () => {
 			'<ThemeImage dark="/a.png" light="/b.png" alt="The quality profile scoring table" />',
 			'![The custom format testing tab](/images/test.png)',
 			'<Video src="/v.mp4" description="A release is grabbed, then upgraded twice as better ones appear." />',
-			'<Dimensions stage={1} description="A dot stretches out into a line." />'
+			'<Dimensions stage={1} description="A dot stretches out into a line." />',
+			'Open the menu (<InlineIcon icon="sliders" label="sliders icon" />).'
 		].join('\n');
 
 		expect(check(content)).toEqual([]);
@@ -38,5 +39,12 @@ describe('require-media-alt', () => {
 
 		expect(violations).toHaveLength(1);
 		expect(violations[0].message).toContain('Dimensions description is missing');
+	});
+
+	it('flags an inline icon without a label', () => {
+		const violations = check('Open the menu (<InlineIcon icon="sliders" label=" " />).');
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0].message).toContain('InlineIcon label is missing');
 	});
 });

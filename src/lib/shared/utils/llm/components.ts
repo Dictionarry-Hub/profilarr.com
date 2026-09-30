@@ -112,11 +112,12 @@ function attributes(tag: string): Record<string, string> {
 	return Object.fromEntries([...tag.matchAll(/(\w+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
 }
 
-/** Replaces ThemeImage, Video, and Dimensions tags with Markdown a model can
-    read: an image becomes its alt text linked to the light version of the
-    file, followed by its caption, a video becomes its title, description, and
-    a link, and an animation becomes its description. Used by every article
-    mirror (docs, dev logs, wiki), since it needs no page data. */
+/** Replaces ThemeImage, Video, Dimensions, and InlineIcon tags with Markdown a
+    model can read: an image becomes its alt text linked to the light version
+    of the file, followed by its caption, a video becomes its title,
+    description, and a link, an animation becomes its description, and an
+    inline icon becomes its label. Used by every article mirror (docs, dev
+    logs, wiki), since it needs no page data. */
 export function mediaToMarkdown(body: string): string {
 	return body
 		.replace(/<ThemeImage\b[\s\S]*?\/>/g, (tag) => {
@@ -135,7 +136,8 @@ export function mediaToMarkdown(body: string): string {
 		.replace(/<Dimensions\b[\s\S]*?\/>/g, (tag) => {
 			const { description } = attributes(tag);
 			return description ? `**Animation.** ${description}` : tag;
-		});
+		})
+		.replace(/<InlineIcon\b[\s\S]*?\/>/g, (tag) => attributes(tag).label || tag);
 }
 
 /** Each screenshot as an image linked to its light version, with its caption.
