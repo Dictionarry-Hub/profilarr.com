@@ -16,7 +16,7 @@ order: 5
 
 <Callout type="info">
 
-Testing is optional. It pays off if you maintain your own configuration, because every change you make can break something you decided earlier. If you sync a database and only make the occasional change, you can skip this section and come back when you need it.
+Testing is optional. It's most useful if you maintain your own configuration, because every change you make can break something you decided earlier. If you sync a database and only make the occasional change, you can skip this section and come back when you need it.
 
 </Callout>
 
@@ -61,6 +61,6 @@ Testing takes those decisions out of your head. You write down a release and wha
 
 <Callout type="info">
 
-Every test runs through the [parser](/docs/installation#the-parser), an optional companion service that reads release titles the way Radarr and Sonarr do, using the same .NET regex engine. Without it, the Testing tabs don't work.
+Every test in this section runs through the [parser](/docs/installation#the-parser), so set it up before you start.
 
 </Callout>
