@@ -848,8 +848,8 @@ comment reads as one aligned block. `wrapIndent` in `indent.ts` works out that c
 With `marks`, `[text]` in the code renders as a `<mark>` in the success tokens, square-cornered,
 without the brackets, for showing what a pattern matched in a list of strings. Marked code renders as plain text
 and skips Shiki, and the copy button copies the code without the brackets. `markSegments` and
-`stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the brackets as written, so
-the plain-text form still shows the ranges.
+`stripMarks` in `marks.ts` do the splitting. The Markdown mirror ships the brackets as written and
+adds a line after the block saying what they mean.
 
 | Prop            | Type                 | Required | Default    |
 | --------------- | -------------------- | -------- | ---------- |

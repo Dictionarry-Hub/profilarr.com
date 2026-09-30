@@ -38,6 +38,14 @@ describe('markdownCode', () => {
 
 		expect(markdown).toBe('`compose.yml`\n\n```yaml\na: 1\n```');
 	});
+
+	it('explains the brackets of a marked block', () => {
+		const markdown = markdownCode([{ title: 'DTS', language: 'text', code: 'x.[DTS].y' }], true);
+
+		expect(markdown).toBe(
+			'`DTS`\n\n```text\nx.[DTS].y\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
+		);
+	});
 });
 
 describe('markdownCallout', () => {
@@ -99,6 +107,14 @@ describe('componentsToMarkdown', () => {
 		const body = '<CodeBlock items={example} overflow="wrap" />';
 
 		expect(componentsToMarkdown(body, data)).toBe('`crontab`\n\n```sh\necho hi\n```');
+	});
+
+	it('adds the brackets note for a marked CodeBlock', () => {
+		const body = '<CodeBlock items={example} marks />';
+
+		expect(componentsToMarkdown(body, data)).toBe(
+			'`crontab`\n\n```sh\necho hi\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
+		);
 	});
 
 	it('replaces CodeBlock and Callout tags', () => {

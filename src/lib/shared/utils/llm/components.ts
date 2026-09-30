@@ -67,8 +67,15 @@ function codeItem(item: CodeExample): string {
 	return `\`${item.title}\`\n\n${fence}${item.language}\n${item.code.trim()}\n${fence}`;
 }
 
-export function markdownCode(items: CodeExample[]): string {
-	return join(items.map(codeItem));
+const MARKS_NOTE =
+	'Square brackets mark the text the expression matched. They are not part of the string.';
+
+/** With `marks`, the note explains the `[text]` ranges a marked CodeBlock
+    renders as highlights, since the mirror ships the brackets as written. */
+export function markdownCode(items: CodeExample[], marks = false): string {
+	const blocks = items.map(codeItem);
+	if (marks) blocks.push(MARKS_NOTE);
+	return join(blocks);
 }
 
 /** A plain-text tree like `tree` prints, in a fenced block. Folders end in a
@@ -169,9 +176,9 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 	return body
 		.replace(WRAPPED_LIST, (_, list: string) => adaptiveList(list))
 		.replace(BARE_LIST, adaptiveList)
-		.replace(/<CodeBlock\s+items=\{(\w+)\}[^>]*\/>/g, (tag, name) => {
+		.replace(/<CodeBlock\s+items=\{(\w+)\}([^>]*)\/>/g, (tag, name, rest: string) => {
 			const items = data[name];
-			return isCodeList(items) ? markdownCode(items) : tag;
+			return isCodeList(items) ? markdownCode(items, /\bmarks\b/.test(rest)) : tag;
 		})
 		.replace(/<FileTree\s+items=\{(\w+)\}\s*\/>/g, (tag, name) => {
 			const items = data[name];
