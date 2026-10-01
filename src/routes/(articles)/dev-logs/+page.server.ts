@@ -1,8 +1,11 @@
 import type { DevLogMeta } from '$lib/shared/utils/llm/index.js';
 
-const modules = import.meta.glob<{ metadata: DevLogMeta }>('/src/routes/dev-logs/**/+page.svx', {
-	eager: true
-});
+// `?articles?` matches the `(articles)` route group. Vite treats escaped
+// parentheses differently in dev and build, so the pattern avoids them.
+const modules = import.meta.glob<{ metadata: DevLogMeta }>(
+	'/src/routes/?articles?/dev-logs/**/+page.svx',
+	{ eager: true }
+);
 
 export function load() {
 	const logs = Object.entries(modules)

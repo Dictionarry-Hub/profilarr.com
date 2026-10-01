@@ -5,7 +5,6 @@
 		{ "route": "/pcd", "reason": "client-side redirect stub to /pcd/{preference}/" }
 	],
 	"pending": [
-		{ "route": "/articles", "reason": "articles section page, placeholder" },
 		{
 			"route": "/pcd/*",
 			"reason": "PCD entity browser, remaining mirror layers not yet built; regular expression detail mirrors are live and guaranteed by their own prerender"

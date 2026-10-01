@@ -9,13 +9,15 @@ export const prerender = true;
 // differently in dev and build, so the pattern avoids them.
 const docModules = import.meta.glob(['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx']);
 
+// `?articles?` matches the `(articles)` route group. Vite treats escaped
+// parentheses differently in dev and build, so the pattern avoids them.
 const devLogModules = import.meta.glob<{ metadata: { created: string } }>(
-	'/src/routes/dev-logs/**/+page.svx',
+	'/src/routes/?articles?/dev-logs/**/+page.svx',
 	{ eager: true }
 );
 
 const wikiModules = import.meta.glob<{ metadata: { created: string } }>(
-	'/src/routes/wiki/**/+page.svx',
+	'/src/routes/?articles?/wiki/**/+page.svx',
 	{ eager: true }
 );
 

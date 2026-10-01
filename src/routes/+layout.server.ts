@@ -65,13 +65,16 @@ export async function load() {
 			eager: true
 		}
 	);
+	// `?articles?` matches the `(articles)` route group. Vite treats escaped
+	// parentheses differently in dev and build, so the pattern avoids them.
 	const devLogFiles = import.meta.glob<{ metadata: ArticleMeta }>(
-		'/src/routes/dev-logs/**/+page.svx',
+		'/src/routes/?articles?/dev-logs/**/+page.svx',
 		{ eager: true }
 	);
-	const wikiFiles = import.meta.glob<{ metadata: ArticleMeta }>('/src/routes/wiki/**/+page.svx', {
-		eager: true
-	});
+	const wikiFiles = import.meta.glob<{ metadata: ArticleMeta }>(
+		'/src/routes/?articles?/wiki/**/+page.svx',
+		{ eager: true }
+	);
 
 	const docs = docsNav(docFiles);
 	const devLogs = articleNav(devLogFiles, '/dev-logs');

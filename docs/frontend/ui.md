@@ -606,24 +606,23 @@ page and gets NavGroup's active treatment on that page; without it the left side
 when the current path is `href` or one of `sectionPaths`, or starts with one of them followed by
 `/`. `sectionPaths` is for sections whose pages live outside `href`.
 
-The sidebar has three sections. Docs links to `/docs` and stays open. The PCD subtree is labelled
-with the active database's name and icon, links to its landing page at `/pcd/{database}`, and uses
+The sidebar has four sections. Home links to `/` and stays open. The PCD subtree is labelled with
+the active database's name and icon, links to its landing page at `/pcd/{database}`, and uses
 `'auto'`; switching the database happens in the navbar database switcher (see
-[backend/content.md](../backend/content.md#database-selection)). Articles links to `/articles`, uses
-`'auto'`, and passes `/dev-logs` and `/wiki` as `sectionPaths`.
+[backend/content.md](../backend/content.md#database-selection)). Dev Logs and Wiki link to their
+list pages, use `'auto'`, and list their articles directly as `NavItem`s.
 
 ```svelte
 <NavGroupLabel
-	label="Articles"
-	href="/articles"
-	icon={Library}
-	open="auto"
-	sectionPaths={['/dev-logs', '/wiki']}>
-	<NavGroup
-		label="Dev Logs"
-		href="/dev-logs">
-		<!-- ... -->
-	</NavGroup>
+	label="Dev Logs"
+	href="/dev-logs"
+	icon={Rss}
+	open="auto">
+	{#each data.devLogs as log (log.href)}
+		<NavItem
+			label={log.title}
+			href={log.href} />
+	{/each}
 </NavGroupLabel>
 ```
 

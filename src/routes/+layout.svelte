@@ -6,7 +6,6 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
-		Library,
 		BookText,
 		Wrench,
 		House,
@@ -355,41 +354,32 @@
 			</NavGroupLabel>
 		{/if}
 
-		<!-- Authored articles: dev logs and wiki share one section. -->
-		{#if data.devLogs.length > 0 || data.wiki.length > 0}
+		<!-- Authored articles: dev logs and wiki are sections of their own. -->
+		{#if data.devLogs.length > 0}
 			<NavGroupLabel
-				label="Articles"
-				href="/articles"
-				icon={Library}
-				open="auto"
-				sectionPaths={['/dev-logs', '/wiki']}>
-				{#if data.devLogs.length > 0}
-					<NavGroup
-						label="Dev Logs"
-						href="/dev-logs"
-						icon={Rss}
-						class="mb-1">
-						{#each data.devLogs as log (log.href)}
-							<NavItem
-								label={log.title}
-								href={log.href} />
-						{/each}
-					</NavGroup>
-				{/if}
+				label="Dev Logs"
+				href="/dev-logs"
+				icon={Rss}
+				open="auto">
+				{#each data.devLogs as log (log.href)}
+					<NavItem
+						label={log.title}
+						href={log.href} />
+				{/each}
+			</NavGroupLabel>
+		{/if}
 
-				{#if data.wiki.length > 0}
-					<NavGroup
-						label="Wiki"
-						href="/wiki"
-						icon={BookText}
-						class="mb-1">
-						{#each data.wiki as article (article.href)}
-							<NavItem
-								label={article.title}
-								href={article.href} />
-						{/each}
-					</NavGroup>
-				{/if}
+		{#if data.wiki.length > 0}
+			<NavGroupLabel
+				label="Wiki"
+				href="/wiki"
+				icon={BookText}
+				open="auto">
+				{#each data.wiki as article (article.href)}
+					<NavItem
+						label={article.title}
+						href={article.href} />
+				{/each}
 			</NavGroupLabel>
 		{/if}
 

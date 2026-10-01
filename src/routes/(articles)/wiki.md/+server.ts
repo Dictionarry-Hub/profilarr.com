@@ -3,9 +3,12 @@ import { wikiIndexToMarkdown, type WikiMeta } from '$lib/shared/utils/llm/index.
 
 export const prerender = true;
 
-const modules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/**/+page.svx', {
-	eager: true
-});
+// `?articles?` matches the `(articles)` route group. Vite treats escaped
+// parentheses differently in dev and build, so the pattern avoids them.
+const modules = import.meta.glob<{ metadata: WikiMeta }>(
+	'/src/routes/?articles?/wiki/**/+page.svx',
+	{ eager: true }
+);
 
 export const GET: RequestHandler = () => {
 	const articles = Object.entries(modules)

@@ -32,14 +32,17 @@ const docSources = import.meta.glob<string>(
 	}
 );
 
+// `?articles?` matches the `(articles)` route group. Vite treats escaped
+// parentheses differently in dev and build, so the pattern avoids them.
 const devLogModules = import.meta.glob<{ metadata: DevLogMeta }>(
-	'/src/routes/dev-logs/**/+page.svx',
+	'/src/routes/?articles?/dev-logs/**/+page.svx',
 	{ eager: true }
 );
 
-const wikiModules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/**/+page.svx', {
-	eager: true
-});
+const wikiModules = import.meta.glob<{ metadata: WikiMeta }>(
+	'/src/routes/?articles?/wiki/**/+page.svx',
+	{ eager: true }
+);
 
 export const GET: RequestHandler = async () => {
 	const docMetas = Object.entries(docModules).map(([path, module]) => ({

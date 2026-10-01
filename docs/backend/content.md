@@ -158,8 +158,8 @@ details, see [tooling/api.md](../tooling/api.md).
 ### Dev Logs and Wiki Articles
 
 Site-specific content written as mdsvex markdown. Dev logs cover releases and development progress.
-Wiki articles cover broader topics. The Articles section page at `/articles`
-(`src/routes/articles/+page.svelte`) introduces both and heads the sidebar section that groups them.
+Wiki articles cover broader topics. Each has its own sidebar section, headed by its list page at
+`/dev-logs` or `/wiki`.
 
 Both layers share the same article frontmatter and render through the same mdsvex layout
 (`src/lib/layouts/Article.svelte`, registered as both the `dev-logs` and `wiki` layout keys):
@@ -174,9 +174,11 @@ Both layers share the same article frontmatter and render through the same mdsve
 | `created` | Publish date, used for newest-first sorting                    |
 | `tags`    | Displayed as chips and indexed as search keywords              |
 
-Articles live at `src/routes/dev-logs/<slug>/+page.svx` and `src/routes/wiki/<slug>/+page.svx`. The
-sidebar nav, search index, and markdown artifact routes all glob these paths and derive the slug
-from the directory name.
+Articles live in the `(articles)` route group, at `src/routes/(articles)/dev-logs/<slug>/+page.svx`
+and `src/routes/(articles)/wiki/<slug>/+page.svx`, next to the `dev-logs.md` and `wiki.md` list
+mirrors. The group keeps the four folders together without changing any URL. The sidebar nav, search
+index, and markdown artifact routes all glob these paths, through `?articles?` for the same reason
+the docs globs use `?docs?`, and derive the slug from the directory name.
 
 ## PCD Pipeline
 

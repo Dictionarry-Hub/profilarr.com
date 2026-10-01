@@ -259,13 +259,13 @@ from the same compiled data the pages render, and a missing entity throws during
 
 Three pieces let a reader find the Markdown artifacts without a copy button.
 
-- **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention (`src/routes/llms.txt/`,
-  serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an H1, a blockquote summary of
-  Profilarr and the site, then sections linking every docs page in reading order, the API reference,
-  every dev log and wiki article with its blurb, and, per compiled PCD database, every quality
-  profile with its tags plus counts of the other entity types. It points to `/sitemap.xml` for the
-  full entity list rather than listing hundreds of entities, since the PCD list pages are not all
-  built. Served as plain text so the footer hook skips it.
+- **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention
+  (`src/routes/(meta)/llms.txt/`, serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an
+  H1, a blockquote summary of Profilarr and the site, then sections linking every docs page in
+  reading order, the API reference, every dev log and wiki article with its blurb, and, per compiled
+  PCD database, every quality profile with its tags plus counts of the other entity types. It points
+  to `/sitemap.xml` for the full entity list rather than listing hundreds of entities, since the PCD
+  list pages are not all built. Served as plain text so the footer hook skips it.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
