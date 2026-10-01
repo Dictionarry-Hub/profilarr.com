@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Deploy
+blurb: Getting your configuration into Radarr and Sonarr.
+order: 6
+---
+
+TODO: How configuration gets from Profilarr into Radarr and Sonarr, and what Profilarr can do with your instances once it's there. Covers adding instances, syncing, checking for drift, cleaning up entities Profilarr no longer manages, and automated upgrades and renames, with links to each page in this section. Notes that nothing here needs the parser service.

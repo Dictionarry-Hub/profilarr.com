@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import type { LintRule, Violation } from '../types.js';
 
 // Exempt/pending routes live in tooling/lint/md-mirror.json so they can be
-// edited without touching code. Entry syntax: an exact route ("/dev/ui"), or
+// edited without touching code. Entry syntax: an exact route ("/pcd"), or
 // a route ending in "/*" which matches everything beneath it ("/pcd/*").
 // "exempt" is permanent policy, "pending" is debt that shrinks to empty as
 // mirror layers land. See docs/backend/llm.md.

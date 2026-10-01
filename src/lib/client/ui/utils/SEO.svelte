@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { SITE_URL } from '$lib/shared/utils/llm/site.js';
+	import { isIndexable } from '$lib/shared/utils/seo/indexing.js';
 
 	const SITE_NAME = 'Profilarr';
 	const DEFAULT_DESCRIPTION = 'Configuration management platform for Radarr and Sonarr.';
@@ -23,9 +24,10 @@
 		markdown
 	}: Props = $props();
 	const canonicalUrl = $derived(`${SITE_URL}${page.url.pathname}`);
+	const indexable = $derived(isIndexable(page.url.pathname));
 	// The site name closes every title so searches for "profilarr <topic>" match; the home page
 	// passes the bare site name.
-	const documentTitle = $derived(title === SITE_NAME ? title : `${title} - ${SITE_NAME}`);
+	const documentTitle = $derived(title === SITE_NAME ? title : `${title} | ${SITE_NAME}`);
 
 	// Google reads the site name shown above results from WebSite structured data on the home
 	// page. `<` is escaped so the JSON can never close its script tag.
@@ -44,6 +46,11 @@
 	<link
 		rel="canonical"
 		href={canonicalUrl} />
+	{#if !indexable}
+		<meta
+			name="robots"
+			content="noindex" />
+	{/if}
 	{#if markdown}
 		<link
 			rel="alternate"

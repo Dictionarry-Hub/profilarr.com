@@ -43,7 +43,7 @@
 </script>
 
 <SEO
-	title={regex.name}
+	title="Regular Expression: {regex.name}"
 	description={regex.description ?? undefined}
 	markdown="{page.url.pathname}.md" />
 

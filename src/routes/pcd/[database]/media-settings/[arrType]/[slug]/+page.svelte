@@ -59,7 +59,7 @@
 </script>
 
 <SEO
-	title={settings.name}
+	title="Media Settings: {settings.name}"
 	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={settings.name}>

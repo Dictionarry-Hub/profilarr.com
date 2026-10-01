@@ -82,7 +82,12 @@
 			<button
 				type="button"
 				onclick={toggleOpen}
-				class="flex cursor-pointer items-center self-stretch rounded-control pr-1.5 pl-1.5 transition-colors hover:bg-surface-hover"
+				class="flex cursor-pointer items-center self-stretch pr-1.5 pl-1.5 transition-colors
+					{!href
+					? 'rounded-control hover:bg-surface-hover'
+					: isActive
+						? 'rounded-r-control hover:bg-surface-hover'
+						: 'rounded-r-control group-hover/header:bg-surface-hover hover:!bg-surface-hover-muted'}"
 				aria-label={isOpen ? 'Collapse group' : 'Expand group'}>
 				<svg
 					class="size-4 text-text-muted transition-transform {isOpen ? 'rotate-90' : ''}"

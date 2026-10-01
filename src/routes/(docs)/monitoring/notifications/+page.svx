@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Notifications
+blurb: Getting notified when something happens in Profilarr.
+order: 2
+---
+
+TODO: Getting notified when something happens. Covers the supported services (Discord, ntfy, Telegram, and webhooks), choosing which events each service receives, testing a service, and the notification history.

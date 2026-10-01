@@ -12,8 +12,6 @@ export interface DocMeta {
 	author?: string | string[];
 	blurb?: string;
 	order?: number;
-	/** Slug of the page this one is listed under in the sidebar. */
-	parent?: string;
 	/** Extra search terms that don't appear in the title, blurb, or headings. */
 	keywords?: string[];
 	/** Pages to point readers at next, in the page footer: docs slugs, or links
@@ -23,6 +21,9 @@ export interface DocMeta {
 
 export interface DocIndexEntry extends DocMeta {
 	slug: string;
+	/** Slug of the page this one is listed under, from its route: the slug
+	    minus its last segment. */
+	parent?: string;
 }
 
 /** A page another page points at, resolved from its frontmatter. */
@@ -33,20 +34,39 @@ export interface DocLink {
 }
 
 /** Slug of a docs page from the path of any file in its route directory, such
-    as `+page.svx` or `data.ts`: the directory name under `src/routes/docs/`, or
-    '' for the root page, which is the site's home page at `src/routes/`. */
+    as `+page.svx` or `data.ts`: the directory path under the `(docs)` route
+    group (`installation/docker`), or '' for the root page, which is the site's
+    home page at `src/routes/`. */
 export function docSlugFromPath(path: string): string {
-	return path.replace(/^\/src\/routes\/(docs\/)?/, '').replace(/\/?[^/]+$/, '');
+	return path.replace(/^\/src\/routes\/(\(docs\)\/)?/, '').replace(/\/?[^/]+$/, '');
 }
 
-/** Web path of a docs page: `/` for the root page, `/docs/{slug}` otherwise. */
+/** Slug of the page a docs page is listed under: its slug minus the last
+    segment, or undefined for a top-level page. */
+export function docParentSlug(slug: string): string | undefined {
+	const end = slug.lastIndexOf('/');
+	return end === -1 ? undefined : slug.slice(0, end);
+}
+
+/** A docs page's index entry from its source path and frontmatter. */
+export function docIndexEntry<T extends DocMeta>(
+	path: string,
+	meta: T
+): T & Pick<DocIndexEntry, 'slug' | 'parent'> {
+	const slug = docSlugFromPath(path);
+	const parent = docParentSlug(slug);
+	return { ...meta, slug, ...(parent ? { parent } : {}) };
+}
+
+/** Web path of a docs page: `/` for the root page, `/{slug}` otherwise. The
+    `(docs)` route group adds nothing to the URL. */
 export function docPath(slug: string): string {
-	return slug === '' ? '/' : `/docs/${slug}`;
+	return `/${slug}`;
 }
 
 /** Repository path of a docs page's source file. */
 export function docSourcePath(slug: string): string {
-	return slug === '' ? 'src/routes/+page.svx' : `src/routes/docs/${slug}/+page.svx`;
+	return slug === '' ? 'src/routes/+page.svx' : `src/routes/(docs)/${slug}/+page.svx`;
 }
 
 const REPO_URL = 'https://github.com/Dictionarry-Hub/profilarr.com';
@@ -88,7 +108,7 @@ export interface MoreInfoLink {
 
 /** Resolves MoreInfo's `pages` attribute: comma-separated docs slugs, each
     with an optional `#anchor` and an optional `: label` shown instead of the
-    page title, as in `docker, installation#the-parser: The parser`. Links
+    page title, as in `installation/docker, installation#the-parser: The parser`. Links
     use the page's own title; pages that share a title (Build and Test both
     have Custom Formats) need a label. Throws on an unknown slug so a typo
     fails the build instead of dropping a link. */
@@ -209,8 +229,8 @@ export function docNavEntries(nodes: DocNavNode[], parent?: string): DocIndexEnt
 }
 
 /** Top-level pages in reading order, each with its child pages in reading
-    order, nested as deep as `parent` goes. Throws on an unknown `parent` so a
-    typo fails the build instead of hiding a page. */
+    order, nested as deep as `parent` goes. Throws when a page's parent route
+    has no page of its own, so the page is not left out of the tree. */
 export function docTree<T extends DocIndexEntry>(docs: T[]): DocNode<T>[] {
 	const slugs = new Set(docs.map((doc) => doc.slug));
 	for (const doc of docs) {

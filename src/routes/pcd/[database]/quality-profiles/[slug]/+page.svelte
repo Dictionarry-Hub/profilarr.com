@@ -413,7 +413,7 @@
 {/snippet}
 
 <SEO
-	title={profile.name}
+	title="Quality Profile: {profile.name}"
 	description={profile.description ?? undefined}
 	markdown="{page.url.pathname}.md" />
 

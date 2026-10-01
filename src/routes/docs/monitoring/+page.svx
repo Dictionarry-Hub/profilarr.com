@@ -1,9 +1,0 @@
----
-layout: docs
-title: Monitoring
-slug: monitoring
-blurb: Keeping track of what Profilarr is doing.
-order: 7
----
-
-TODO: Keeping track of what Profilarr is doing. Covers where to look when something runs, fails, or changes: the job list and history, logs, notifications, and announcements, with links to each page in this section.

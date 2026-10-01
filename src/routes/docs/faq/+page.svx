@@ -1,9 +1,0 @@
----
-layout: docs
-title: FAQ
-slug: faq
-blurb: Answers to common questions and problems.
-order: 8
----
-
-TODO: Answers to common questions and problems. Covers things like the 403 error when logging in behind a reverse proxy without `ORIGIN`, test features disappearing when the parser service is down, cleanup deleting custom formats made by hand in Radarr or Sonarr, why Profilarr doesn't need your download client or access to your library, why jobs can't be started from the Jobs page, why a profile that targets x265 gives x265 a negative score, and why Profilarr has upgrades when the Arrs already upgrade releases, with links to the pages that explain each one.

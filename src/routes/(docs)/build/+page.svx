@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Build
+blurb: How Profilarr builds your configuration from a database and your own changes.
+order: 4
+---
+
+TODO: How configuration comes together in Profilarr before anything reaches Radarr or Sonarr. Covers building from a linked database plus your own changes, the entity types you can edit and how they relate (regular expressions feed custom formats, and custom formats are scored in quality profiles), the settings that affect every editor, such as blocking deletes of entities still in use and the sync prompt after saving, and links to each page in this section. Ends by pointing to both next steps: Test, which is optional, and Deploy.

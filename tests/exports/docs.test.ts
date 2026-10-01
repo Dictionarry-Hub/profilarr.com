@@ -10,6 +10,8 @@ import {
 	docPath,
 	docSourcePath,
 	docSlugFromPath,
+	docParentSlug,
+	docIndexEntry,
 	docToMarkdown,
 	docTree
 } from '$lib/shared/utils/llm/docs';
@@ -25,7 +27,7 @@ describe('docToMarkdown', () => {
 		);
 
 		expect(markdown).toBe(
-			'# Introduction\n\n> What Profilarr is.\n\nA page from the Profilarr documentation. Web version: https://profilarr.com/docs/introduction. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/introduction/+page.svx\n\nTODO: Covers Profilarr.'
+			'# Introduction\n\n> What Profilarr is.\n\nA page from the Profilarr documentation. Web version: https://profilarr.com/introduction. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/(docs)/introduction/+page.svx\n\nTODO: Covers Profilarr.'
 		);
 	});
 });
@@ -46,7 +48,7 @@ describe('docToMarkdown preamble', () => {
 		);
 
 		expect(markdown).toContain(
-			'A page from the Profilarr documentation by https://github.com/a, https://github.com/b, last updated 2026-09-27 (commit: https://github.com/Dictionarry-Hub/profilarr.com/commit/68e8963). Web version: https://profilarr.com/docs/installation. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/installation/+page.svx'
+			'A page from the Profilarr documentation by https://github.com/a, https://github.com/b, last updated 2026-09-27 (commit: https://github.com/Dictionarry-Hub/profilarr.com/commit/68e8963). Web version: https://profilarr.com/installation. Edit on GitHub: https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/(docs)/installation/+page.svx'
 		);
 	});
 });
@@ -66,9 +68,11 @@ describe('docSourcePath and docEditUrl', () => {
 	});
 
 	it('point at the route directory for other pages', () => {
-		expect(docSourcePath('docker')).toBe('src/routes/docs/docker/+page.svx');
-		expect(docEditUrl('docker')).toBe(
-			'https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/docs/docker/+page.svx'
+		expect(docSourcePath('installation/docker')).toBe(
+			'src/routes/(docs)/installation/docker/+page.svx'
+		);
+		expect(docEditUrl('installation/docker')).toBe(
+			'https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/(docs)/installation/docker/+page.svx'
 		);
 	});
 });
@@ -81,14 +85,14 @@ describe('docToMarkdown next links', () => {
 			'',
 			{},
 			[
-				{ title: 'Quick Start', blurb: 'A first setup.', href: '/docs/quick-start' },
-				{ title: 'FAQ', href: '/docs/faq' }
+				{ title: 'Quick Start', blurb: 'A first setup.', href: '/quick-start' },
+				{ title: 'FAQ', href: '/faq' }
 			]
 		);
 
 		expect(
 			markdown.endsWith(
-				'Body.\n\n## Next\n\n- [Quick Start](/docs/quick-start): A first setup.\n- [FAQ](/docs/faq)'
+				'Body.\n\n## Next\n\n- [Quick Start](/quick-start): A first setup.\n- [FAQ](/faq)'
 			)
 		).toBe(true);
 	});
@@ -100,16 +104,16 @@ describe('docToMarkdown next links', () => {
 
 describe('docNext', () => {
 	const docs = [
-		{ title: 'Introduction', slug: '', next: ['quick-start', 'custom-format-testing'] },
+		{ title: 'Introduction', slug: '', next: ['quick-start', 'test/custom-formats'] },
 		{ title: 'Quick Start', slug: 'quick-start', blurb: 'A first setup.' },
 		{ title: 'Test', slug: 'test' },
-		{ title: 'Custom Formats', slug: 'custom-format-testing', parent: 'test' }
+		{ title: 'Custom Formats', slug: 'test/custom-formats', parent: 'test' }
 	];
 
 	it('resolves slugs in order, with the parent title on child pages', () => {
 		expect(docNext(docs[0], docs)).toEqual([
-			{ title: 'Quick Start', blurb: 'A first setup.', href: '/docs/quick-start' },
-			{ title: 'Test: Custom Formats', blurb: undefined, href: '/docs/custom-format-testing' }
+			{ title: 'Quick Start', blurb: 'A first setup.', href: '/quick-start' },
+			{ title: 'Test: Custom Formats', blurb: undefined, href: '/test/custom-formats' }
 		]);
 	});
 
@@ -128,7 +132,7 @@ describe('docNext', () => {
 		};
 
 		expect(docNext(home, [...docs, home])).toEqual([
-			{ title: 'Quick Start', blurb: 'A first setup.', href: '/docs/quick-start' },
+			{ title: 'Quick Start', blurb: 'A first setup.', href: '/quick-start' },
 			{ title: 'Database Browser', blurb: 'Every entity.', href: '/pcd/dictionarry' }
 		]);
 	});
@@ -150,14 +154,16 @@ describe('docNext', () => {
 
 describe('moreInfoLinks', () => {
 	const docs = [
-		{ title: 'Docker', slug: 'docker', parent: 'installation' },
+		{ title: 'Docker', slug: 'installation/docker', parent: 'installation' },
 		{ title: 'Installation', slug: 'installation' }
 	];
 
 	it('resolves slugs to titled links, with anchors and labels', () => {
-		expect(moreInfoLinks('docker, installation#the-parser: The parser', docs)).toEqual([
-			{ label: 'Docker', href: '/docs/docker' },
-			{ label: 'The parser', href: '/docs/installation#the-parser' }
+		expect(
+			moreInfoLinks('installation/docker, installation#the-parser: The parser', docs)
+		).toEqual([
+			{ label: 'Docker', href: '/installation/docker' },
+			{ label: 'The parser', href: '/installation#the-parser' }
 		]);
 	});
 
@@ -167,7 +173,7 @@ describe('moreInfoLinks', () => {
 
 	it('serializes the tag as a line of links', () => {
 		expect(moreInfoToMarkdown('Step.\n\n<MoreInfo pages="installation" />', docs)).toBe(
-			'Step.\n\nMore info: [Installation](/docs/installation)'
+			'Step.\n\nMore info: [Installation](/installation)'
 		);
 	});
 });
@@ -193,9 +199,14 @@ describe('byDocOrder', () => {
 describe('docTree', () => {
 	it('nests child pages under their parent, both in reading order', () => {
 		const tree = docTree([
-			{ title: 'Docker', slug: 'docker', parent: 'installation', order: 1 },
+			{ title: 'Docker', slug: 'installation/docker', parent: 'installation', order: 1 },
 			{ title: 'Installation', slug: 'installation', order: 2 },
-			{ title: 'Reverse Proxy', slug: 'reverse-proxy', parent: 'installation', order: 2 },
+			{
+				title: 'Reverse Proxy',
+				slug: 'installation/reverse-proxy',
+				parent: 'installation',
+				order: 2
+			},
 			{ title: 'Introduction', slug: 'introduction', order: 1 }
 		]);
 
@@ -203,25 +214,38 @@ describe('docTree', () => {
 
 		expect(slugs).toEqual([
 			['introduction', []],
-			['installation', ['docker', 'reverse-proxy']]
+			['installation', ['installation/docker', 'installation/reverse-proxy']]
 		]);
 	});
 
 	it('nests a child page under a child page', () => {
 		const tree = docTree([
-			{ title: 'Traefik', slug: 'traefik', parent: 'reverse-proxy', order: 1 },
+			{
+				title: 'Traefik',
+				slug: 'installation/reverse-proxy/traefik',
+				parent: 'installation/reverse-proxy',
+				order: 1
+			},
 			{ title: 'Installation', slug: 'installation', order: 1 },
-			{ title: 'Reverse Proxies', slug: 'reverse-proxy', parent: 'installation', order: 1 }
+			{
+				title: 'Reverse Proxies',
+				slug: 'installation/reverse-proxy',
+				parent: 'installation',
+				order: 1
+			}
 		]);
 
-		expect(tree[0].children[0].slug).toBe('reverse-proxy');
-		expect(tree[0].children[0].children.map((child) => child.slug)).toEqual(['traefik']);
+		expect(tree[0].children[0].slug).toBe('installation/reverse-proxy');
+		expect(tree[0].children[0].children.map((child) => child.slug)).toEqual([
+			'installation/reverse-proxy/traefik'
+		]);
 	});
 
-	it('throws on an unknown parent', () => {
-		const build = () => docTree([{ title: 'Docker', slug: 'docker', parent: 'instalation' }]);
+	it('throws on a parent route without a page', () => {
+		const build = () =>
+			docTree([{ title: 'Docker', slug: 'instalation/docker', parent: 'instalation' }]);
 
-		expect(build).toThrow('Docs page "docker" has unknown parent "instalation"');
+		expect(build).toThrow('Docs page "instalation/docker" has unknown parent "instalation"');
 	});
 });
 
@@ -233,10 +257,38 @@ describe('docSlugFromPath, docPath, and docMarkdownPath', () => {
 		expect(docMarkdownPath('')).toBe('/index.md');
 	});
 
-	it('use the route directory name for other pages', () => {
-		expect(docSlugFromPath('/src/routes/docs/docker/+page.svx')).toBe('docker');
-		expect(docSlugFromPath('/src/routes/docs/docker/data.ts')).toBe('docker');
-		expect(docPath('docker')).toBe('/docs/docker');
-		expect(docMarkdownPath('docker')).toBe('/docs/docker.md');
+	it('use the route path under the (docs) group for other pages', () => {
+		expect(docSlugFromPath('/src/routes/(docs)/faq/+page.svx')).toBe('faq');
+		expect(docSlugFromPath('/src/routes/(docs)/installation/docker/+page.svx')).toBe(
+			'installation/docker'
+		);
+		expect(docSlugFromPath('/src/routes/(docs)/installation/docker/data.ts')).toBe(
+			'installation/docker'
+		);
+		expect(docPath('installation/docker')).toBe('/installation/docker');
+		expect(docMarkdownPath('installation/docker')).toBe('/installation/docker.md');
+	});
+});
+
+describe('docParentSlug and docIndexEntry', () => {
+	it('take the parent from the route, one level up', () => {
+		expect(docParentSlug('installation/reverse-proxy/traefik')).toBe(
+			'installation/reverse-proxy'
+		);
+		expect(docParentSlug('installation/docker')).toBe('installation');
+		expect(docParentSlug('installation')).toBeUndefined();
+		expect(docParentSlug('')).toBeUndefined();
+	});
+
+	it('build an entry with the slug and parent from the source path', () => {
+		expect(
+			docIndexEntry('/src/routes/(docs)/test/custom-formats/+page.svx', {
+				title: 'Custom Formats'
+			})
+		).toEqual({ title: 'Custom Formats', slug: 'test/custom-formats', parent: 'test' });
+		expect(docIndexEntry('/src/routes/(docs)/faq/+page.svx', { title: 'FAQ' })).toEqual({
+			title: 'FAQ',
+			slug: 'faq'
+		});
 	});
 });

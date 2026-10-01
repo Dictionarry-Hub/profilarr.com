@@ -138,13 +138,14 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 | Artifact      | URL                   | Content                                                  |
 | ------------- | --------------------- | -------------------------------------------------------- |
 | Home page     | `/index.md`           | Preamble from frontmatter, then the source body verbatim |
-| Docs page     | `/docs/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
+| Docs page     | `/{slug}.md`          | Preamble from frontmatter, then the source body verbatim |
 | Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
 | Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
 | Wiki index    | `/wiki.md`            | One line per article (title, date, blurb), newest first  |
 | Wiki article  | `/wiki/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
 
-The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
+The slug is the route directory name, the same derivation the nav uses; a docs page's slug is its
+route path (`installation/docker`), so its mirror sits next to its URL. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
 the web URL. Docs pages have no publish date or tags, so their context line names the docs, the
 page's authors when it has any, its last-updated date and commit link from git when the build has
@@ -157,7 +158,7 @@ intact, the same approach Anthropic's docs use. Components often carry real cont
 
 Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
 to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the
-docs mirror routes import the same module and pass it to `componentsToMarkdown`
+docs mirror route imports the same module and passes it to `componentsToMarkdown`
 (`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
 `AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
 fenced block per tab under its title (a `marks` block gets a line after it saying the square
@@ -258,19 +259,21 @@ from the same compiled data the pages render, and a missing entity throws during
 
 Three pieces let a reader find the Markdown artifacts without a copy button.
 
-- **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention (`src/routes/llms.txt/`,
-  serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an H1, a blockquote summary of
-  Profilarr and the site, then sections linking every docs page in reading order, the API reference,
-  every dev log and wiki article with its blurb, and, per compiled PCD database, every quality
-  profile with its tags plus counts of the other entity types. It points to `/sitemap.xml` for the
-  full entity list rather than listing hundreds of entities, since the PCD list pages are not all
-  built. Served as plain text so the footer hook skips it.
+- **`/llms.txt`**, per the [llms.txt](https://llmstxt.org/) convention
+  (`src/routes/(meta)/llms.txt/`, serializer `llmsTxt` in `src/lib/shared/utils/llm/llms.ts`): an
+  H1, a blockquote summary of Profilarr and the site, then sections linking every docs page in
+  reading order, the API reference, every dev log and wiki article with its blurb, and, per compiled
+  PCD database, every quality profile with its tags plus counts of the other entity types. It points
+  to `/pcd/{database}/nav.json` for the full entity list and explains how an entity's URL is built
+  from its name, rather than listing hundreds of entities, since the PCD list pages are not all
+  built and the sitemap lists only quality profiles. Served as plain text so the footer hook skips
+  it.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
   bakes the footer into the prerendered files. The same hook rewrites site-relative Markdown links
-  (`](/docs/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page pasted into
-  a chat on its own still resolves its links.
+  (`](/installation/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page
+  pasted into a chat on its own still resolves its links.
 - **Alternate link.** Pages with a Markdown version pass its path to the `SEO` component's
   `markdown` prop, which renders `<link rel="alternate" type="text/markdown">` in the head, so tools
   that fetch the HTML learn the Markdown version exists.
@@ -318,11 +321,11 @@ and forgetting its markdown mirror. See [tooling/lint.md](../tooling/lint.md) fo
   mirror of `X.html` is `X.md`, and the root `index.html` maps to `index.md`.
 - **Blacklist, not whitelist, in two lists.** Every page requires a mirror by default. The lists
   live in `tooling/lint/md-mirror.json` so they can be edited without touching code. `exempt` holds
-  pages that will never have a mirror (the `/dev/ui` showcase, redirect stubs); `pending` holds
-  route groups whose mirror layer has not been built yet, which is debt, not policy, and shrinks to
-  empty as layers land. Every entry is `{ "route", "reason" }`, where the route is either exact
-  (`/dev/ui`) or ends in `/*` to match everything beneath it (`/pcd/*`). Adding to either list is a
-  visible, reviewable act.
+  pages that will never have a mirror (redirect stubs such as `/pcd`); `pending` holds route groups
+  whose mirror layer has not been built yet, which is debt, not policy, and shrinks to empty as
+  layers land. Every entry is `{ "route", "reason" }`, where the route is either exact (`/pcd`) or
+  ends in `/*` to match everything beneath it (`/pcd/*`). Adding to either list is a visible,
+  reviewable act.
 - **Page-level mirrors are the minimum guarantee.** The rule enforces one `.md` per built page.
   Sub-page granularities (API tags and endpoints) are extra surface on top, guaranteed by their own
   build instead: artifact routes derive from the same parsed data the page renders, and a throwing

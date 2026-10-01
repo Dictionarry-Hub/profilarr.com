@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Cleanup
+blurb: Removing custom formats, profiles, and media that Profilarr no longer manages.
+order: 4
+---
+
+TODO: Removing what Profilarr no longer manages. Covers what cleanup deletes (every custom format and quality profile your sync selections don't use, including ones created by hand in the Arr, and media the Arr reports as removed from TMDB or TVDB), previewing a run before it happens, and scheduling it. Makes clear what can't be undone before you turn it on.

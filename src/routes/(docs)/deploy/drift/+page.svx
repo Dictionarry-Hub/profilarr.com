@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Drift
+blurb: Finding changes made directly in Radarr or Sonarr that no longer match Profilarr.
+order: 3
+---
+
+TODO: Checking whether an instance still matches what Profilarr would sync. Covers turning drift detection on and scheduling it, reading the list of drifted items and their field differences, the drift indicators on the Sync tab, and the notifications sent when drift is found. Notes that drift detection never changes anything in the Arr.

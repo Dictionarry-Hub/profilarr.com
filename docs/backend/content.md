@@ -10,32 +10,32 @@ The site has four content layers:
 
 Setup guides and user-facing documentation. Written as mdsvex markdown. Authored by hand.
 
-Pages live at `src/routes/docs/<slug>/+page.svx` and render through the `docs` mdsvex layout, which
-reuses `src/lib/layouts/Article.svelte`. The root page is the site's home page: it lives at
-`src/routes/+page.svx`, is served at `/` with an empty slug, and is titled "Profilarr" so the `SEO`
-component gives it the bare site name. `/docs`, where it used to live, redirects to `/`. Docs follow
-reading order instead of publish date, so their frontmatter drops `created` and `tags`, makes
-`author` optional, and adds `order`, `parent`, and `keywords`:
+Pages live in the `(docs)` route group at `src/routes/(docs)/<slug>/+page.svx` and render through
+the `docs` mdsvex layout, which reuses `src/lib/layouts/Article.svelte`. A route group's name is not
+part of the URL, so a page is served at `/<slug>`. The root page is the site's home page: it lives
+at `src/routes/+page.svx`, is served at `/` with an empty slug, and is titled "Profilarr" so the
+`SEO` component gives it the bare site name. There is no `/docs` page. Docs follow reading order
+instead of publish date, so their frontmatter drops `created` and `tags`, makes `author` optional,
+and adds `order` and `keywords`:
 
-| Field      | Notes                                                                           |
-| ---------- | ------------------------------------------------------------------------------- |
-| `layout`   | `docs`                                                                          |
-| `title`    | Display title and sidebar label                                                 |
-| `slug`     | Matches the route directory name (which is what routes derive); omitted on root |
-| `blurb`    | Short description; SEO meta, search blurb, artifact preamble                    |
-| `order`    | Position among its siblings, ascending; pages without one sort last by title    |
-| `parent`   | Optional slug of the page it is listed under in the sidebar                     |
-| `keywords` | Optional extra search terms that appear in no heading                           |
-| `author`   | Optional GitHub profile URL (or list), shown in the page header                 |
-| `next`     | Optional list of docs slugs or site links to point readers at in the footer     |
+| Field      | Notes                                                                        |
+| ---------- | ---------------------------------------------------------------------------- |
+| `layout`   | `docs`                                                                       |
+| `title`    | Display title and sidebar label                                              |
+| `slug`     | Not set; derived from the route path, such as `installation/docker`          |
+| `blurb`    | Short description; SEO meta, search blurb, artifact preamble                 |
+| `order`    | Position among its siblings, ascending; pages without one sort last by title |
+| `keywords` | Optional extra search terms that appear in no heading                        |
+| `author`   | Optional GitHub profile URL (or list), shown in the page header              |
+| `next`     | Optional list of docs slugs or site links to point readers at in the footer  |
 
 A page with `next` set ends with a footer that links to those pages, as cards with each page's title
 and blurb (`PageFooter` in `src/lib/client/ui/footer/`). An entry is a docs slug, or a link to
 another page on the site written as `{ title, href, blurb }`, such as the database browser.
 `docNext` in `src/lib/shared/utils/llm/docs.ts` resolves the entries and fails the build on an
-unknown slug or a link that leaves the site. It runs in `src/routes/docs/+layout.server.ts`, which
+unknown slug or a link that leaves the site. It runs in `src/routes/(docs)/+layout.server.ts`, which
 reads the URL so each prerendered page carries only its own links, in `src/routes/+page.server.ts`
-for the home page, and in the Markdown mirror routes, which list the same pages under a `## Next`
+for the home page, and in the Markdown mirror route, which lists the same pages under a `## Next`
 heading. `docsIndex` in `src/lib/server/docs.ts` holds every page's metadata for these lookups.
 Pages without `next` have no footer.
 
@@ -51,20 +51,24 @@ and the CI build check out with `fetch-depth: 0` for that reason. Content kept i
 doesn't change its date.
 
 The Home section header links to the root page. Below it the sidebar lists the other top-level pages
-in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. A page
-with `parent` set is listed under that page instead, and a child page can have children of its own,
-as Installation > Reverse Proxies > Traefik does; `docTree` in `src/lib/shared/utils/llm/docs.ts`
-builds the nesting and fails the build on an unknown parent. URLs stay flat (`/docs/docker`, not
-`/docs/installation/docker`), so moving a page to another section does not change its URL. The
-sidebar nav, search index, sitemap, `llms.txt`, and the Markdown mirrors (`/index.md` for the root,
-`/docs/<slug>.md` for the rest) all glob the same two paths, `src/routes/+page.svx` and
-`src/routes/docs/**/+page.svx`, and `docSlugFromPath`, `docPath`, and `docMarkdownPath` in the same
-file map between source paths, slugs, and URLs. Titles repeat across sections (Build and Test both
-have a Custom Formats page), so search results and the document title put the parent's title in
-front of a child page's (`Test: Custom Formats`, built by `docFullTitle`); the sidebar and page
-heading keep the short title. A page that embeds components with data (AdaptiveList rows, CodeBlock
-examples) keeps that data in a `data.ts` next to its `+page.svx`, so the Markdown mirror can
-serialize it (see [llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
+in order above the API Reference, with icons keyed by slug in `src/routes/+layout.svelte`. URLs
+follow the sidebar nesting: a page's route directory sits inside the route directory of the page it
+is listed under, and a child page can have children of its own, as
+`/installation/reverse-proxy/traefik` does. A page's parent is its slug minus the last segment
+(`docParentSlug`), and `docTree` in `src/lib/shared/utils/llm/docs.ts` builds the nesting and fails
+the build when a parent route has no page of its own. Moving a page to another section changes its
+URL, and the old URL is not redirected (see [seo.md](../frontend/seo.md#url-structure)). The sidebar
+nav, search index, sitemap, `llms.txt`, and the Markdown mirrors (`/index.md` for the root,
+`/<slug>.md` for the rest) all glob the same two paths, `src/routes/+page.svx` and
+`src/routes/?docs?/**/+page.svx`, where `?docs?` matches the `(docs)` folder without escaping its
+parentheses, which Vite handles differently in dev and build. `docIndexEntry`, `docSlugFromPath`,
+`docPath`, and `docMarkdownPath` in the same file map between source paths, slugs, and URLs. Titles
+repeat across sections (Build and Test both have a Custom Formats page), so search results and the
+document title put the parent's title in front of a child page's (`Test: Custom Formats`, built by
+`docFullTitle`); the sidebar and page heading keep the short title. A page that embeds components
+with data (AdaptiveList rows, CodeBlock examples) keeps that data in a `data.ts` next to its
+`+page.svx`, so the Markdown mirror can serialize it (see
+[llm.md](./llm.md#docs-dev-log-and-wiki-artifacts)).
 
 ### PCD Entity Browser
 
@@ -154,8 +158,8 @@ details, see [tooling/api.md](../tooling/api.md).
 ### Dev Logs and Wiki Articles
 
 Site-specific content written as mdsvex markdown. Dev logs cover releases and development progress.
-Wiki articles cover broader topics. The Articles section page at `/articles`
-(`src/routes/articles/+page.svelte`) introduces both and heads the sidebar section that groups them.
+Wiki articles cover broader topics. Each has its own sidebar section, headed by its list page at
+`/dev-logs` or `/wiki`.
 
 Both layers share the same article frontmatter and render through the same mdsvex layout
 (`src/lib/layouts/Article.svelte`, registered as both the `dev-logs` and `wiki` layout keys):
@@ -170,9 +174,11 @@ Both layers share the same article frontmatter and render through the same mdsve
 | `created` | Publish date, used for newest-first sorting                    |
 | `tags`    | Displayed as chips and indexed as search keywords              |
 
-Articles live at `src/routes/dev-logs/<slug>/+page.svx` and `src/routes/wiki/<slug>/+page.svx`. The
-sidebar nav, search index, and markdown artifact routes all glob these paths and derive the slug
-from the directory name.
+Articles live in the `(articles)` route group, at `src/routes/(articles)/dev-logs/<slug>/+page.svx`
+and `src/routes/(articles)/wiki/<slug>/+page.svx`, next to the `dev-logs.md` and `wiki.md` list
+mirrors. The group keeps the four folders together without changing any URL. The sidebar nav, search
+index, and markdown artifact routes all glob these paths, through `?articles?` for the same reason
+the docs globs use `?docs?`, and derive the slug from the directory name.
 
 ## PCD Pipeline
 

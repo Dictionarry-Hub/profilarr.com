@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Profilarr
-blurb: What Profilarr is and where it fits alongside Radarr and Sonarr.
+blurb: Profilarr is a configuration management platform for the arr stack. Build and test quality profiles against real releases, then sync them to your arr instances.
 author: https://github.com/santiagosayshey
 order: 1
 next:
@@ -41,7 +41,7 @@ Profilarr is a self-hosted web app that manages the configurations of your Radar
 
 ## How It Works
 
-Profilarr is built on three simple steps. You [build](/docs/build) your configurations, starting from a [database](/docs/databases) and adding your own [local changes](/docs/local-changes). You [test](/docs/test) them against real release titles to check they grab what you expect. Then you [deploy](/docs/deploy) them by [syncing](/docs/sync) to your Radarr and Sonarr instances.
+Profilarr is built on three simple steps. You [build](/build) your configurations, starting from a [database](/build/databases) and adding your own [local changes](/build/local-changes). You [test](/test) them against real release titles to check they grab what you expect. Then you [deploy](/deploy) them by [syncing](/deploy/sync) to your Radarr and Sonarr instances.
 
 ```mermaid
 flowchart LR
@@ -65,7 +65,7 @@ flowchart LR
 
 ## Supported Apps
 
-Profilarr syncs to Radarr v5 or newer and Sonarr v4 or newer, and you can [connect](/docs/arr-instances) as many instances of each as you run. Other Arr apps, like Lidarr, aren't supported.
+Profilarr syncs to Radarr v5 or newer and Sonarr v4 or newer, and you can [connect](/deploy/arr-instances) as many instances of each as you run. Other Arr apps, like Lidarr, aren't supported.
 
 ## License
 

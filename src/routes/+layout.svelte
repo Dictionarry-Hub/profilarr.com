@@ -6,9 +6,7 @@
 	import DropdownSelect from '$lib/client/ui/dropdown/DropdownSelect.svelte';
 	import {
 		Rss,
-		Library,
 		BookText,
-		Wrench,
 		House,
 		BookOpen,
 		Trash2,
@@ -55,8 +53,8 @@
 
 	type DocNavEntry = (typeof data.docs)[number];
 
-	// Docs URLs are flat, so a group counts every page below it as inside,
-	// which keeps it open on a grandchild's page too.
+	// A group counts every page below it as inside, which keeps it open on a
+	// grandchild's page too.
 	function descendantHrefs(doc: DocNavEntry): string[] {
 		return doc.children.flatMap((child) => [child.href, ...descendantHrefs(child)]);
 	}
@@ -169,10 +167,7 @@
 					src="/icon.png"
 					alt=""
 					class="size-5" />
-				<span class="flex items-baseline gap-1">
-					<span class="font-accent text-lg font-semibold">profilarr</span>
-					<span class="font-mono text-sm text-text-muted">/docs</span>
-				</span>
+				<span class="font-accent text-lg font-semibold">profilarr</span>
 			</a>
 		</Tooltip>
 		<div class="flex items-center gap-2">
@@ -358,62 +353,33 @@
 			</NavGroupLabel>
 		{/if}
 
-		<!-- Authored articles: dev logs and wiki share one section. -->
-		{#if data.devLogs.length > 0 || data.wiki.length > 0}
+		<!-- Authored articles: dev logs and wiki are sections of their own. -->
+		{#if data.devLogs.length > 0}
 			<NavGroupLabel
-				label="Articles"
-				href="/articles"
-				icon={Library}
-				open="auto"
-				sectionPaths={['/dev-logs', '/wiki']}>
-				{#if data.devLogs.length > 0}
-					<NavGroup
-						label="Dev Logs"
-						href="/dev-logs"
-						icon={Rss}
-						class="mb-1">
-						{#each data.devLogs as log (log.href)}
-							<NavItem
-								label={log.title}
-								href={log.href} />
-						{/each}
-					</NavGroup>
-				{/if}
-
-				{#if data.wiki.length > 0}
-					<NavGroup
-						label="Wiki"
-						href="/wiki"
-						icon={BookText}
-						class="mb-1">
-						{#each data.wiki as article (article.href)}
-							<NavItem
-								label={article.title}
-								href={article.href} />
-						{/each}
-					</NavGroup>
-				{/if}
+				label="Dev Logs"
+				href="/dev-logs"
+				icon={Rss}
+				open="auto">
+				{#each data.devLogs as log (log.href)}
+					<NavItem
+						label={log.title}
+						href={log.href} />
+				{/each}
 			</NavGroupLabel>
 		{/if}
 
-		{#if import.meta.env.DEV}
-			<NavGroup
-				label="Dev"
-				href="/dev"
-				icon={Wrench}>
-				<NavItem
-					label="UI Showcase"
-					href="/dev/ui" />
-				<NavItem
-					label="Error 404"
-					href="/dev/errors/404" />
-				<NavItem
-					label="Error 403"
-					href="/dev/errors/403" />
-				<NavItem
-					label="Error 500"
-					href="/dev/errors/500" />
-			</NavGroup>
+		{#if data.wiki.length > 0}
+			<NavGroupLabel
+				label="Wiki"
+				href="/wiki"
+				icon={BookText}
+				open="auto">
+				{#each data.wiki as article (article.href)}
+					<NavItem
+						label={article.title}
+						href={article.href} />
+				{/each}
+			</NavGroupLabel>
 		{/if}
 	</div>
 </div>

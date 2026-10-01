@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Sync
+blurb: Pushing your configurations to Radarr and Sonarr.
+order: 2
+---
+
+TODO: Pushing configuration to an instance. Covers the three sync sections (quality profiles, delay profiles, and media management), picking what each one syncs, the manual, on pull, and scheduled triggers, ordering databases by priority when profiles come from more than one, why adding an instance applies a default delay profile (without a delay, the Arr grabs the first matching release, often a poorly tagged early WEB-DL, then re-downloads every upgrade that follows), why media management and a delay profile must be saved before quality profiles can sync (a profile's custom formats and scores are tuned to specific naming, file size tiers, and protocol delays, and without them matching, scoring, and renaming break in ways that are hard to spot), and the prompt to sync after saving an entity.
