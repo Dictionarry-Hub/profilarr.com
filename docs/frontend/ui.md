@@ -592,7 +592,8 @@ regex test. Otherwise exact or prefix match against `href`.
 
 NavGroup's split-header language for a sidebar section: the left side names the section, the right
 chevron collapses the children it scopes. With `href` the left side is a link to the section's own
-page and gets NavGroup's active treatment on that page; without it the left side is a plain label.
+page and gets NavGroup's active treatment on that page, and both sides highlight on hover of either,
+as on NavGroup; without it the left side is a plain label.
 
 | Prop           | Type                | Required | Default |
 | -------------- | ------------------- | -------- | ------- |
