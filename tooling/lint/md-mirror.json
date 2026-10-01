@@ -1,9 +1,5 @@
 {
-	"exempt": [
-		{ "route": "/dev/ui", "reason": "component showcase, dev-only, not content" },
-		{ "route": "/dev", "reason": "dev tools index, dev-only, not content" },
-		{ "route": "/pcd", "reason": "client-side redirect stub to /pcd/{preference}/" }
-	],
+	"exempt": [{ "route": "/pcd", "reason": "client-side redirect stub to /pcd/{preference}/" }],
 	"pending": [
 		{
 			"route": "/pcd/*",

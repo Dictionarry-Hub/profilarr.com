@@ -1198,8 +1198,3 @@ enforces all of the above, including token-contract completeness.
 namespace. This produces utility classes like `bg-bg`, `text-text-soft`, `border-border`,
 `rounded-control`, `shadow-card`, etc. Components use these utilities instead of
 `bg-[var(--theme-bg)]`.
-
-### Dev Showcase
-
-`/dev/ui` renders every component with all variants and a theme switcher. Not linked from
-navigation. Use it to verify components across themes.

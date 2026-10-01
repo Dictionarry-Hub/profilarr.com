@@ -319,11 +319,11 @@ and forgetting its markdown mirror. See [tooling/lint.md](../tooling/lint.md) fo
   mirror of `X.html` is `X.md`, and the root `index.html` maps to `index.md`.
 - **Blacklist, not whitelist, in two lists.** Every page requires a mirror by default. The lists
   live in `tooling/lint/md-mirror.json` so they can be edited without touching code. `exempt` holds
-  pages that will never have a mirror (the `/dev/ui` showcase, redirect stubs); `pending` holds
-  route groups whose mirror layer has not been built yet, which is debt, not policy, and shrinks to
-  empty as layers land. Every entry is `{ "route", "reason" }`, where the route is either exact
-  (`/dev/ui`) or ends in `/*` to match everything beneath it (`/pcd/*`). Adding to either list is a
-  visible, reviewable act.
+  pages that will never have a mirror (redirect stubs such as `/pcd`); `pending` holds route groups
+  whose mirror layer has not been built yet, which is debt, not policy, and shrinks to empty as
+  layers land. Every entry is `{ "route", "reason" }`, where the route is either exact (`/pcd`) or
+  ends in `/*` to match everything beneath it (`/pcd/*`). Adding to either list is a visible,
+  reviewable act.
 - **Page-level mirrors are the minimum guarantee.** The rule enforces one `.md` per built page.
   Sub-page granularities (API tags and endpoints) are extra surface on top, guaranteed by their own
   build instead: artifact routes derive from the same parsed data the page renders, and a throwing

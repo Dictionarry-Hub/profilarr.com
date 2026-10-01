@@ -7,7 +7,6 @@
 	import {
 		Rss,
 		BookText,
-		Wrench,
 		House,
 		BookOpen,
 		Trash2,
@@ -381,26 +380,6 @@
 						href={article.href} />
 				{/each}
 			</NavGroupLabel>
-		{/if}
-
-		{#if import.meta.env.DEV}
-			<NavGroup
-				label="Dev"
-				href="/dev"
-				icon={Wrench}>
-				<NavItem
-					label="UI Showcase"
-					href="/dev/ui" />
-				<NavItem
-					label="Error 404"
-					href="/dev/errors/404" />
-				<NavItem
-					label="Error 403"
-					href="/dev/errors/403" />
-				<NavItem
-					label="Error 500"
-					href="/dev/errors/500" />
-			</NavGroup>
 		{/if}
 	</div>
 </div>
