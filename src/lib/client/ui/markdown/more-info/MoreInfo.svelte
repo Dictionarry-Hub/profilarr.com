@@ -9,7 +9,7 @@
 
 	interface Props {
 		/** Comma-separated docs slugs, each with an optional `#anchor` and an
-		    optional `: label`, as in `docker, installation#the-parser: The parser`. */
+		    optional `: label`, as in `installation/docker, installation#the-parser: The parser`. */
 		pages: string;
 	}
 

@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import { llmsTxt } from '$lib/shared/utils/llm/llms.js';
 import {
-	docSlugFromPath,
+	docIndexEntry,
 	type DevLogMeta,
 	type DocMeta,
 	type WikiMeta
@@ -12,8 +12,10 @@ import type { CompiledDatabase } from '$lib/types/pcd';
 // the footer points to.
 export const prerender = true;
 
+// `?docs?` matches the `(docs)` route group. Vite treats escaped parentheses
+// differently in dev and build, so the pattern avoids them.
 const docModules = import.meta.glob<{ metadata: DocMeta }>(
-	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx'],
 	{
 		eager: true
 	}
@@ -40,10 +42,9 @@ function newestFirst<T extends { metadata: { created?: string } }>(
 
 export const GET: RequestHandler = () => {
 	const body = llmsTxt({
-		docs: Object.entries(docModules).map(([path, module]) => ({
-			...module.metadata,
-			slug: docSlugFromPath(path)
-		})),
+		docs: Object.entries(docModules).map(([path, module]) =>
+			docIndexEntry(path, module.metadata)
+		),
 		devLogs: newestFirst(devLogModules),
 		wiki: newestFirst(wikiModules),
 		databases: Object.values(databases)

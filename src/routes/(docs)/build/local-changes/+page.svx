@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Local Changes
+blurb: How your edits survive database updates, and what happens when they conflict.
+order: 2
+---
+
+TODO: How your own edits live alongside a database. Covers how edits to a database you don't maintain are saved locally and re-applied after every pull, what happens when an update changes something you edited, the conflict strategies (Override, Align, and Ask), and resolving held changes in the Conflicts tab. Ends by pointing to the next pages, which cover editing each type of entity.

@@ -40,11 +40,21 @@ const database: CompiledDatabase = {
 describe('llmsTxt', () => {
 	const text = llmsTxt({
 		docs: [
-			{ title: 'Docker', slug: 'docker', parent: 'installation', order: 1 },
+			{ title: 'Docker', slug: 'installation/docker', parent: 'installation', order: 1 },
 			{ title: 'Introduction', slug: 'introduction', blurb: 'What Profilarr is.', order: 1 },
 			{ title: 'Installation', slug: 'installation', order: 2 },
-			{ title: 'Reverse Proxies', slug: 'reverse-proxy', parent: 'installation', order: 2 },
-			{ title: 'Traefik', slug: 'traefik', parent: 'reverse-proxy', order: 1 }
+			{
+				title: 'Reverse Proxies',
+				slug: 'installation/reverse-proxy',
+				parent: 'installation',
+				order: 2
+			},
+			{
+				title: 'Traefik',
+				slug: 'installation/reverse-proxy/traefik',
+				parent: 'installation/reverse-proxy',
+				order: 1
+			}
 		],
 		devLogs: [{ title: 'Rebirth', slug: 'rebirth', blurb: 'Starting over.' }],
 		wiki: [{ title: 'Anatomy of a Profile', slug: 'anatomy-of-a-profile' }],
@@ -62,11 +72,11 @@ describe('llmsTxt', () => {
 	it('links docs pages in reading order with child pages indented', () => {
 		expect(text).toContain(
 			'## Docs\n\n' +
-				'- [Introduction](https://profilarr.com/docs/introduction.md): What Profilarr is.\n' +
-				'- [Installation](https://profilarr.com/docs/installation.md)\n' +
-				'  - [Docker](https://profilarr.com/docs/docker.md)\n' +
-				'  - [Reverse Proxies](https://profilarr.com/docs/reverse-proxy.md)\n' +
-				'    - [Traefik](https://profilarr.com/docs/traefik.md)\n'
+				'- [Introduction](https://profilarr.com/introduction.md): What Profilarr is.\n' +
+				'- [Installation](https://profilarr.com/installation.md)\n' +
+				'  - [Docker](https://profilarr.com/installation/docker.md)\n' +
+				'  - [Reverse Proxies](https://profilarr.com/installation/reverse-proxy.md)\n' +
+				'    - [Traefik](https://profilarr.com/installation/reverse-proxy/traefik.md)\n'
 		);
 	});
 
@@ -102,7 +112,7 @@ describe('withIndexFooter', () => {
 describe('absoluteLinks', () => {
 	it('points site-relative links at the site URL and leaves the rest alone', () => {
 		const markdown = [
-			'See [Docker](/docs/docker), [Parser](#the-parser), and [Deno](https://deno.com).',
+			'See [Docker](/installation/docker), [Parser](#the-parser), and [Deno](https://deno.com).',
 			'',
 			'```md',
 			'[Example](/not/rewritten)',
@@ -110,7 +120,10 @@ describe('absoluteLinks', () => {
 		].join('\n');
 
 		expect(absoluteLinks(markdown, 'https://profilarr.com')).toBe(
-			markdown.replace('](/docs/docker)', '](https://profilarr.com/docs/docker)')
+			markdown.replace(
+				'](/installation/docker)',
+				'](https://profilarr.com/installation/docker)'
+			)
 		);
 	});
 });

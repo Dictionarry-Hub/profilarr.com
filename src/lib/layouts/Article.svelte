@@ -22,18 +22,18 @@
 		author?: string | string[];
 		created?: string;
 		tags?: string[];
-		/** Docs only: slug of the page this one is listed under. */
-		parent?: string;
 		children: Snippet;
 	}
 
-	let { title, blurb, author, created, tags, parent, children }: Props = $props();
+	let { title, blurb, author, created, tags, children }: Props = $props();
 
 	// Docs child pages put their section in the document title, since titles
-	// repeat across sections. The sidebar data holds every page's title.
+	// repeat across sections. The sidebar data holds every page's title and
+	// where it sits; dev logs and wiki articles are not in it.
 	const documentTitle = $derived.by(() => {
-		if (!parent) return title;
 		const docs = docNavEntries((page.data.docs as DocNavNode[] | undefined) ?? []);
+		const slug = page.url.pathname.replace(/^\//, '');
+		const parent = docs.find((doc) => doc.slug === slug)?.parent;
 		return docFullTitle(title, docs.find((doc) => doc.slug === parent)?.title);
 	});
 
@@ -50,7 +50,7 @@
 
 	// Docs only: the pages this one points readers at, resolved from its `next`
 	// frontmatter by src/routes/+page.server.ts for the home page and
-	// src/routes/docs/+layout.server.ts for the rest.
+	// src/routes/(docs)/+layout.server.ts for the rest.
 	const next = $derived((page.data.docNext as DocLink[] | undefined) ?? []);
 
 	// Docs only: the GitHub link to edit this page's source (in the Actions

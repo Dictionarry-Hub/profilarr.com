@@ -1,0 +1,46 @@
+---
+layout: docs
+title: Contributing
+blurb: Contributing to Profilarr, its databases, and these docs.
+order: 10
+---
+
+<script>
+	import CodeBlock from '$lib/client/ui/markdown/code/CodeBlock.svelte';
+	import { devSetup } from './data';
+</script>
+
+Contributions are welcome, whether that's code, database changes, or fixes to these docs. Small fixes can go straight to a pull request. For anything bigger, open an issue or ask on [Discord](https://discord.gg/2A89tXZMgA) first, so we can agree on the approach before you put time into it. To report a bug or request a feature, see [Community](/community).
+
+## Profilarr
+
+Profilarr's code lives in [Dictionarry-Hub/profilarr](https://github.com/Dictionarry-Hub/profilarr).
+
+### Setting Up
+
+You'll need Git, Deno, and Node.js. The .NET SDK is only needed for the parser, which powers custom format and quality profile testing. The repository's `.tool-versions` file pins the version of each.
+
+<CodeBlock items={devSetup} />
+
+`deno task dev` starts the parser and the Vite dev server together.
+
+### Making a Change
+
+Branch off `develop`, keep the pull request to one feature or fix, and open it against `develop`. Pull requests are squash merged, so the title becomes the commit message and has to follow [Conventional Commits](https://www.conventionalcommits.org/), such as `fix: sync status not updating after save`. You don't need to write tests; the maintainer writes them.
+
+Before you start, know that:
+
+- The PCD module, which covers the op replay system, the compile pipeline, and the export flow, is off-limits without discussing it with the maintainer first.
+- AI tools are fine as assistants, but the contribution has to be yours. You need to understand the change and be able to answer questions about it. Pull requests that look like unreviewed generated output may be closed.
+
+The full workflow, including rebasing onto `develop`, naming, and code conventions, is in [CONTRIBUTING.md](https://github.com/Dictionarry-Hub/profilarr/blob/develop/docs/CONTRIBUTING.md). The branching model and release process are in [DEVELOPMENT.md](https://github.com/Dictionarry-Hub/profilarr/blob/develop/docs/DEVELOPMENT.md).
+
+## Databases
+
+Profiles, custom formats, and regular expressions come from [databases](/build/databases), and each database lives in its own repository with its own maintainers. For the Dictionarry database, ask on [Discord](https://discord.gg/2A89tXZMgA) or open an issue on [Dictionarry-Hub/database](https://github.com/Dictionarry-Hub/database/issues). For any other database, check its repository.
+
+To run a database of your own, see [Maintaining a Database](/build/maintaining-a-database).
+
+## These Docs
+
+This site lives in [Dictionarry-Hub/profilarr.com](https://github.com/Dictionarry-Hub/profilarr.com). Each docs page is a Markdown file under `src/routes/docs/`, so fixing a typo or a wrong step can be as small as editing that file on GitHub and opening a pull request against `develop`. For local setup and conventions, see the site's [CONTRIBUTING.md](https://github.com/Dictionarry-Hub/profilarr.com/blob/develop/docs/CONTRIBUTING.md).

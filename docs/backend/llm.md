@@ -138,13 +138,14 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 | Artifact      | URL                   | Content                                                  |
 | ------------- | --------------------- | -------------------------------------------------------- |
 | Home page     | `/index.md`           | Preamble from frontmatter, then the source body verbatim |
-| Docs page     | `/docs/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
+| Docs page     | `/{slug}.md`          | Preamble from frontmatter, then the source body verbatim |
 | Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
 | Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
 | Wiki index    | `/wiki.md`            | One line per article (title, date, blurb), newest first  |
 | Wiki article  | `/wiki/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
 
-The slug is the route directory name, the same derivation the nav uses. The preamble is synthesized
+The slug is the route directory name, the same derivation the nav uses; a docs page's slug is its
+route path (`installation/docker`), so its mirror sits next to its URL. The preamble is synthesized
 from frontmatter: title as H1, blurb as blockquote, then a context line with author, date, tags, and
 the web URL. Docs pages have no publish date or tags, so their context line names the docs, the
 page's authors when it has any, its last-updated date and commit link from git when the build has
@@ -157,7 +158,7 @@ intact, the same approach Anthropic's docs use. Components often carry real cont
 
 Docs pages go one step further, because a docs page can keep its component data in a `data.ts` next
 to `+page.svx` instead of in its `<script>` block. The page imports that module to render, and the
-docs mirror routes import the same module and pass it to `componentsToMarkdown`
+docs mirror route imports the same module and passes it to `componentsToMarkdown`
 (`src/lib/shared/utils/llm/components.ts`), which swaps component tags for plain Markdown: an
 `AdaptiveList` (and its `mb-5` spacing wrapper) becomes a Markdown table, a `CodeBlock` becomes a
 fenced block per tab under its title (a `marks` block gets a line after it saying the square
@@ -269,8 +270,8 @@ Three pieces let a reader find the Markdown artifacts without a copy button.
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
   bakes the footer into the prerendered files. The same hook rewrites site-relative Markdown links
-  (`](/docs/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page pasted into
-  a chat on its own still resolves its links.
+  (`](/installation/docker)`) to full URLs with `absoluteLinks`, skipping fenced code, so a page
+  pasted into a chat on its own still resolves its links.
 - **Alternate link.** Pages with a Markdown version pass its path to the `SEO` component's
   `markdown` prop, which renders `<link rel="alternate" type="text/markdown">` in the head, so tools
   that fetch the HTML learn the Markdown version exists.

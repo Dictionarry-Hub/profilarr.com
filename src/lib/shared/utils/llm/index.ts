@@ -5,6 +5,8 @@ export {
 	byDocOrder,
 	docTree,
 	docSlugFromPath,
+	docParentSlug,
+	docIndexEntry,
 	docPath,
 	docMarkdownPath,
 	docSourcePath,

@@ -1,7 +1,7 @@
 import type { PcdNavIndex } from '$lib/types/pcd';
 import {
+	docIndexEntry,
 	docPath,
-	docSlugFromPath,
 	docTree,
 	type DocIndexEntry,
 	type DocMeta,
@@ -45,20 +45,22 @@ function docNavEntry(doc: DocNode<DocIndexEntry>): DocNavEntry {
 	};
 }
 
-// Docs follow reading order, not publish date, and nest under a `parent`
-// page. The root page is the home page and the Home header's link, not an
-// entry.
+// Docs follow reading order, not publish date, and nest under the page whose
+// route contains theirs. The root page is the home page and the Home header's
+// link, not an entry.
 function docsNav(files: Record<string, { metadata: DocMeta }>) {
 	const docs = Object.entries(files)
-		.map(([path, module]) => ({ ...module.metadata, slug: docSlugFromPath(path) }))
+		.map(([path, module]) => docIndexEntry(path, module.metadata))
 		.filter((doc) => doc.slug !== '');
 
 	return docTree(docs).map(docNavEntry);
 }
 
 export async function load() {
+	// `?docs?` matches the `(docs)` route group. Vite treats escaped parentheses
+	// differently in dev and build, so the pattern avoids them.
 	const docFiles = import.meta.glob<{ metadata: DocMeta }>(
-		['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+		['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx'],
 		{
 			eager: true
 		}

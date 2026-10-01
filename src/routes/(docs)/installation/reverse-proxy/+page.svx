@@ -1,0 +1,106 @@
+---
+layout: docs
+title: Reverse Proxies
+blurb: Serving Profilarr from your own domain through a reverse proxy.
+author: https://github.com/santiagosayshey
+order: 3
+---
+
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Badge from '$lib/client/ui/badge/Badge.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import { requirements, requirementColumns, guides, guideColumns } from './data';
+</script>
+
+Already running a reverse proxy? Skip ahead to [Requirements](#requirements).
+
+A reverse proxy is a server that sits in front of your apps and passes each request to the right one. When you open `https://profilarr.example.com`, the request doesn't go to Profilarr. It goes to the proxy, which reads the name you typed, finds the app that name belongs to, and forwards the request to Profilarr over plain HTTP inside your network. The proxy handles the HTTPS side, so Profilarr never sees it.
+
+That gets you:
+
+- An address you can remember, like `profilarr.example.com` instead of `192.168.1.10:6868`.
+- HTTPS for every app, set up once in the proxy instead of in each app.
+- One place to put a login like [Authelia](https://www.authelia.com/) or [Authentik](https://goauthentik.io/) in front of all your apps.
+
+<Callout type="info">
+
+If you only need to reach Profilarr yourself, you might not need a reverse proxy at all. A VPN like [WireGuard](https://www.wireguard.com/) or [Tailscale](https://tailscale.com/) gets you to Profilarr from anywhere without exposing it to the internet. See [Authentication](/installation/authentication).
+
+</Callout>
+
+## Requirements
+
+Behind a proxy, Profilarr never sees your browser's request. It only sees the proxy's copy, so it can't tell whether you used HTTPS or where you're connecting from. Whichever proxy you use, Profilarr needs a few things to work around that.
+
+<div class="mb-5">
+<AdaptiveList
+	data={requirements}
+	columns={requirementColumns}>
+	<!-- Renders text wrapped in backticks as inline code, like Markdown. -->
+	{#snippet inline(text)}{#each text.split('`') as part, i}{#if i % 2}<code>{part}</code>{:else}{part}{/if}{/each}{/snippet}
+	{#snippet cell(row, col)}
+		{#if col.key === 'requirement'}
+			<span class="font-medium">{@render inline(row.requirement)}{#if row.variable}{' '}<a href={row.variable.href}><code>{row.variable.name}</code></a> {row.variable.after}{/if}</span>
+		{:else if col.key === 'without'}
+			{row.without}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{:else}
+			{@render inline(row.why)}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="font-medium">{@render inline(row.requirement)}{#if row.variable}{' '}<a href={row.variable.href}><code>{row.variable.name}</code></a> {row.variable.after}{/if}</div>
+			<div class="text-sm">{@render inline(row.why)}</div>
+			<div class="text-sm text-text-muted">{row.without} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="info">
+
+Why check forms at all? Another website can make your browser submit a form to Profilarr without you knowing. This is called [cross-site request forgery](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/CSRF) (CSRF). For example:
+
+1. You open a malicious website on a computer that can reach Profilarr.
+2. The website has a hidden form that deletes one of your Arr instances.
+3. Your browser submits that form to Profilarr.
+
+Profilarr checks which website each form came from and rejects forms from any other website. To run that check, Profilarr needs to know its own address.
+
+</Callout>
+
+## Guides
+
+<div class="mb-5">
+<AdaptiveList
+	data={guides}
+	columns={guideColumns}
+	href={(row) => row.href}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'status'}
+			<Badge color={row.status === 'Available' ? 'success' : 'neutral'} variant="subtle" pill>{row.status}</Badge>
+		{:else if col.key === 'proxy'}
+			<span class="font-medium {row.href ? 'text-link-text group-hover/row:underline' : ''}">{row.proxy}</span>
+		{:else}
+			{row.description}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex items-start justify-between gap-2">
+			<div>
+				<div class="font-medium {row.href ? 'text-link-text group-hover/row:underline' : ''}">{row.proxy}</div>
+				<div class="text-sm text-text-muted">{row.description}</div>
+			</div>
+			<Badge color={row.status === 'Available' ? 'success' : 'neutral'} variant="subtle" pill>{row.status}</Badge>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="info">
+
+If you'd like to help write the Caddy or nginx (including SWAG and Nginx Proxy Manager) guide, please feel free to contribute [here](/contributing#these-docs).
+
+</Callout>

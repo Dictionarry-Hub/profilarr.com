@@ -12,7 +12,7 @@ describe('buildDocEntry', () => {
 
 		expect(entry).toEqual({
 			title: 'Quick Start',
-			url: '/docs/quick-start',
+			url: '/quick-start',
 			type: 'doc',
 			blurb: 'A first Profilarr setup from start to finish.',
 			keywords: ['docs', 'documentation'],
@@ -22,7 +22,7 @@ describe('buildDocEntry', () => {
 
 	it('puts the parent title in front for child pages', () => {
 		const entry = buildDocEntry(
-			{ title: 'Custom Formats', slug: 'custom-format-testing', parent: 'test' },
+			{ title: 'Custom Formats', slug: 'test/custom-formats', parent: 'test' },
 			'Test'
 		);
 
@@ -76,7 +76,7 @@ describe('docHeadings', () => {
 describe('buildDocSectionEntries', () => {
 	it('links each section and names its parent section for subheadings', () => {
 		const entries = buildDocSectionEntries(
-			{ title: 'Docker', slug: 'docker', parent: 'installation' },
+			{ title: 'Docker', slug: 'installation/docker', parent: 'installation' },
 			'## File Permissions\n\n### Linux Basics',
 			'Installation'
 		);
@@ -84,12 +84,12 @@ describe('buildDocSectionEntries', () => {
 		expect(entries.map((entry) => [entry.title, entry.url, entry.blurb])).toEqual([
 			[
 				'Docker: File Permissions',
-				'/docs/docker#file-permissions',
+				'/installation/docker#file-permissions',
 				'Section of Installation: Docker'
 			],
 			[
 				'Docker: Linux Basics',
-				'/docs/docker#linux-basics',
+				'/installation/docker#linux-basics',
 				'Section of File Permissions, in Installation: Docker'
 			]
 		]);

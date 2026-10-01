@@ -1,0 +1,113 @@
+---
+layout: docs
+title: Quality Profiles
+blurb: Scoring real releases against a quality profile.
+author: https://github.com/santiagosayshey
+order: 3
+next: [deploy, deploy/upgrades]
+---
+
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import InlineIcon from '$lib/client/ui/markdown/icon/InlineIcon.svelte';
+	import Screenshots from '$lib/client/ui/markdown/screenshots/Screenshots.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import { profileScores, releaseSources, releaseSourceColumns } from './data';
+</script>
+
+A custom format test asks whether one release matches one format. A quality profile test asks a different question: when every custom format in a profile scores the same set of releases, do they come out in the order you want?
+
+That question has no pass or fail. You don't tell Profilarr what score a release should get. Instead you save the releases you care about, pick a profile, and read the scores. When you change a custom format or a score, you come back to the same releases and check the order still makes sense.
+
+<Callout type="info">
+
+Think of a quality profile test as a search simulation. Instead of editing, syncing, and running an interactive search for every score change, you run the search once and keep its releases. Profilarr scores them against your latest changes straight away.
+
+</Callout>
+
+## Adding Movies and Series
+
+Rather than storing tests under each quality profile, Profilarr stores them under the movies and series whose releases you're testing. Every profile in the database can score the same releases, so you can switch between profiles and see how each one ranks the same search.
+
+
+
+Open **Testing** under **Quality Profiles**. Each linked database has its own tab. Press **Add Entity** (`+`), search TMDB for a movie or series, and select as many results as you like. Each one becomes a row you can add releases to.
+
+<ThemeImage
+	dark="/images/docs_qp_testing_add[style=dark].png"
+	light="/images/docs_qp_testing_add[style=light].png"
+	alt="Profilarr's Add Test Entity dialog over the Testing page, with a TMDB search for Blade Runner. Blade Runner 2049 (2017) and Blade Runner (1982) are checked as movies, Blade Runner: Black Lotus (2021) is an unchecked TV series, and both movies are listed under Selected (2) above the Add button."
+	caption="Adding Blade Runner and Blade Runner 2049 from a TMDB search."
+	border />
+
+<Callout type="info">
+
+Profilarr looks movies and series up on TMDB, so it needs a [TMDB token](https://www.themoviedb.org/settings/api) before you can add any. Open **Settings > General**, and paste your **API Read Access Token** (not the API key) from your TMDB account into **TMDB Configuration**. Press **Test** to check it works.
+
+</Callout>
+
+## Adding Releases
+
+Each movie or series has two ways to add releases.
+
+<div class="mb-5">
+<AdaptiveList
+	data={releaseSources}
+	columns={releaseSourceColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'method'}
+			<span class="font-medium">{row.method}</span>
+		{:else}
+			{row.description}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="font-medium">{row.method}</div>
+			<div class="text-sm text-text-muted">{row.description}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="info">
+
+Import releases searches from an item in your Radarr or Sonarr library, so add the movie or series there first. The search goes out to your indexers and can take a while. Each imported release keeps the size, indexers, languages, and flags its indexers reported, and near-identical releases are merged into one.
+
+</Callout>
+
+<ThemeImage
+	dark="/images/docs_qp_testing_release[style=dark].png"
+	light="/images/docs_qp_testing_release[style=light].png"
+	alt="Profilarr's Add Test Release dialog for Blade Runner, with the release title Blade.Runner.1982.The.Final.Cut.1080p.BluRay.DTS-HD.MA.5.1.x264-GROUP, a size of 16.4 GB, English as the language, ExampleIndexer as the indexer, and freeleech as the flag."
+	caption="A Blade Runner release added by hand, with its size, language, indexer, and flag."
+	border />
+
+<Callout type="tip">
+
+Search simulations double as documentation. Databases can publish them and users can see how its profiles rank real releases!
+
+</Callout>
+
+## Simulating a Search
+
+Start by choosing the profile you want to test from the profile menu (<InlineIcon icon="sliders" label="sliders icon" />). When you expand a movie or series, Profilarr scores each of its releases in three steps:
+
+1. It runs the release title through the parser.
+2. It checks the parsed release against every custom format in the database.
+3. Each matched format is then added together to give a final score.
+
+Here are the same four Blade Runner releases scored against two profiles:
+
+<Screenshots items={profileScores} />
+
+<Callout type="info">
+
+A custom format is often scored by more than one profile, so changing it affects all of them. Since your test releases aren't tied to a profile, you can make the change once, then switch between the profiles that use it and check how each one ranks the same releases.
+
+</Callout>
+
+### Quick Parse
+
+Press **Quick Parse** (<InlineIcon icon="flask" label="flask icon" />) to score a single title without saving it. Paste the title, choose whether it's a movie or a series, and choose a profile. Profilarr shows the same breakdown as an expanded release. Use it to check a title you've just seen in Radarr or Sonarr before deciding whether it's worth keeping as a test.

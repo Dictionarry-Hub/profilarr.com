@@ -55,8 +55,8 @@
 
 	type DocNavEntry = (typeof data.docs)[number];
 
-	// Docs URLs are flat, so a group counts every page below it as inside,
-	// which keeps it open on a grandchild's page too.
+	// A group counts every page below it as inside, which keeps it open on a
+	// grandchild's page too.
 	function descendantHrefs(doc: DocNavEntry): string[] {
 		return doc.children.flatMap((child) => [child.href, ...descendantHrefs(child)]);
 	}
@@ -169,10 +169,7 @@
 					src="/icon.png"
 					alt=""
 					class="size-5" />
-				<span class="flex items-baseline gap-1">
-					<span class="font-accent text-lg font-semibold">profilarr</span>
-					<span class="font-mono text-sm text-text-muted">/docs</span>
-				</span>
+				<span class="font-accent text-lg font-semibold">profilarr</span>
 			</a>
 		</Tooltip>
 		<div class="flex items-center gap-2">

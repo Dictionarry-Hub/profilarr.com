@@ -17,7 +17,7 @@ export function withIndexFooter(markdown: string, siteUrl: string): string {
 	return `${markdown.trimEnd()}\n\n---\n\nIndex of this site's Markdown pages: ${siteUrl}/llms.txt\n`;
 }
 
-/** Point site-relative Markdown links (`](/docs/docker)`) at the full site URL,
+/** Point site-relative Markdown links (`](/installation/docker)`) at the full site URL,
     so a page still resolves when it's read on its own, outside the site. Fenced
     code blocks are left as they are. */
 export function absoluteLinks(markdown: string, siteUrl: string): string {

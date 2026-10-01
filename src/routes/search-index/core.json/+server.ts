@@ -3,7 +3,7 @@ import type { DevLogMeta, DocMeta, WikiMeta } from '$lib/shared/utils/llm/index.
 import { buildApiEndpointEntries } from '$lib/shared/utils/search/api.js';
 import { buildDevLogEntry } from '$lib/shared/utils/search/devlog.js';
 import { buildDocEntry, buildDocSectionEntries } from '$lib/shared/utils/search/docs.js';
-import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
+import { docIndexEntry } from '$lib/shared/utils/llm/docs.js';
 import { buildWikiEntry } from '$lib/shared/utils/search/wiki.js';
 import { applyRatings } from '$lib/shared/utils/search/ratings.js';
 import { loadApiSpec } from '$lib/shared/utils/openapi/index.js';
@@ -13,8 +13,10 @@ export const prerender = true;
 // Database-independent search entries: Profilarr docs, dev logs, wiki
 // articles, and API endpoints. See docs/backend/search.md.
 
+// `?docs?` matches the `(docs)` route group. Vite treats escaped parentheses
+// differently in dev and build, so the pattern avoids them.
 const docModules = import.meta.glob<{ metadata: DocMeta }>(
-	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx'],
 	{
 		eager: true
 	}
@@ -22,7 +24,7 @@ const docModules = import.meta.glob<{ metadata: DocMeta }>(
 
 // Raw sources, for the section headings each docs page adds to the index.
 const docSources = import.meta.glob<string>(
-	['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx'],
+	['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx'],
 	{
 		eager: true,
 		query: '?raw',
@@ -41,8 +43,7 @@ const wikiModules = import.meta.glob<{ metadata: WikiMeta }>('/src/routes/wiki/*
 
 export const GET: RequestHandler = async () => {
 	const docMetas = Object.entries(docModules).map(([path, module]) => ({
-		...module.metadata,
-		slug: docSlugFromPath(path),
+		...docIndexEntry(path, module.metadata),
 		source: docSources[path]
 	}));
 	const docTitles = new Map(docMetas.map((doc) => [doc.slug, doc.title]));

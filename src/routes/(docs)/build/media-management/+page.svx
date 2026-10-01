@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Media Management
+blurb: Editing naming formats, media settings, and quality definitions.
+order: 6
+---
+
+TODO: Editing media management configs for Radarr and Sonarr. Covers naming formats with the token picker and live preview, media settings and why preferring propers and repacks can break custom format scoring, and quality definitions with their size limits for each quality.

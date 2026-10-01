@@ -5,7 +5,9 @@ import { docSlugFromPath } from '$lib/shared/utils/llm/docs.js';
 
 export const prerender = true;
 
-const docModules = import.meta.glob(['/src/routes/+page.svx', '/src/routes/docs/**/+page.svx']);
+// `?docs?` matches the `(docs)` route group. Vite treats escaped parentheses
+// differently in dev and build, so the pattern avoids them.
+const docModules = import.meta.glob(['/src/routes/+page.svx', '/src/routes/?docs?/**/+page.svx']);
 
 const devLogModules = import.meta.glob<{ metadata: { created: string } }>(
 	'/src/routes/dev-logs/**/+page.svx',
