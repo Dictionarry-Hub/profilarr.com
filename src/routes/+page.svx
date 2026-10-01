@@ -35,7 +35,7 @@ Profilarr is an attempt to fix this. Each quality profile, custom format, and re
 
 ## So What Even Is Profilarr?
 
-Profilarr is a self-hosted web app that manages the configurations of your Radarr and Sonarr instances. It runs alongside them, pulls configurations from one or more databases, and syncs them to your instances through their APIs. You can change anything a database gives you, and Profilarr keeps your changes when the database updates.
+Profilarr is a configuration management platform for the arr stack. It runs alongside Radarr and Sonarr, pulls configurations from one or more databases, tests them against real releases, and syncs them to your instances through their APIs. You can change anything a database gives you, and Profilarr keeps your changes when the database updates.
 
 > Radarr and Sonarr still search, grab, and import releases; Profilarr just tells them _what_ to grab.
 
