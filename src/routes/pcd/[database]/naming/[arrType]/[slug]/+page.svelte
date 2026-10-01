@@ -84,7 +84,7 @@
 </script>
 
 <SEO
-	title={naming.name}
+	title="Naming: {naming.name}"
 	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={naming.name}>

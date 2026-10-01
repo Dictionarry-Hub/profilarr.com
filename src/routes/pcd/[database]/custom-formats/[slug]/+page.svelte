@@ -249,7 +249,7 @@
 {/snippet}
 
 <SEO
-	title={format.name}
+	title="Custom Format: {format.name}"
 	description={format.description ?? undefined}
 	markdown="{page.url.pathname}.md" />
 

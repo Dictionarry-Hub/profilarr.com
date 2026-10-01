@@ -69,7 +69,7 @@
 </script>
 
 <SEO
-	title={profile.name}
+	title="Delay Profile: {profile.name}"
 	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={profile.name}>

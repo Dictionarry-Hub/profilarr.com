@@ -115,8 +115,14 @@ export function llmsTxt(input: LlmsInput): string {
 		].join('\n'),
 		'## PCD Browser',
 		'Entities from each Profilarr Compliant Database, with every quality profile linked below.' +
-			` \`${SITE_URL}/sitemap.xml\` lists every page, including each entity; an entity's` +
-			' Markdown version is its page URL with `.md` appended.',
+			` \`${SITE_URL}/pcd/{database}/nav.json\` lists every entity's name by type.` +
+			" An entity's page is `/pcd/{database}/{type}/{slug}`, with the type as" +
+			' quality-profiles, custom-formats, regular-expressions, or delay-profiles; naming,' +
+			' media-settings, and quality-definitions add the app:' +
+			' `/pcd/{database}/{type}/{radarr|sonarr}/{slug}`. The slug is the name lowercased,' +
+			' with `+` as `-plus`, `[x]` as `literal-x`, spaces and underscores as hyphens, every' +
+			' other character except letters, digits, dots, and hyphens dropped, and repeated' +
+			" hyphens collapsed. An entity's Markdown version is its page URL with `.md` appended.",
 		...input.databases.map(databaseSection)
 	]);
 }

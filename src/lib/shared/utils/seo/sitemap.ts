@@ -1,14 +1,15 @@
-// Sitemap generation. One entry per prerendered HTML page, with lastmod
-// where a real date exists: article publish dates and, for PCD entities,
-// the date of the last commit that touched them (from the history replay).
-// Docs pages carry no date, so they are listed without one.
+// Sitemap generation. One entry per indexable prerendered HTML page, with
+// lastmod where a real date exists: article publish dates and, for PCD
+// entities, the date of the last commit that touched them (from the history
+// replay). Docs pages carry no date, so they are listed without one.
 // Artifacts (.md, .yaml, .json) are alternate representations, not pages,
-// and are left out.
+// and are left out, as are pages marked noindex (see indexing.ts).
 
 import { pcdDatabaseEntries, pcdNavDatabase } from '../pcd/prerender.js';
 import { entityLastChanged } from '../pcd/history-data.js';
 import { slugify } from '../slug.js';
 import { docPath } from '../llm/docs.js';
+import { isIndexable } from './indexing.js';
 import type { SitemapEntry } from './xml.js';
 
 export { renderSitemap, type SitemapEntry } from './xml.js';
@@ -88,7 +89,7 @@ export function sitemapEntries(
 		}
 	}
 
-	return entries;
+	return entries.filter((entry) => isIndexable(entry.path));
 }
 
 function withLastmod(path: string, lastmod: string | null): SitemapEntry {

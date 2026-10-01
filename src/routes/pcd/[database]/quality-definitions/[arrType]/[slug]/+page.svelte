@@ -79,7 +79,7 @@
 </script>
 
 <SEO
-	title={config.name}
+	title="Quality Definitions: {config.name}"
 	markdown="{page.url.pathname}.md" />
 
 <PageHeader title={config.name}>
