@@ -1,0 +1,101 @@
+---
+layout: docs
+title: Fields
+blurb: What each field in an upgrade filter checks, for Radarr and Sonarr.
+author: https://github.com/santiagosayshey
+order: 2
+next: [deploy/upgrades/selection, deploy/upgrades/examples]
+---
+
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import { sharedFields, radarrFields, sonarrFields, fieldColumns } from './data';
+</script>
+
+> New to filters? Start with [Filtering](/deploy/upgrades/filtering), which covers rules and groups.
+
+Every rule starts with a field. Some are obvious, like Year, and some aren't, like Popularity or Cutoff Met. The tables below explain what each field actually checks, so come back here whenever you're building a rule and aren't sure which field you need.
+
+## Shared Fields
+
+<div class="mb-5">
+<AdaptiveList
+	data={sharedFields}
+	columns={fieldColumns}>
+	<!-- Renders text between backticks as inline code and text between asterisks in italics, like Markdown. -->
+	{#snippet rich(text)}{#each text.split('`') as code, c}{#if c % 2}<code>{code}</code>{:else}{#each code.split('*') as part, i}{#if i % 2}<em>{part}</em>{:else}{part}{/if}{/each}{/if}{/each}{/snippet}
+	{#snippet checks(row)}{@render rich(row.checks)}{#if row.seeAlso}{' '}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}{/snippet}
+	{#snippet cell(row, col)}
+		{#if col.key === 'field'}
+			<span class="font-medium">{row.field}</span>
+		{:else if col.key === 'kind'}
+			<code>{row.kind}</code>
+		{:else}
+			{@render checks(row)}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.field} <code class="text-sm font-normal">{row.kind}</code></div>
+		<div class="mt-1 text-sm">{@render checks(row)}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+### Cutoff Met
+
+**Cutoff Met** is a *special* boolean field. It evaulates to <u>true</u> when a file scores at least **Cutoff %** of its quality profile's Upgrade Until Custom Format Score. Cutoff % is a top level setting on the filter itself, and it applies to every Cutoff Met rule in that filter. For a series, the score is the average across all of its episode files.
+
+For a file scoring `860,000` on Dictionarry's 1080p Quality profile, which stops upgrading at `1,000,000`:
+
+- At 100%, it needs `1,000,000`, so Cutoff Met is False.
+- At 80%, it needs `800,000`, so Cutoff Met is True.
+
+## Radarr Fields
+
+<div class="mb-5">
+<AdaptiveList
+	data={radarrFields}
+	columns={fieldColumns}>
+	<!-- Renders text between backticks as inline code and text between asterisks in italics, like Markdown. -->
+	{#snippet rich(text)}{#each text.split('`') as code, c}{#if c % 2}<code>{code}</code>{:else}{#each code.split('*') as part, i}{#if i % 2}<em>{part}</em>{:else}{part}{/if}{/each}{/if}{/each}{/snippet}
+	{#snippet checks(row)}{@render rich(row.checks)}{#if row.seeAlso}{' '}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}{/snippet}
+	{#snippet cell(row, col)}
+		{#if col.key === 'field'}
+			<span class="font-medium">{row.field}</span>
+		{:else if col.key === 'kind'}
+			<code>{row.kind}</code>
+		{:else}
+			{@render checks(row)}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.field} <code class="text-sm font-normal">{row.kind}</code></div>
+		<div class="mt-1 text-sm">{@render checks(row)}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+## Sonarr Fields
+
+<div class="mb-5">
+<AdaptiveList
+	data={sonarrFields}
+	columns={fieldColumns}>
+	<!-- Renders text between backticks as inline code and text between asterisks in italics, like Markdown. -->
+	{#snippet rich(text)}{#each text.split('`') as code, c}{#if c % 2}<code>{code}</code>{:else}{#each code.split('*') as part, i}{#if i % 2}<em>{part}</em>{:else}{part}{/if}{/each}{/if}{/each}{/snippet}
+	{#snippet checks(row)}{@render rich(row.checks)}{#if row.seeAlso}{' '}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}{/snippet}
+	{#snippet cell(row, col)}
+		{#if col.key === 'field'}
+			<span class="font-medium">{row.field}</span>
+		{:else if col.key === 'kind'}
+			<code>{row.kind}</code>
+		{:else}
+			{@render checks(row)}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.field} <code class="text-sm font-normal">{row.kind}</code></div>
+		<div class="mt-1 text-sm">{@render checks(row)}</div>
+	{/snippet}
+</AdaptiveList>
+</div>

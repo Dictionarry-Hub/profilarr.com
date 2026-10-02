@@ -2,7 +2,7 @@
 layout: docs
 title: Selection
 blurb: Choosing which matching items get searched first, and how many each run.
-order: 2
+order: 3
 ---
 
 TODO: Choosing which matching items get searched each run. Covers the ten methods (Random, Oldest, Newest, Lowest Score, Size (Largest First), Size (Smallest First), Most Popular, Least Popular, A-Z, and Z-A), how Lowest Score scores a Sonarr series from the average of its episode files, and Count, including the maximum the schedule allows.

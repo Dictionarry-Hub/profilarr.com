@@ -2,7 +2,98 @@
 layout: docs
 title: Filtering
 blurb: Building the rules that decide which items an upgrade can search.
+author: https://github.com/santiagosayshey
 order: 1
+next: [deploy/upgrades/fields, deploy/upgrades/selection]
 ---
 
-TODO: Building the filters that decide which items an upgrade run can search. Covers rules and nested AND/OR groups, the operators for each kind of field, Cutoff % and how it decides Cutoff Met, the default rules for new filters, copying and importing filters as JSON, and the fields available for Radarr and Sonarr, including the ones that exist for only one of them.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Screenshots from '$lib/client/ui/markdown/screenshots/Screenshots.svelte';
+	import { fieldKinds, fieldKindColumns, firstGuessScreens, yearScreens, finalScreens } from './data';
+</script>
+
+A filter decides which items in your library are worth searching for an upgrade. It's a set of *rules* about items in your library, like whether:
+
+- It's assigned to the 1080p Quality profile.
+- Its file comes from a banned release group.
+- It was added more than a year ago.
+
+## Rules
+
+Every rule has three parts: a **field**, an *operator*, and a <u>value</u>, like **Monitored** *is* <u>True</u>.
+
+The field you pick decides which operators you get:
+
+<div class="mb-5">
+<AdaptiveList
+	data={fieldKinds}
+	columns={fieldKindColumns}>
+	{#snippet example(e)}<strong>{e.field}</strong> <em>{e.operator}</em> <u>{e.value}</u>{#if e.unit}{' '}{e.unit}{/if}{/snippet}
+	{#snippet ops(list)}{#each list as op, i}{#if i > 0}{', '}{/if}<em>{op}</em>{/each}{/snippet}
+	{#snippet cell(row, col)}
+		{#if col.key === 'kind'}
+			<span class="font-medium">{row.kind}</span>
+		{:else if col.key === 'operators'}
+			{@render ops(row.operators)}
+		{:else}
+			{@render example(row.example)}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.kind}</div>
+		<div class="text-sm">{@render ops(row.operators)}</div>
+		<div class="mt-1 text-sm">{@render example(row.example)}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="info">
+
+The rule row shortens some operators once they're picked, like *has* for *includes*. Text fields that offer a dropdown of values, like **Quality Profile** and **Release Group**, only have *is* and *is not*.
+
+</Callout>
+
+## Groups
+
+A *group* is a rule that holds other rules. Every filter starts with a top group, and all your rules go inside it.
+
+Like any rule, a group either matches an item or it doesn't. Its **Match** setting decides how:
+
+- With **All (AND)**, every rule inside has to match. **Monitored** *is* <u>True</u> and **Size on Disk** *<* <u>5</u> together only match monitored movies under 5 GB.
+- With **Any (OR)**, one is enough. **Original Language** *is* <u>Japanese</u> and **Original Language** *is* <u>Korean</u> together match movies made in either language.
+
+Because a group is just another rule, you can put one group inside another group!
+
+
+## Building a Filter
+
+Rules and groups make a lot more sense once you see them in action, so let's play around with a filter!
+
+You've decided that you want to upgrade the most popular movies in your library. Crappy encodes shall be no more! But what does this actually mean? What is "popular"? Well, let's try to map these to some upgrade [fields](/deploy/upgrades/fields).
+
+Popularity seems like the obvious place to start, and a high rating probably counts too. So a first guess might look like this, with the group on **Any (OR)** so either one is enough:
+
+- **Popularity** *≥* <u>30</u>
+- **TMDb Rating** *≥* <u>7</u>
+
+<Screenshots items={firstGuessScreens} />
+
+Open the preview, and near the top is... The Shawshank Redemption? Sure, it just got a 4K remaster, so everyone's watching it again, and it's rated through the roof. By your two rules, it's as popular as it gets. But it's a 1994 prison drama, and that's not what anyone on your server is asking for. So let's only count recent movies. Add **Year** *≥* <u>2020</u> and check again.
+
+<Screenshots items={yearScreens} />
+
+Shawshank hasn't budged. And now the list is *longer*: every movie from 2020 onwards has shown up too.
+
+That's because our group is set to **Any (OR)**, so a movie only needs to match one rule. That's what we want for popularity and rating, since either one is good enough. But it also means a movie only needs to be recent to match, which isn't what we wanted at all. Year isn't another kind of popular, it's a base requirement.
+
+So lets shuffle them around:
+- Popularity and rating move into a new group, still on **Any (OR)**.
+- Year, as well as a new rule: **Monitored** *is* <u>True</u> stay in the top group, which switches to **All (AND)**.
+
+A movie now has to be recent, *and* monitored, *and* popular in at least one way.
+
+<Screenshots items={finalScreens} />
+
+Now only four movies match: The Menu, Oppenheimer, Dune: Part Two, and Everything Everywhere All at Once. Shawshank and the other older movies are out.
