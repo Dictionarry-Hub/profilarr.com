@@ -2,7 +2,90 @@
 layout: docs
 title: Upgrades
 blurb: Automatically searching for better releases.
+author: https://github.com/santiagosayshey
 order: 5
+next: [deploy/upgrades/filtering, deploy/upgrades/examples]
 ---
 
-TODO: Searching for better releases automatically. Starts by answering whether Radarr and Sonarr already do this: they upgrade, but only when a better release appears in their RSS feeds, so items already in your library are never searched again automatically. Makes clear that Profilarr never searches or grabs anything itself: it tells the Arr which items to search for, and the Arr does the searching and grabbing. That's why Profilarr doesn't need your download client or access to your library files. Covers building filters from nested rules, choosing how items are selected, how many items each run searches, the tag-based cooldown that works through your library before repeating, dry runs and previews, the search limits for Radarr and Sonarr, and the fields that only exist for one of them.
+<script>
+	import Screenshots from '$lib/client/ui/markdown/screenshots/Screenshots.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import { radarrScreens, profilarrScreens, concepts, conceptColumns } from './data';
+</script>
+
+## Doesn't Radarr Already Upgrade?
+
+Before trying to understand *what* upgrades are and *how* they work, it's important to understand why this functionality needs to exist in the first place. So let's go back to 2018.
+
+Younger you has just set up your first media server and you've decided to add your favourite movie: `The Dark Knight`. You add The Pirate Bay as an indexer to Radarr and let it go to work. It picks the 1080p release with the most seeders: `The Dark Knight 2008 1080p BluRay x264-nikt0`. You're happy with this release so you unmonitor The Dark Knight in Radarr. This `nikt0` encode has sat in your library ever since.
+
+<Screenshots items={radarrScreens} />
+
+Fast forward to today. You decide quality matters to you, so you learn about custom formats and quality profiles. You learn that writing a good set of them is a hobby in itself, which is how you find Profilarr. You link the Dictionarry database, sync its 1080p Quality profile to Radarr, assign it to The Dark Knight, and start monitoring it again.
+
+Suddenly the `nikt0` encode younger you was happy with is now considered *bad*. Dictionarry considers `nikt0` a bad release group and bans them from this quality profile. The file on disk is now scored as `-299,599`.
+
+<ThemeImage
+	light="/images/docs_upgrades_radarr_scored[style=light].png"
+	dark="/images/docs_upgrades_radarr_scored[style=dark].png"
+	alt="The Dark Knight's page in Radarr on the 1080p Quality profile. Its nikt0 file matches the 1080p Bluray, Banned Groups, and Dolby Digital custom formats and scores -299599."
+	caption="The same file under 1080p Quality. The 'Banned Groups' custom format pushes its score down to `-299,599`."
+	border />
+
+Herein lies the rub.
+
+When you change or switch quality profiles, add new indexers, or leave your server off while you're on holiday, Radarr doesn't go back and search for the best release again. It relies on RSS feeds, which surface releases as they're posted to an indexer. If a new release scores higher than the file you have, Radarr grabs it.
+
+This can result in *downgrades*: upgrades that score higher than what you already have, but only because what you have scores so low already.
+
+Consider a release that has just popped up in your RSS feed:
+
+<ThemeImage
+	light="/images/docs_upgrades_radarr_search[style=light].png"
+	dark="/images/docs_upgrades_radarr_search[style=dark].png"
+	alt="Radarr's Interactive Search for The Dark Knight with two releases. The.Dark.Knight.2008.480p.BluRay.x264-HANDJOB from Not The Pirate Bay is 10 hours old, 1.9 GiB, Bluray-480p, and scores +400000. The Dark Knight 2008 1080p BluRay x264-nikt0 from The Pirate Bay is 2921 days old, 6.6 GiB, Bluray-1080p, scores -299599, and is marked as rejected."
+	caption="Shown as a search so you can see both. An RSS grab compares the same two scores."
+	border />
+
+Despite being a smaller `480p` encode, Radarr considers this an upgrade! A human manually picking out upgrades probably isn't going to grab this just because it's a score upgrade. But that kind of implicit decision making isn't possible in a system like this, so we have to rely on other means: *direct upgrades*.
+
+<Callout type="info">
+
+If your quality profile ranks its qualities in order, you're probably thinking this could never happen to you. You'd be right! Radarr compares quality before it looks at anything else, so a 480p release is never an upgrade over a 1080p file, whatever its score. When in doubt, [quality trumps all](https://wiki.servarr.com/radarr/faq#how-are-possible-downloads-compared).
+
+Dictionarry profiles work differently. 1080p Quality puts every quality it allows into one group, so Radarr ranks releases by custom format score alone. That's how a banned group sinks no matter its resolution, and how a 480p release just beat a 1080p file. Ranked qualities keep your resolution safe but only let custom formats sort within each quality. One group lets them sort across qualities, at the cost of that safety.
+
+</Callout>
+
+Rather than relying on RSS to *incrementally* upgrade your library over time, we can instead tell Radarr to go do another full search, grabbing the highest scored release overall, not just whatever popped up in your RSS feed.
+
+So now that we've established a need for *direct* upgrades, how can we start doing them? Of course you can manually click **Search Movie** on every item in your library, but do you really want to do that? If only there was a tool that could automate it...
+
+## Automating Upgrades
+
+That's right. Profilarr can automatically click a button for you! It picks a few items from your library and asks Radarr to search for them. What gets picked, and when, comes down to a few concepts:
+
+<div class="mb-5">
+<AdaptiveList
+	data={concepts}
+	columns={conceptColumns}
+	href={(row) => row.href}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'concept'}
+			<span class="font-medium text-link-text group-hover/row:underline">{row.concept}</span>
+		{:else}
+			{row.decides}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium text-link-text group-hover/row:underline">{row.concept}</div>
+		<div class="text-sm text-text-muted">{row.decides}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+Let's put this to work on The Dark Knight. Our `nikt0` encode probably isn't the only file in the library from a banned group, so instead of targeting the movie, we can target the problem: movies on 1080p Quality whose file comes from a banned release group. That's a filter with two rules, **Quality Profile** is 1080p Quality and **Custom Format** has Banned Groups. Set the method to **Lowest Score**, and the worst of them get searched first.
+
+<Screenshots items={profilarrScreens} />

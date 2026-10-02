@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Scheduling
+blurb: When upgrades run, and when an item can be searched again.
+order: 3
+---
+
+TODO: When upgrades run. Covers turning upgrades on for an instance, the schedule and its minimum intervals (10 minutes for Radarr, 60 for Sonarr), the search rate limits, the Round Robin and Random Shuffle modes when there's more than one filter, and the cooldown: the tag Profilarr adds to each searched item, how the tags reset once every match has been searched, filters that share a tag, and what happens to tags when a filter is renamed or deleted.

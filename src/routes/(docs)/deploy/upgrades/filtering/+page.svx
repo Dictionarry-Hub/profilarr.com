@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Filtering
+blurb: Building the rules that decide which items an upgrade can search.
+order: 1
+---
+
+TODO: Building the filters that decide which items an upgrade run can search. Covers rules and nested AND/OR groups, the operators for each kind of field, Cutoff % and how it decides Cutoff Met, the default rules for new filters, copying and importing filters as JSON, and the fields available for Radarr and Sonarr, including the ones that exist for only one of them.

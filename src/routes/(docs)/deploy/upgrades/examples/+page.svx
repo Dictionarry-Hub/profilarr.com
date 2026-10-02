@@ -1,0 +1,8 @@
+---
+layout: docs
+title: Examples
+blurb: Ready-made upgrade filters to copy into Profilarr.
+order: 5
+---
+
+TODO: Ready-made upgrade filters to copy into Profilarr. Covers importing a filter from its JSON, which app each filter is for and the Profilarr version it was tested on, and how to submit your own.
