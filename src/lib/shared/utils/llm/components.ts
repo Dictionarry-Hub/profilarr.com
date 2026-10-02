@@ -98,8 +98,11 @@ export function markdownTree(items: TreeNode[]): string {
 	return `${fence}text\n${lines.join('\n')}\n${fence}`;
 }
 
+// Callout types whose label in Callout.svelte isn't the capitalized type.
+const CALLOUT_LABELS: Record<string, string> = { help: 'Help wanted' };
+
 export function markdownCallout(type: string, body: string): string {
-	const label = type.charAt(0).toUpperCase() + type.slice(1);
+	const label = CALLOUT_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
 	const lines = `**${label}:** ${body.trim()}`.split('\n');
 	return lines.map((line) => (line.trim() === '' ? '>' : `> ${line}`)).join('\n');
 }

@@ -164,9 +164,10 @@ docs mirror route imports the same module and passes it to `componentsToMarkdown
 fenced block per tab under its title (a `marks` block gets a line after it saying the square
 brackets mark matched text), a `FileTree` becomes a plain-text tree like the `tree` command prints,
 a `Screenshots` becomes each image with its caption, and a `Callout` becomes a blockquote led by its
-type. Columns are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a cell for the
-mirror, so styling the page adds in snippets (badges, links, placeholders) has a text form. A tag
-that names data the module doesn't export, and any other component, stays as it is.
+label ("Help wanted" for `help`, the capitalized type otherwise). Columns are typed as
+`MarkdownColumn`, whose optional `markdown(row)` formats a cell for the mirror, so styling the page
+adds in snippets (badges, links, placeholders) has a text form. A tag that names data the module
+doesn't export, and any other component, stays as it is.
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes

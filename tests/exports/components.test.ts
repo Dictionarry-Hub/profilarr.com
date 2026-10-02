@@ -57,6 +57,12 @@ describe('markdownCallout', () => {
 			'> **Warning:** First line.\n>\n> - Point'
 		);
 	});
+
+	it('uses the component label when it differs from the type', () => {
+		expect(markdownCallout('help', 'Write the nginx guide.')).toBe(
+			'> **Help wanted:** Write the nginx guide.'
+		);
+	});
 });
 
 describe('markdownTree', () => {
