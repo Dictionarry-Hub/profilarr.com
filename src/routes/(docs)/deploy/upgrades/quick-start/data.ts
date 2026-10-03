@@ -1,5 +1,7 @@
 import type { Column } from '$lib/client/ui/table/types';
 
+export { upgradePrompt } from './ai';
+
 type FilterExample = {
 	title: string;
 	description: string;

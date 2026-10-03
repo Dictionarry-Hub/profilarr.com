@@ -864,6 +864,23 @@ brackets as written and adds a line after the block saying what they mean.
 | `footer`        | `Snippet<[number]>`  | no       |            |
 | `headerActions` | `Snippet`            | no       |            |
 
+#### `PromptBuilder`
+
+`src/lib/client/ui/markdown/prompt/PromptBuilder.svelte`
+
+Combines a description field and a small icon button in one bordered control. The button sits
+inside the top-right corner, with a Copy AI Prompt tooltip and copy feedback. The textarea leaves
+space for the button. It replaces `[User’s description]` in
+the supplied prompt's `code` with the user's text and copies the result locally. The button stays
+disabled until the description contains text and reports copy success or failure. Prompt data,
+including schemas, stays out of the browser layout. The Markdown mirror exports the complete
+template through `componentsToMarkdown` when the prompt is exported from the page's `data.ts`.
+
+| Prop          | Type          | Required | Default |
+| ------------- | ------------- | -------- | ------- |
+| `prompt`      | `CodeExample` | yes      |         |
+| `placeholder` | `string`      | no       | `''`    |
+
 #### `FileTree`
 
 `src/lib/client/ui/markdown/tree/FileTree.svelte`

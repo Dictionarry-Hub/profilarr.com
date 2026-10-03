@@ -172,6 +172,16 @@ function isCodeList(value: unknown): value is CodeExample[] {
 	return Array.isArray(value);
 }
 
+function isCodeExample(value: unknown): value is CodeExample {
+	return (
+		typeof value === 'object' && value !== null &&
+		'title' in value && typeof value.title === 'string' &&
+		'language' in value && typeof value.language === 'string' &&
+		'code' in value && typeof value.code === 'string' &&
+		(!('description' in value) || typeof value.description === 'string')
+	);
+}
+
 function isTreeList(value: unknown): value is TreeNode[] {
 	return Array.isArray(value);
 }
@@ -180,7 +190,7 @@ function isScreenshotList(value: unknown): value is Screenshot[] {
 	return Array.isArray(value);
 }
 
-/** Replaces AdaptiveList, CodeBlock, FileTree, Screenshots, and Callout tags in an mdsvex body with
+/** Replaces AdaptiveList, PromptBuilder, CodeBlock, FileTree, Screenshots, and Callout tags with
     Markdown. `data` is the page's data.ts module; a tag that names data the
     module doesn't export is left as it is. */
 export function componentsToMarkdown(body: string, data: Record<string, unknown>): string {
@@ -196,6 +206,10 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 	return body
 		.replace(WRAPPED_LIST, (_, list: string) => adaptiveList(list))
 		.replace(BARE_LIST, adaptiveList)
+		.replace(/<PromptBuilder\b[\s\S]*?\/>/g, (tag) => {
+			const prompt = data[tag.match(/\bprompt=\{(\w+)\}/)?.[1] ?? ''];
+			return isCodeExample(prompt) ? codeItem(prompt) : tag;
+		})
 		.replace(/<CodeBlock\s+items=\{(\w+)\}([^>]*)\/>/g, (tag, name, rest: string) => {
 			const items = data[name];
 			return isCodeList(items) ? markdownCode(items, /\bmarks\b/.test(rest)) : tag;

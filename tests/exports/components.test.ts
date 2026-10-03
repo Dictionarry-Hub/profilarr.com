@@ -154,6 +154,20 @@ describe('componentsToMarkdown', () => {
 		);
 	});
 
+	it('exports the complete prompt template instead of the interactive form', () => {
+		const prompt = {
+			title: 'Upgrade Prompt',
+			language: 'text',
+			code: 'Goal: [User’s description]\nSchema: {"type":"object"}'
+		};
+		const body = '<PromptBuilder\n prompt={prompt}\n placeholder="Describe your goal" />';
+
+		expect(componentsToMarkdown(body, { prompt })).toBe(
+			'`Upgrade Prompt`\n\n```text\nGoal: [User’s description]\nSchema: {"type":"object"}\n```'
+		);
+		expect(componentsToMarkdown(body, {})).toBe(body);
+	});
+
 	it('replaces CodeBlock and Callout tags', () => {
 		const body = '<CodeBlock items={example} />\n\n<Callout type="info">\nNote.\n</Callout>';
 

@@ -174,6 +174,13 @@ fenced code using the row's `language`. The upgrade examples use this to keep JS
 browser layout while including it in the Markdown artifact. Their Copy Filter buttons copy the
 same JSON string directly, rather than the page's Markdown artifact.
 
+A `PromptBuilder` exports its prompt template as a titled fenced block from the page's `data.ts`.
+The browser form replaces `[User’s description]` with the user's input when copying; the Markdown
+artifact keeps the placeholder. Upgrade prompt data lives beside the Quick Start page in `ai.ts`,
+re-exported by `data.ts`. Its field IDs, operators, selector IDs, and search limits are a snapshot
+of Profilarr's source and need updating when that contract changes. Field and selector descriptions
+reuse the existing documentation data; schemas do not appear on those pages.
+
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
 `![alt](light image)` followed by its caption, so a model can read the alt text or fetch the image,
