@@ -25,6 +25,7 @@ export interface TreeNode {
 /** One tab of a CodeBlock. */
 export interface CodeExample {
 	title: string;
+	description?: string;
 	language: string;
 	code: string;
 }
@@ -64,7 +65,11 @@ export function markdownTable<T extends Record<string, unknown>>(
 
 function codeItem(item: CodeExample): string {
 	const fence = '```';
-	return `\`${item.title}\`\n\n${fence}${item.language}\n${item.code.trim()}\n${fence}`;
+	return join([
+		`\`${item.title}\``,
+		item.description ?? null,
+		`${fence}${item.language}\n${item.code.trim()}\n${fence}`
+	]);
 }
 
 const MARKS_NOTE =
@@ -181,6 +186,9 @@ function isScreenshotList(value: unknown): value is Screenshot[] {
 export function componentsToMarkdown(body: string, data: Record<string, unknown>): string {
 	const adaptiveList = (block: string): string => {
 		const rows = data[block.match(/\bdata=\{(\w+)\}/)?.[1] ?? ''];
+		if (/\bmarkdown="code"/.test(block)) {
+			return isCodeList(rows) ? markdownCode(rows) : block;
+		}
 		const columns = data[block.match(/\bcolumns=\{(\w+)\}/)?.[1] ?? ''];
 		return isRowList(rows) && isColumnList(columns) ? markdownTable(rows, columns) : block;
 	};

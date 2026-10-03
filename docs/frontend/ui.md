@@ -147,11 +147,16 @@ by breakpoint) below. `view="cards"` skips the table and renders the card grid a
 Generic over the row type, which must carry a string index signature. Used by the PCD entity detail
 pages and the API reference.
 
+`markdown="code"` exports each row's `title`, optional `description`, and fenced `code` using its
+`language`, instead of a table. This lets a list show descriptions and copy buttons while its
+Markdown artifact includes the full configurations. It does not change the browser layout.
+
 | Prop       | Type                                   | Required           | Default      |
 | ---------- | -------------------------------------- | ------------------ | ------------ |
 | `data`     | `T[]`                                  | yes                |              |
 | `columns`  | `Column<T>[]`                          | in `adaptive` view | `[]`         |
 | `view`     | `'adaptive' \| 'cards'`                | no                 | `'adaptive'` |
+| `markdown` | `'table' \| 'code'`                    | no                 | `'table'`    |
 | `href`     | `(row: T) => string \| undefined`      | no                 |              |
 | `cell`     | `Snippet<[row: T, column: Column<T>]>` | no                 |              |
 | `card`     | `Snippet<[row: T]>`                    | yes                |              |

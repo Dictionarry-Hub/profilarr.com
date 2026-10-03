@@ -169,6 +169,11 @@ label ("Help wanted" for `help`, the capitalized type otherwise). Columns are ty
 adds in snippets (badges, links, placeholders) has a text form. A tag that names data the module
 doesn't export, and any other component, stays as it is.
 
+An `AdaptiveList` with `markdown="code"` exports each row as a title, optional description, and
+fenced code using the row's `language`. The upgrade examples use this to keep JSON out of the
+browser layout while including it in the Markdown artifact. Their Copy Filter buttons copy the
+same JSON string directly, rather than the page's Markdown artifact.
+
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
 `![alt](light image)` followed by its caption, so a model can read the alt text or fetch the image,
