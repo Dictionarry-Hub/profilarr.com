@@ -8,7 +8,9 @@ next: [deploy/renames]
 ---
 
 <script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import { filterModes, filterModeColumns } from './data';
 </script>
 
 Your [filter](/deploy/upgrades/filtering) decides what qualifies as an upgrade, and your [selector](/deploy/upgrades/selection) picks what items get searched first. Scheduling controls *when* those searches happen and *which* filter runs each time.
@@ -30,8 +32,23 @@ For example:
 
 When you have several filters, Profilarr picks one per upgrade run. You can choose how it picks a filter using the **Mode** option:
 
-- **Round Robin** takes turns in list order.
-- **Random Shuffle** takes turns in a random order.
+<div class="mb-5">
+<AdaptiveList
+	data={filterModes}
+	columns={filterModeColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'mode'}
+			<span class="font-medium">{row.mode}</span>
+		{:else}
+			{row.order}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.mode}</div>
+		<div class="mt-1 text-sm">{row.order}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
 
 <Callout type="info">
 
