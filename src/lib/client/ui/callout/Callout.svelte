@@ -5,11 +5,12 @@
 		OctagonAlert,
 		Lightbulb,
 		StickyNote,
-		Quote
+		Quote,
+		HandHelping
 	} from '@lucide/svelte';
 	import type { Component, Snippet } from 'svelte';
 
-	type CalloutType = 'info' | 'warning' | 'danger' | 'tip' | 'note' | 'quote';
+	type CalloutType = 'info' | 'warning' | 'danger' | 'tip' | 'note' | 'quote' | 'help';
 
 	interface Props {
 		type?: CalloutType;
@@ -29,7 +30,8 @@
 		danger: { icon: OctagonAlert, label: 'Danger' },
 		tip: { icon: Lightbulb, label: 'Tip' },
 		note: { icon: StickyNote, label: 'Note' },
-		quote: { icon: Quote, label: 'Quote' }
+		quote: { icon: Quote, label: 'Quote' },
+		help: { icon: HandHelping, label: 'Help wanted' }
 	};
 
 	const Icon = $derived(config[type].icon);
@@ -147,6 +149,15 @@
 
 	.callout-quote .callout-body {
 		font-style: italic;
+	}
+
+	.callout-help {
+		--callout-accent: var(--theme-success-border);
+		background: color-mix(in srgb, var(--theme-success-bg) 50%, transparent);
+	}
+
+	.callout-help .callout-header {
+		color: var(--theme-success-text);
 	}
 
 	.callout-cite {

@@ -9,6 +9,8 @@ export interface Violation {
 	message: string;
 	line?: number;
 	column?: number;
+	/** Overrides the rule's severity for this violation. */
+	severity?: 'error' | 'warn';
 }
 
 export interface LintRule {

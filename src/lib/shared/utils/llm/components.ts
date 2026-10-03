@@ -25,6 +25,7 @@ export interface TreeNode {
 /** One tab of a CodeBlock. */
 export interface CodeExample {
 	title: string;
+	description?: string;
 	language: string;
 	code: string;
 }
@@ -64,7 +65,11 @@ export function markdownTable<T extends Record<string, unknown>>(
 
 function codeItem(item: CodeExample): string {
 	const fence = '```';
-	return `\`${item.title}\`\n\n${fence}${item.language}\n${item.code.trim()}\n${fence}`;
+	return join([
+		`\`${item.title}\``,
+		item.description ?? null,
+		`${fence}${item.language}\n${item.code.trim()}\n${fence}`
+	]);
 }
 
 const MARKS_NOTE =
@@ -98,8 +103,11 @@ export function markdownTree(items: TreeNode[]): string {
 	return `${fence}text\n${lines.join('\n')}\n${fence}`;
 }
 
+// Callout types whose label in Callout.svelte isn't the capitalized type.
+const CALLOUT_LABELS: Record<string, string> = { help: 'Help wanted' };
+
 export function markdownCallout(type: string, body: string): string {
-	const label = type.charAt(0).toUpperCase() + type.slice(1);
+	const label = CALLOUT_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
 	const lines = `**${label}:** ${body.trim()}`.split('\n');
 	return lines.map((line) => (line.trim() === '' ? '>' : `> ${line}`)).join('\n');
 }
@@ -164,6 +172,20 @@ function isCodeList(value: unknown): value is CodeExample[] {
 	return Array.isArray(value);
 }
 
+function isCodeExample(value: unknown): value is CodeExample {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'title' in value &&
+		typeof value.title === 'string' &&
+		'language' in value &&
+		typeof value.language === 'string' &&
+		'code' in value &&
+		typeof value.code === 'string' &&
+		(!('description' in value) || typeof value.description === 'string')
+	);
+}
+
 function isTreeList(value: unknown): value is TreeNode[] {
 	return Array.isArray(value);
 }
@@ -172,12 +194,15 @@ function isScreenshotList(value: unknown): value is Screenshot[] {
 	return Array.isArray(value);
 }
 
-/** Replaces AdaptiveList, CodeBlock, FileTree, Screenshots, and Callout tags in an mdsvex body with
+/** Replaces AdaptiveList, PromptBuilder, CodeBlock, FileTree, Screenshots, and Callout tags with
     Markdown. `data` is the page's data.ts module; a tag that names data the
     module doesn't export is left as it is. */
 export function componentsToMarkdown(body: string, data: Record<string, unknown>): string {
 	const adaptiveList = (block: string): string => {
 		const rows = data[block.match(/\bdata=\{(\w+)\}/)?.[1] ?? ''];
+		if (/\bmarkdown="code"/.test(block)) {
+			return isCodeList(rows) ? markdownCode(rows) : block;
+		}
 		const columns = data[block.match(/\bcolumns=\{(\w+)\}/)?.[1] ?? ''];
 		return isRowList(rows) && isColumnList(columns) ? markdownTable(rows, columns) : block;
 	};
@@ -185,6 +210,10 @@ export function componentsToMarkdown(body: string, data: Record<string, unknown>
 	return body
 		.replace(WRAPPED_LIST, (_, list: string) => adaptiveList(list))
 		.replace(BARE_LIST, adaptiveList)
+		.replace(/<PromptBuilder\b[\s\S]*?\/>/g, (tag) => {
+			const prompt = data[tag.match(/\bprompt=\{(\w+)\}/)?.[1] ?? ''];
+			return isCodeExample(prompt) ? codeItem(prompt) : tag;
+		})
 		.replace(/<CodeBlock\s+items=\{(\w+)\}([^>]*)\/>/g, (tag, name, rest: string) => {
 			const items = data[name];
 			return isCodeList(items) ? markdownCode(items, /\bmarks\b/.test(rest)) : tag;

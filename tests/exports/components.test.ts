@@ -57,6 +57,12 @@ describe('markdownCallout', () => {
 			'> **Warning:** First line.\n>\n> - Point'
 		);
 	});
+
+	it('uses the component label when it differs from the type', () => {
+		expect(markdownCallout('help', 'Write the nginx guide.')).toBe(
+			'> **Help wanted:** Write the nginx guide.'
+		);
+	});
 });
 
 describe('markdownTree', () => {
@@ -112,12 +118,57 @@ describe('componentsToMarkdown', () => {
 		expect(componentsToMarkdown(body, data)).toBe('`crontab`\n\n```sh\necho hi\n```');
 	});
 
+	it('exports descriptions and complete JSON from a list that only shows copy buttons', () => {
+		const filters = [
+			{
+				title: 'Favourites (Radarr)',
+				description: 'Search tagged movies.',
+				language: 'json',
+				code: '{\n  "name": "Favourites",\n  "count": 10\n}'
+			},
+			{
+				title: 'Finished Shows (Sonarr)',
+				description: 'Search ended series.',
+				language: 'json',
+				code: '{\n  "name": "Finished Shows",\n  "count": 1\n}'
+			}
+		];
+		const body =
+			'<div class="mb-5">\n' +
+			'<AdaptiveList data={filters} columns={columns} markdown="code">\n' +
+			'{#snippet card(row)}<Button>Copy Filter</Button>{/snippet}\n' +
+			'</AdaptiveList>\n</div>';
+
+		expect(componentsToMarkdown(body, { filters, columns })).toBe(
+			'`Favourites (Radarr)`\n\nSearch tagged movies.\n\n```json\n' +
+				filters[0].code +
+				'\n```\n\n' +
+				'`Finished Shows (Sonarr)`\n\nSearch ended series.\n\n```json\n' +
+				filters[1].code +
+				'\n```'
+		);
+	});
+
 	it('adds the brackets note for a marked CodeBlock', () => {
 		const body = '<CodeBlock items={example} marks />';
 
 		expect(componentsToMarkdown(body, data)).toBe(
 			'`crontab`\n\n```sh\necho hi\n```\n\nSquare brackets mark the text the expression matched. They are not part of the string.'
 		);
+	});
+
+	it('exports the complete prompt template instead of the interactive form', () => {
+		const prompt = {
+			title: 'Upgrade Prompt',
+			language: 'text',
+			code: 'Goal: [User’s description]\nSchema: {"type":"object"}'
+		};
+		const body = '<PromptBuilder\n prompt={prompt}\n placeholder="Describe your goal" />';
+
+		expect(componentsToMarkdown(body, { prompt })).toBe(
+			'`Upgrade Prompt`\n\n```text\nGoal: [User’s description]\nSchema: {"type":"object"}\n```'
+		);
+		expect(componentsToMarkdown(body, {})).toBe(body);
 	});
 
 	it('replaces CodeBlock and Callout tags', () => {

@@ -56,9 +56,10 @@ describe('renderMermaid', () => {
 	it('labels the svg with the title and description', () => {
 		const open = `<svg id="${id}" role="img" aria-labelledby="${id}-title ${id}-desc"`;
 		expect(svg.startsWith(open)).toBe(true);
-		expect(svg).toContain(`<title id="${id}-title">Build and test</title>`);
+		expect(svg).toContain(`<desc id="${id}-title">Build and test</desc>`);
 		expect(svg).toContain(`<desc id="${id}-desc">`);
 		expect(svg).not.toContain('data-id="accTitle"');
+		expect(svg).not.toContain('<title');
 	});
 
 	it('redraws edges as paths', () => {
@@ -88,6 +89,69 @@ describe('mermaidBlock', () => {
 
 		expect(block.startsWith('<figure class="mermaid-diagram">{@html "<svg')).toBe(true);
 		expect(block.endsWith('"}</figure>')).toBe(true);
+	});
+});
+
+describe('explicit Mermaid rows', () => {
+	const loop = [
+		'flowchart TD',
+		'accDescr: A run cycles through four steps.',
+		'%% rows: A B / C D',
+		'A[Wait] --> B[Filter] --> C[Search] --> D[Tag] --> A'
+	].join('\n');
+
+	it('extracts the row order from the source', () => {
+		const source = parseMermaid(loop);
+		expect(source.rows).toEqual([
+			['A', 'B'],
+			['C', 'D']
+		]);
+		expect(source.diagram).not.toContain('%% rows');
+	});
+
+	it('keeps a cycle in two rows with the return edge pointing at its original node', () => {
+		const svg = renderMermaid(loop);
+		const positions = new Map<
+			string,
+			{ x: number; y: number; width: number; height: number }
+		>();
+		for (const match of svg.matchAll(/<g class="node"([^>]+)>([\s\S]*?)<\/g>/g)) {
+			const id = match[1].match(/data-id="([^"]+)"/)![1];
+			const offset = match[1].match(/translate\(([-\d.]+) ([-\d.]+)\)/)!;
+			const rectangle = match[2].match(/<rect\b([^>]+)>/)![1];
+			positions.set(id, {
+				x: Number(rectangle.match(/\bx="([^"]+)"/)![1]) + Number(offset[1]),
+				y: Number(rectangle.match(/\by="([^"]+)"/)![1]) + Number(offset[2]),
+				width: Number(rectangle.match(/\swidth="([^"]+)"/)![1]),
+				height: Number(rectangle.match(/\sheight="([^"]+)"/)![1])
+			});
+		}
+		expect(positions.size).toBe(4);
+		expect(positions.get('A')!.x).toBeLessThan(positions.get('B')!.x);
+		expect(positions.get('A')!.y).toBeLessThan(positions.get('D')!.y);
+		expect(positions.get('C')!.x).toBeGreaterThan(positions.get('D')!.x);
+		expect(positions.get('A')!.x + positions.get('A')!.width).toBeLessThan(
+			positions.get('B')!.x
+		);
+		expect(positions.get('D')!.x + positions.get('D')!.width).toBeLessThan(
+			positions.get('C')!.x
+		);
+		const bounds = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)!;
+		for (const node of positions.values()) {
+			expect(node.x).toBeGreaterThanOrEqual(0);
+			expect(node.y).toBeGreaterThanOrEqual(0);
+			expect(node.x + node.width).toBeLessThan(Number(bounds[1]));
+			expect(node.y + node.height).toBeLessThan(Number(bounds[2]));
+		}
+		expect(svg).toMatch(/<path class="edge"[^>]*data-from="D"[^>]*data-to="A"[^>]*marker-end=/);
+	});
+
+	it('rejects missing, repeated, and unknown nodes', () => {
+		for (const rows of ['A B / C', 'A B / C A', 'A B / C MISSING']) {
+			expect(() => renderMermaid(loop.replace('A B / C D', rows))).toThrow(
+				/every node exactly once/
+			);
+		}
 	});
 });
 

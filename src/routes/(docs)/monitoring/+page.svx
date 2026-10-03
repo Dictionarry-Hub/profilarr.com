@@ -2,6 +2,7 @@
 layout: docs
 title: Monitoring
 blurb: Keeping track of what Profilarr is doing.
+groupDescription: "#todo"
 order: 7
 ---
 

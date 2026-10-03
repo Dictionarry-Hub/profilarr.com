@@ -18,16 +18,17 @@ at `src/routes/+page.svx`, is served at `/` with an empty slug, and is titled "P
 instead of publish date, so their frontmatter drops `created` and `tags`, makes `author` optional,
 and adds `order` and `keywords`:
 
-| Field      | Notes                                                                        |
-| ---------- | ---------------------------------------------------------------------------- |
-| `layout`   | `docs`                                                                       |
-| `title`    | Display title and sidebar label                                              |
-| `slug`     | Not set; derived from the route path, such as `installation/docker`          |
-| `blurb`    | Short description; SEO meta, search blurb, artifact preamble                 |
-| `order`    | Position among its siblings, ascending; pages without one sort last by title |
-| `keywords` | Optional extra search terms that appear in no heading                        |
-| `author`   | Optional GitHub profile URL (or list), shown in the page header              |
-| `next`     | Optional list of docs slugs or site links to point readers at in the footer  |
+| Field              | Notes                                                                        |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `layout`           | `docs`                                                                       |
+| `title`            | Display title and sidebar label                                              |
+| `slug`             | Not set; derived from the route path, such as `installation/docker`          |
+| `blurb`            | Short description; SEO meta, search blurb, artifact preamble                 |
+| `order`            | Position among its siblings, ascending; pages without one sort last by title |
+| `keywords`         | Optional extra search terms that appear in no heading                        |
+| `author`           | Optional GitHub profile URL (or list), shown in the page header              |
+| `next`             | Optional list of docs slugs or site links to point readers at in the footer  |
+| `groupDescription` | On a page with child pages: what the pages in its group cover                |
 
 A page with `next` set ends with a footer that links to those pages, as cards with each page's title
 and blurb (`PageFooter` in `src/lib/client/ui/footer/`). An entry is a docs slug, or a link to
@@ -38,6 +39,14 @@ reads the URL so each prerendered page carries only its own links, in `src/route
 for the home page, and in the Markdown mirror route, which lists the same pages under a `## Next`
 heading. `docsIndex` in `src/lib/server/docs.ts` holds every page's metadata for these lookups.
 Pages without `next` have no footer.
+
+A page with child pages heads a group, and its Actions menu can copy, view, or open in an assistant
+the whole group as Markdown: the page and every page under it (see [llm.md](./llm.md#docs-groups)).
+Such a page sets `groupDescription`, which says what the pages in the group cover and opens the
+group's Markdown. The root page heads every other docs page, so it sets one too. The
+`require-group-description` lint rule fails a header page without the field and warns when it is
+shorter than 80 characters. A group whose pages aren't written yet uses `#todo`, which the Markdown
+leaves out and the rule warns about (see [tooling/lint.md](../tooling/lint.md)).
 
 Every docs page shows when its source last changed and links to where it can be edited. The page
 header's meta row reads "Last updated" with the date, which links to the last commit that changed

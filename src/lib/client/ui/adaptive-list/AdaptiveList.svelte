@@ -10,6 +10,8 @@
 		data: T[];
 		columns?: Column<T>[];
 		view?: 'adaptive' | 'cards';
+		/** Markdown export format. Code rows carry title, language, code, and optional description. */
+		markdown?: 'table' | 'code';
 		href?: (row: T) => string | undefined;
 		cell?: Snippet<[row: T, column: Column<T>]>;
 		card: Snippet<[row: T]>;
@@ -18,6 +20,9 @@
 		footer?: Snippet;
 	}
 
+	// Nothing here reads `markdown`: componentsToMarkdown takes it from the page
+	// source when it builds the Markdown mirror.
+	// eslint-disable-next-line svelte/no-unused-props
 	let {
 		data,
 		columns = [],

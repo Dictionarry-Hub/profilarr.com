@@ -1,0 +1,104 @@
+---
+layout: docs
+title: Quick Start
+blurb: Enable and schedule Profilarr upgrades for Radarr or Sonarr, preview your filter, and try example filters for your library.
+author: https://github.com/santiagosayshey
+order: 1
+next: [deploy/upgrades/fields]
+---
+
+<script lang="ts">
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+	import { exampleFilters, exampleFilterColumns } from './data';
+	import CopyFilter from './CopyFilter.svelte';
+</script>
+
+> Before turning upgrades on, decide what you want them to fix. Have you changed quality profiles, added better indexers, or found files you want to replace? If you aren't sure why you need upgrades, read [Upgrades](/deploy/upgrades) first, then come back with a goal.
+
+Every upgrade run follows the same steps:
+
+```mermaid
+flowchart TD
+  %% rows: SCHEDULE FILTER MATCH COOLDOWN / SELECT SEARCH TAG
+  accTitle: An upgrade run
+  accDescr: The schedule starts a run. Mode picks a filter, its rules find matching library items, cooldown tags exclude previously searched items, and the selector and count pick which items the Arr searches. Profilarr tags the searched items and waits for the next scheduled run.
+  SCHEDULE["Wait for the<br/>next run"] --> FILTER[Pick a filter]
+  FILTER --> MATCH["Find matching<br/>library items"]
+  MATCH --> COOLDOWN["Exclude previously<br/>searched items"]
+  COOLDOWN --> SELECT["Pick items using<br/>selector"]
+  SELECT --> SEARCH["Ask the Arr<br/>to search"]
+  SEARCH --> TAG["Tag the<br/>searched items"]
+  TAG --> SCHEDULE
+```
+
+## Enable and Schedule Upgrades
+
+Open your Arr instance in Profilarr and go to **Upgrades**. Set **Status** to **Enabled**, choose **Hourly** at `0` minutes, and leave **Mode** as **Round Robin**.
+
+## Add a Filter
+
+Click `+` beside the filter search bar and choose **Default** to add a filter. Keep the default rules and **Random** method, then set **Count** to `10` for Radarr or `1` for Sonarr.
+
+For Radarr, the default rules target monitored, released movies. Each run randomly selects up to ten matching movies and asks Radarr to search for upgrades.
+
+Click **Save** to apply your settings.
+
+<ThemeImage
+	light="/images/docs_upgrades_quick_start_config[style=light].png"
+	dark="/images/docs_upgrades_quick_start_config[style=dark].png"
+	alt="Profilarr's Upgrades page with upgrades enabled hourly and a default filter selecting ten monitored, released movies at random"
+	border />
+
+## Preview Your Filter
+
+Click the **eye icon** beside your filter to preview the matching library items. Check that these are the movies you want Profilarr to search for upgrades.
+
+<ThemeImage
+	light="/images/docs_upgrades_quick_start_preview[style=light].png"
+	dark="/images/docs_upgrades_quick_start_preview[style=dark].png"
+	alt="The default filter preview with twelve matching movies, ten selected to search next, and two eligible later"
+	border />
+
+## That's It
+
+Profilarr will now select up to ten random monitored, released movies each hour and ask Radarr to search them again.
+
+Upgrades can be as specific as you need them to be. If you just want to upgrade your library over time after changing profiles or adding an indexer, this setup is enough. You don't need to learn every filter, selector, or field to get started.
+
+Read on for a few example filters you can use or adapt for your library.
+
+## Example Filters
+
+After choosing a filter below, click `+` beside the filter search bar and choose **Import**. Paste the JSON, preview the filter, and click **Save**. These examples use the hourly schedule above.
+
+<div class="mb-5">
+<AdaptiveList
+	data={exampleFilters}
+	columns={exampleFilterColumns}
+	markdown="code">
+	{#snippet cell(row, col)}
+		{#if col.key === 'title'}
+			<span class="font-medium">{row.title}</span>
+		{:else if col.key === 'description'}
+			{row.description}
+		{:else}
+			<CopyFilter title={row.title} code={row.code} />
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.title}</div>
+		<div class="mt-1 text-sm">{row.description}</div>
+		<div class="mt-3">
+			<CopyFilter title={row.title} code={row.code} />
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+<Callout type="help">
+
+Have a filter you'd like to share? [Open a pull request](https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/%28docs%29/deploy/upgrades/quick-start/data.ts) with your filter and a short description of what it does and when it's useful.
+
+</Callout>

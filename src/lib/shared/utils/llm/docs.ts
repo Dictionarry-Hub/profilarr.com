@@ -17,6 +17,9 @@ export interface DocMeta {
 	/** Pages to point readers at next, in the page footer: docs slugs, or links
 	    to other pages on the site. */
 	next?: (string | DocLink)[];
+	/** On a page with child pages: what the pages in its group cover. Opens the
+	    group's Markdown (see docGroupToMarkdown). */
+	groupDescription?: string;
 }
 
 export interface DocIndexEntry extends DocMeta {
@@ -92,6 +95,12 @@ export function commitUrl(hash: string): string {
 /** Path of a docs page's Markdown mirror: `/index.md` for the root page. */
 export function docMarkdownPath(slug: string): string {
 	return slug === '' ? '/index.md' : `${docPath(slug)}.md`;
+}
+
+/** Path of a group's Markdown, a page and every page under it in one file:
+    the page's mirror path with `.group` before the extension. */
+export function docGroupMarkdownPath(slug: string): string {
+	return docMarkdownPath(slug).replace(/\.md$/, '.group.md');
 }
 
 /** Title with its parent's in front ("Test: Custom Formats"), so child pages
@@ -246,4 +255,73 @@ export function docTree<T extends DocIndexEntry>(docs: T[]): DocNode<T>[] {
 			.map((doc) => ({ ...doc, children: childrenOf(doc.slug) }));
 
 	return childrenOf(undefined);
+}
+
+/** Whether a page heads a group: a page with child pages, or the root page,
+    which heads every other page. */
+export function docHasGroup(slug: string, docs: DocIndexEntry[]): boolean {
+	return docs.some((doc) => (slug === '' ? doc.slug !== '' : doc.parent === slug));
+}
+
+/** A page that heads a group, with the pages under it nested in reading
+    order. The root page's child pages are the top-level pages. Returns
+    undefined for a page without child pages. */
+export function docGroup<T extends DocIndexEntry>(slug: string, docs: T[]): DocNode<T> | undefined {
+	const tree = docTree(docs.filter((doc) => doc.slug !== ''));
+
+	if (slug === '') {
+		const root = docs.find((doc) => doc.slug === '');
+		return root && tree.length > 0 ? { ...root, children: tree } : undefined;
+	}
+
+	const find = (nodes: DocNode<T>[]): DocNode<T> | undefined => {
+		for (const node of nodes) {
+			const found = node.slug === slug ? node : find(node.children);
+			if (found) return found;
+		}
+		return undefined;
+	};
+
+	const group = find(tree);
+	return group && group.children.length > 0 ? group : undefined;
+}
+
+/** Stands in for a group description that isn't written yet. */
+const GROUP_DESCRIPTION_TODO = '#todo';
+
+/** A group's Markdown: the page that heads it and every page under it, in one
+    file. It opens with the group's title, its `groupDescription`, and a
+    contents list linking each page's own mirror. The pages follow in reading
+    order, each parent before its child pages, separated by rules. `page`
+    returns one page's Markdown and prints the title it is given: pages under
+    the header get their parent's title in front, as in search results, since
+    titles repeat across sections. */
+export function docGroupToMarkdown<T extends DocIndexEntry>(
+	group: DocNode<T>,
+	page: (doc: T) => string
+): string {
+	const contents: string[] = [];
+	const pages: string[] = [];
+	const add = (doc: DocNode<T>, indent: string, parent?: DocNode<T>) => {
+		contents.push(`${indent}- [${doc.title}](${docMarkdownPath(doc.slug)})`);
+		// The root page is no page's parent, so its title goes in front of none.
+		const parentTitle = doc.parent === undefined ? undefined : parent?.title;
+		pages.push(page({ ...doc, title: docFullTitle(doc.title, parentTitle) }));
+		for (const child of doc.children) add(child, `${indent}  `, doc);
+	};
+	add(group, '');
+
+	const description = group.groupDescription?.trim();
+	const scope =
+		group.slug === ''
+			? 'The Profilarr documentation'
+			: `The ${group.title} section of the Profilarr documentation`;
+
+	return join([
+		`# ${group.title}`,
+		description && description !== GROUP_DESCRIPTION_TODO ? `> ${description}` : '',
+		`${scope}, ${pages.length} pages in reading order. Web version: ${SITE_URL}${docPath(group.slug)}`,
+		contents.join('\n'),
+		...pages.flatMap((markdown) => ['---', markdown])
+	]);
 }

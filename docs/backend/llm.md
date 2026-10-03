@@ -135,14 +135,15 @@ The mdsvex content layers. The source `.svx` files are already markdown, so the 
 `src/lib/shared/utils/llm/wiki.ts` are thin. The shared stripping and date helpers (`articleBody`,
 `isoDate`) live in `md.ts`; each layer module owns only its formatting strings.
 
-| Artifact      | URL                   | Content                                                  |
-| ------------- | --------------------- | -------------------------------------------------------- |
-| Home page     | `/index.md`           | Preamble from frontmatter, then the source body verbatim |
-| Docs page     | `/{slug}.md`          | Preamble from frontmatter, then the source body verbatim |
-| Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first      |
-| Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim |
-| Wiki index    | `/wiki.md`            | One line per article (title, date, blurb), newest first  |
-| Wiki article  | `/wiki/{slug}.md`     | Preamble from frontmatter, then the source body verbatim |
+| Artifact      | URL                   | Content                                                       |
+| ------------- | --------------------- | ------------------------------------------------------------- |
+| Home page     | `/index.md`           | Preamble from frontmatter, then the source body verbatim      |
+| Docs page     | `/{slug}.md`          | Preamble from frontmatter, then the source body verbatim      |
+| Docs group    | `/{slug}.group.md`    | A page and every page under it, in one file (see Docs Groups) |
+| Dev log index | `/dev-logs.md`        | One line per log (title, date, blurb), newest first           |
+| Dev log       | `/dev-logs/{slug}.md` | Preamble from frontmatter, then the source body verbatim      |
+| Wiki index    | `/wiki.md`            | One line per article (title, date, blurb), newest first       |
+| Wiki article  | `/wiki/{slug}.md`     | Preamble from frontmatter, then the source body verbatim      |
 
 The slug is the route directory name, the same derivation the nav uses; a docs page's slug is its
 route path (`installation/docker`), so its mirror sits next to its URL. The preamble is synthesized
@@ -164,9 +165,23 @@ docs mirror route imports the same module and passes it to `componentsToMarkdown
 fenced block per tab under its title (a `marks` block gets a line after it saying the square
 brackets mark matched text), a `FileTree` becomes a plain-text tree like the `tree` command prints,
 a `Screenshots` becomes each image with its caption, and a `Callout` becomes a blockquote led by its
-type. Columns are typed as `MarkdownColumn`, whose optional `markdown(row)` formats a cell for the
-mirror, so styling the page adds in snippets (badges, links, placeholders) has a text form. A tag
-that names data the module doesn't export, and any other component, stays as it is.
+label ("Help wanted" for `help`, the capitalized type otherwise). Columns are typed as
+`MarkdownColumn`, whose optional `markdown(row)` formats a cell for the mirror, so styling the page
+adds in snippets (badges, links, placeholders) has a text form. A tag that names data the module
+doesn't export, and any other component, stays as it is.
+
+An `AdaptiveList` with `markdown="code"` exports each row as a title, optional description, and
+fenced code using the row's `language`. The upgrade examples use this to keep JSON out of the
+browser layout while including it in the Markdown artifact. Their Copy Filter buttons copy the same
+JSON string directly, rather than the page's Markdown artifact.
+
+A `PromptBuilder` exports its prompt template as a titled fenced block from the page's `data.ts`.
+The browser form replaces `[User’s description]` with the user's input when copying; the Markdown
+artifact keeps the placeholder. Upgrade prompt data lives beside the Quick Start page in `ai.ts`.
+The Quick Start page currently omits the tool and its Markdown export pending further testing. Its
+field IDs, operators, selector IDs, and search limits are a snapshot of Profilarr's source and need
+updating when that contract changes. Field and selector descriptions reuse the existing
+documentation data; schemas do not appear on those pages.
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes
@@ -187,6 +202,31 @@ SVG (see [markdown.md](../frontend/markdown.md#diagrams)).
 
 Index links point at the `.md` artifacts, so each index doubles as a machine-readable directory of
 its layer.
+
+### Docs Groups
+
+A docs page with child pages heads a group, and the group has its own artifact: the page and every
+page under it in one file, nested groups included. Its path is the page's mirror path with `.group`
+before the extension, so `/deploy/upgrades.group.md` holds Upgrades and its five child pages. The
+root page heads every other docs page, so `/index.group.md` is the whole documentation, without the
+API reference.
+
+`docGroupToMarkdown` in `docs.ts` builds the file. It opens with the header page's title, its
+`groupDescription` frontmatter as a blockquote, a context line with the page count and web URL, and
+a contents list that links each page's own mirror, nested like the sidebar. The pages follow in
+reading order, each parent before its child pages, separated by rules. Each page is its own mirror
+with two changes. A page under the header puts its parent's title in front of its own
+(`# Upgrades: Quick Start`), as search results do, since titles repeat across sections. The
+`## Next` list is left out, since the file already holds the pages in reading order. Headings are
+not shifted, so every page starts at `#`.
+
+A `groupDescription` of `#todo` marks a description that isn't written yet, and the file leaves it
+out. The `require-group-description` lint rule checks the field (see
+[tooling/lint.md](../tooling/lint.md)).
+
+Page mirrors and groups come from one route, `src/routes/(docs)/[...slug].md/`. Its rest parameter
+takes the `.group` suffix along with the slug, which avoids a second rest route that SvelteKit would
+have to rank against the first.
 
 ## PCD Entity Artifacts
 
@@ -266,8 +306,9 @@ Three pieces let a reader find the Markdown artifacts without a copy button.
   PCD database, every quality profile with its tags plus counts of the other entity types. It points
   to `/pcd/{database}/nav.json` for the full entity list and explains how an entity's URL is built
   from its name, rather than listing hundreds of entities, since the PCD list pages are not all
-  built and the sitemap lists only quality profiles. Served as plain text so the footer hook skips
-  it.
+  built and the sitemap lists only quality profiles. Its intro says where the docs groups are:
+  `.group.md` on a docs page with child pages, and `/index.group.md` for every docs page. Served as
+  plain text so the footer hook skips it.
 - **Footer.** Every Markdown artifact ends with a rule and a link to `/llms.txt`, so a reader that
   lands on one page can find the rest. `src/hooks.server.ts` appends it (`withIndexFooter` in
   `md.ts`) to any `text/markdown` response, which covers every `.md` route, current and future, and
@@ -293,7 +334,10 @@ as Markdown"), not just the format.
 
 Docs, dev log, and wiki pages get an `AiMenu` automatically: the shared `Article` layout renders one
 in its `PageHeader` actions, deriving the artifact path from the current pathname plus `.md` and
-using the default prompt.
+using the default prompt. On a docs page that heads a group, the layout also passes the group's
+path, and the menu adds a Group section: "Copy group as Markdown", "View group as Markdown", "Open
+group in Claude", and "Open group in ChatGPT" (see [groups](#docs-groups)). A group has no HTML page
+of its own, so both assistant links point at its Markdown.
 
 ### Assistant deep links
 

@@ -2,6 +2,7 @@
 layout: docs
 title: Reverse Proxies
 blurb: Serving Profilarr from your own domain through a reverse proxy.
+groupDescription: "Serving Profilarr from your own domain: what a reverse proxy does, what Profilarr needs from one, and a full Traefik setup."
 author: https://github.com/santiagosayshey
 order: 3
 ---
@@ -99,7 +100,7 @@ Profilarr checks which website each form came from and rejects forms from any ot
 </AdaptiveList>
 </div>
 
-<Callout type="info">
+<Callout type="help">
 
 If you'd like to help write the Caddy or nginx (including SWAG and Nginx Proxy Manager) guide, please feel free to contribute [here](/contributing#these-docs).
 

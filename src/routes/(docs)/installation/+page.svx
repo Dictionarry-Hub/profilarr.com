@@ -2,6 +2,7 @@
 layout: docs
 title: Installation
 blurb: Every way to install Profilarr, what it needs to run, and how to configure it.
+groupDescription: "Everything you need to run Profilarr yourself: its requirements, the parser, release channels, and environment variables, then installing and updating with Docker, protecting it with passwords, SSO, and API keys, serving it through a reverse proxy, and backing it up."
 author:
   - https://github.com/santiagosayshey
   - https://github.com/Delavicci

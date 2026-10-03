@@ -11,6 +11,9 @@ build time. This means:
 - Svelte components can be imported and used inside markdown.
 - All rendering happens at build time, so SEO is unaffected.
 
+Keep rune-based state in imported `.svelte` components. mdsvex generates a legacy page wrapper using
+`$$props`, so adding runes such as `$state` directly to a `.svx` page causes a compile error.
+
 ## Component Remapping
 
 Default HTML elements (headings, code blocks, links, etc.) can be remapped to custom Svelte
@@ -70,8 +73,23 @@ flowchart LR
 ````
 
 Every diagram needs an `accDescr` line, and the build fails without one. `accTitle` is optional.
-Both must be single lines; the block form (`accDescr { ... }`) is not supported. They become the
-SVG's `<title>` and `<desc>`, which screen readers read.
+Both must be single lines; the block form (`accDescr { ... }`) is not supported. They become the SVG
+descriptions, which screen readers read through `aria-labelledby`. Using `<desc>` for the accessible
+title avoids a native browser tooltip. Flowcharts do not support tooltips.
+
+For a flowchart that needs an explicit reading order, use a rows comment. List node IDs in the order
+they run, separating rows with `/`:
+
+```text
+%% rows: SCHEDULE FILTER MATCH COOLDOWN / SELECT SEARCH TAG
+```
+
+The first row reads left to right, the second right to left, and later rows alternate the same way.
+Edges between rows travel around the sides, including edges that return to an earlier node. This
+keeps a loop's starting point fixed instead of letting the automatic layout choose it. Every node
+must appear exactly once. This layout supports rectangle nodes without subgraphs or edge labels;
+other shapes and missing or repeated IDs fail the build. Diagrams without this comment keep their
+automatic layout.
 
 Rendering uses [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid), which lays
 diagrams out without a browser. Its output needs four changes before it goes on a page, all made in
@@ -83,7 +101,7 @@ diagrams out without a browser. Its output needs four changes before it goes on 
 - Its marker ids are fixed. Every id is prefixed with a hash of the diagram source, so diagrams on
   the same page don't repeat ids.
 - It draws `accTitle` and `accDescr` as nodes. They are removed before rendering and added back as
-  `<title>` and `<desc>`.
+  `<desc>` elements referenced by `aria-labelledby`.
 - It draws flowchart edges as right-angled polylines. `edgePath` redraws them as paths with each
   corner replaced by a curve, so a short step between two nodes becomes an S-curve. The route is
   unchanged, which keeps edge labels on the line.

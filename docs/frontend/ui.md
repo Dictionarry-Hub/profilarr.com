@@ -147,11 +147,16 @@ by breakpoint) below. `view="cards"` skips the table and renders the card grid a
 Generic over the row type, which must carry a string index signature. Used by the PCD entity detail
 pages and the API reference.
 
+`markdown="code"` exports each row's `title`, optional `description`, and fenced `code` using its
+`language`, instead of a table. This lets a list show descriptions and copy buttons while its
+Markdown artifact includes the full configurations. It does not change the browser layout.
+
 | Prop       | Type                                   | Required           | Default      |
 | ---------- | -------------------------------------- | ------------------ | ------------ |
 | `data`     | `T[]`                                  | yes                |              |
 | `columns`  | `Column<T>[]`                          | in `adaptive` view | `[]`         |
 | `view`     | `'adaptive' \| 'cards'`                | no                 | `'adaptive'` |
+| `markdown` | `'table' \| 'code'`                    | no                 | `'table'`    |
 | `href`     | `(row: T) => string \| undefined`      | no                 |              |
 | `cell`     | `Snippet<[row: T, column: Column<T>]>` | no                 |              |
 | `card`     | `Snippet<[row: T]>`                    | yes                |              |
@@ -404,9 +409,11 @@ Unified page-level menu for page views, machine-readable formats, and AI actions
 actions plus their Markdown artifact and page paths. Setting `viewSwitcher` adds Rich view and YAML
 view choices under Page view, with the active choice selected. Page formats contains the entity
 format actions followed by Copy page as Markdown and View as Markdown; AI actions contains the
-assistant links. Passing `editUrl` adds an Edit this page item under Contribute, which docs pages
-use to open their source on GitHub. Successful copies close the menu and replace the trigger with a
-green confirmation for two seconds; failures use the same pattern with the danger state.
+assistant links. Passing `groupArtifactPath` adds a Group section, which docs pages with child pages
+use: it copies, views, or opens in an assistant the Markdown of the page and every page under it.
+Passing `editUrl` adds an Edit this page item under Contribute, which docs pages use to open their
+source on GitHub. Successful copies close the menu and replace the trigger with a green confirmation
+for two seconds; failures use the same pattern with the danger state.
 
 ### Search
 
@@ -858,6 +865,23 @@ brackets as written and adds a line after the block saying what they mean.
 | `marks`         | `boolean`            | no       | `false`    |
 | `footer`        | `Snippet<[number]>`  | no       |            |
 | `headerActions` | `Snippet`            | no       |            |
+
+#### `PromptBuilder`
+
+`src/lib/client/ui/markdown/prompt/PromptBuilder.svelte`
+
+Combines a description field and a small icon button in one bordered control. The button sits inside
+the top-right corner, with a Copy AI Prompt tooltip and copy feedback. The textarea leaves space for
+the button. It replaces `[User’s description]` in the supplied prompt's `code` with the user's text
+and copies the result locally. The button stays disabled until the description contains text and
+reports copy success or failure. Prompt data, including schemas, stays out of the browser layout.
+The Markdown mirror exports the complete template through `componentsToMarkdown` when the prompt is
+exported from the page's `data.ts`.
+
+| Prop          | Type          | Required | Default |
+| ------------- | ------------- | -------- | ------- |
+| `prompt`      | `CodeExample` | yes      |         |
+| `placeholder` | `string`      | no       | `''`    |
 
 #### `FileTree`
 
