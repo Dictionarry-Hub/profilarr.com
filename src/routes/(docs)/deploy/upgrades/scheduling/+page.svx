@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Scheduling
-blurb: When upgrades run, and when an item can be searched again.
+blurb: Set Profilarr upgrade schedules, understand Radarr and Sonarr search limits, and control filter order and cooldown tags.
 author: https://github.com/santiagosayshey
 order: 5
 next: [deploy/renames]

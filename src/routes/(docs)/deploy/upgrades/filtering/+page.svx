@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Filtering
-blurb: Building the rules that decide which items an upgrade can search.
+blurb: Build Profilarr upgrade filters with rules and nested AND/OR groups to target the movies or series you want to search.
 author: https://github.com/santiagosayshey
 order: 2
 next: [deploy/upgrades/fields, deploy/upgrades/selection]

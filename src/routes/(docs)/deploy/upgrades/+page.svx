@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Upgrades
-blurb: Automatically searching for better releases.
+blurb: Why RSS upgrades can miss better releases, and how Profilarr searches your existing library after changing profiles or adding indexers.
 author: https://github.com/santiagosayshey
 order: 5
 next: [deploy/upgrades/quick-start, deploy/upgrades/filtering]

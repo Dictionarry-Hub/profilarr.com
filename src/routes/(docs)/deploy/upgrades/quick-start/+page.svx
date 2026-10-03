@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Quick Start
-blurb: Setting up your first upgrade filter and checking it before it runs.
+blurb: Enable and schedule Profilarr upgrades for Radarr or Sonarr, preview your filter, and try example filters for your library.
 author: https://github.com/santiagosayshey
 order: 1
 next: [deploy/upgrades/fields]
@@ -11,8 +11,7 @@ next: [deploy/upgrades/fields]
 	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
 	import Callout from '$lib/client/ui/callout/Callout.svelte';
 	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
-	import PromptBuilder from '$lib/client/ui/markdown/prompt/PromptBuilder.svelte';
-	import { exampleFilters, exampleFilterColumns, upgradePrompt } from './data';
+	import { exampleFilters, exampleFilterColumns } from './data';
 	import CopyFilter from './CopyFilter.svelte';
 </script>
 
@@ -103,11 +102,3 @@ After choosing a filter below, click `+` beside the filter search bar and choose
 Have a filter you'd like to share? [Open a pull request](https://github.com/Dictionarry-Hub/profilarr.com/edit/develop/src/routes/%28docs%29/deploy/upgrades/quick-start/data.ts) with your filter and a short description of what it does and when it's useful.
 
 </Callout>
-
-### Ask an AI
-
-Describe what you want to upgrade, then copy a prompt to use with your preferred AI. It includes your description and the information needed to build a Profilarr filter.
-
-<PromptBuilder
-	prompt={upgradePrompt}
-	placeholder="After adding a new indexer, I want to replace movies from banned release groups, starting with the lowest scoring files." />

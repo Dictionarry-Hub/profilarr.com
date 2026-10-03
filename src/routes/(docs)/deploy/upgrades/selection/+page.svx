@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Selection
-blurb: Choosing which matching items get searched first, and how many each run.
+blurb: Choose which matching items Profilarr searches first with selectors such as Lowest Score, and set how many it searches per run.
 author: https://github.com/santiagosayshey
 order: 4
 next: [deploy/upgrades/scheduling]

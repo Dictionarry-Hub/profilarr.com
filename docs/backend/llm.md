@@ -176,8 +176,9 @@ same JSON string directly, rather than the page's Markdown artifact.
 
 A `PromptBuilder` exports its prompt template as a titled fenced block from the page's `data.ts`.
 The browser form replaces `[User’s description]` with the user's input when copying; the Markdown
-artifact keeps the placeholder. Upgrade prompt data lives beside the Quick Start page in `ai.ts`,
-re-exported by `data.ts`. Its field IDs, operators, selector IDs, and search limits are a snapshot
+artifact keeps the placeholder. Upgrade prompt data lives beside the Quick Start page in `ai.ts`.
+The Quick Start page currently omits the tool and its Markdown export pending further testing.
+Its field IDs, operators, selector IDs, and search limits are a snapshot
 of Profilarr's source and need updating when that contract changes. Field and selector descriptions
 reuse the existing documentation data; schemas do not appear on those pages.
 

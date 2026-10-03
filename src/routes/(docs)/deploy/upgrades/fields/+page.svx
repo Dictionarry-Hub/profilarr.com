@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Fields
-blurb: What each field in an upgrade filter checks, for Radarr and Sonarr.
+blurb: What each Profilarr upgrade filter field checks in Radarr and Sonarr, including custom formats, ratings, dates, and Cutoff Met.
 author: https://github.com/santiagosayshey
 order: 3
 next: [deploy/upgrades/selection]
