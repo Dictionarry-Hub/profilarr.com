@@ -3,6 +3,47 @@ layout: docs
 title: Selection
 blurb: Choosing which matching items get searched first, and how many each run.
 order: 3
+next: [deploy/upgrades/scheduling]
 ---
 
-TODO: Choosing which matching items get searched each run. Covers the ten methods (Random, Oldest, Newest, Lowest Score, Size (Largest First), Size (Smallest First), Most Popular, Least Popular, A-Z, and Z-A), how Lowest Score scores a Sonarr series from the average of its episode files, and Count, including the maximum the schedule allows.
+<script>
+	import AdaptiveList from '$lib/client/ui/adaptive-list/AdaptiveList.svelte';
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import { selectors, selectorColumns } from './data';
+</script>
+
+> Selection decides which [filtered](/deploy/upgrades/filtering) items get searched first. If you haven't built a filter yet, start with [Filtering](/deploy/upgrades/filtering).
+
+Filtering narrows down what you want to upgrade, but that can still leave a large selection pool. Rather than picking from this pool randomly, you might want to start with low scoring files that need the most improvement, recently added movies you're keen to watch, or the largest files to try to save some disk space. The selector decides which of those matching items Profilarr searches first.
+
+<div class="mb-5">
+<AdaptiveList
+	data={selectors}
+	columns={selectorColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'selector'}
+			<span class="font-medium">{row.selector}</span>
+		{:else}
+			{row.searches}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="font-medium">{row.selector}</div>
+		<div class="mt-1 text-sm">{row.searches}</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+## Count
+
+**Count** decides how many [filtered](/deploy/upgrades/filtering) items Profilarr *selects* each run. For example:
+
+- **Lowest Score** with a count of `5` searches the five lowest scoring items available.
+- **Newest** with a count of `3` searches the three most recently added items available.
+- **Random** with a count of `2` searches two randomly chosen items.
+
+<Callout type="warning">
+
+Profilarr limits the upgrade count to avoid hammering your indexers with searches. The maximum depends on how often upgrades run. See [Scheduling](/deploy/upgrades/scheduling) for these limits.
+
+</Callout>
