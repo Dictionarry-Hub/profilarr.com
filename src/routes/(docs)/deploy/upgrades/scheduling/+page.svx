@@ -2,7 +2,51 @@
 layout: docs
 title: Scheduling
 blurb: When upgrades run, and when an item can be searched again.
+author: https://github.com/santiagosayshey
 order: 5
+next: [deploy/renames]
 ---
 
-TODO: When upgrades run. Covers turning upgrades on for an instance, the schedule and its minimum intervals (10 minutes for Radarr, 60 for Sonarr), the search rate limits, the Round Robin and Random Shuffle modes when there's more than one filter, and the cooldown: the tag Profilarr adds to each searched item, how the tags reset once every match has been searched, filters that share a tag, and what happens to tags when a filter is renamed or deleted.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+</script>
+
+Your [filter](/deploy/upgrades/filtering) decides what qualifies as an upgrade, and your [selector](/deploy/upgrades/selection) picks what items get searched first. Scheduling controls *when* those searches happen and *which* filter runs each time.
+
+You can pick a schedule from the dropdown at the top of the upgrades page, or choose **Custom** to write a cron expression. [Crontab Guru](https://crontab.guru/) helps you check an expression, and its [syntax reference](https://crontab.guru/crontab.5.html) explains how to write one. Schedules use Profilarr's timezone, set by [`TZ`](/installation#general).
+
+## Search Limits
+
+Every search sends requests to your indexers, so Profilarr limits how often upgrades can run and how many items they can search. Radarr allows up to 10 movies per hour, with at least 10 minutes between runs. Sonarr allows one series per hour, with at least 60 minutes between runs.
+
+For example:
+
+- **Radarr every hour**, with a count of `10`, searches up to ten movies each run.
+- **Radarr every 30 minutes**, with a count of `5`, spreads those searches across two runs.
+- **Radarr every 10 minutes**, with a count of `1`, searches one movie each run.
+- **Sonarr** locks count to `1` per hour because each run asks Sonarr to search a whole series, rather than one season.
+
+## Filter Modes
+
+When you have several filters, Profilarr picks one per upgrade run. You can choose how it picks a filter using the **Mode** option:
+
+- **Round Robin** takes turns in list order.
+- **Random Shuffle** takes turns in a random order.
+
+<Callout type="info">
+
+Both modes run every enabled filter once before starting another cycle. Disabled filters are skipped.
+
+</Callout>
+
+## Cooldowns
+
+Without a cooldown, selectors could potentially pick the same movie every run. For example, if you use the **Lowest Score** selector and no better release is found, the movie's score stays the same, so it gets picked again next run. Profilarr adds a tag to each searched item in Radarr or Sonarr and skips items with that tag on later runs. Once every matching item has been searched, it clears the tag and starts again.
+
+### Sharing Tags
+
+You can share a cooldown between filters by setting their **Cooldown Tag** to the same value. For example, your popular movies filter can skip movies your low score filter has already searched. When either filter runs out of untagged matches, it clears the shared tag for both.
+
+### Renaming and Deleting Filters
+
+The default tag follows the filter's name, so changing the filter's name can make it search the same items again. To keep tracking those searches, set **Cooldown Tag** to the existing tag before renaming. Old tags stay in Radarr or Sonarr after a rename or deletion; you can remove them there if no filter uses them.

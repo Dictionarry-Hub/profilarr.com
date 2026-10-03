@@ -2,6 +2,7 @@
 layout: docs
 title: Selection
 blurb: Choosing which matching items get searched first, and how many each run.
+author: https://github.com/santiagosayshey
 order: 4
 next: [deploy/upgrades/scheduling]
 ---
