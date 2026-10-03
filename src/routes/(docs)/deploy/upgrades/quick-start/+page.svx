@@ -1,0 +1,13 @@
+---
+layout: docs
+title: Quick Start
+blurb: Setting up your first upgrade filter and checking it before it runs.
+order: 1
+next: [deploy/upgrades/fields]
+---
+
+TODO: A short walkthrough to get upgrades running. Covers turning upgrades on for an instance, importing an example filter from JSON, choosing its selector and count, previewing what matches, testing it with a dry run, and setting a schedule. Keep detailed explanations on Filtering, Fields, Selection, and Scheduling.
+
+TODO: Fold in the example filters, including which app each one is for, the Profilarr version it was tested on, and how to submit your own.
+
+TODO: Explain the preview statuses and run history. Cover dry runs searching without grabbing, their 10-minute limit, the hour-long cache and Reset Cache, Sonarr only searching the latest monitored season in a dry run, and dry runs still being able to reset cooldown tags.

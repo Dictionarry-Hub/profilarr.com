@@ -1,8 +1,0 @@
----
-layout: docs
-title: Dry Runs
-blurb: Previewing filters and testing upgrades without grabbing anything.
-order: 5
----
-
-TODO: Checking an upgrade setup before it searches for real. Covers the filter preview and what each status means, dry runs (real searches that never grab, limited to one every 10 minutes, with picked items held back from later dry runs for an hour unless Reset Cache clears them), how a Sonarr dry run only searches the latest monitored season, that a dry run can still reset cooldown tags, and reading the run history.

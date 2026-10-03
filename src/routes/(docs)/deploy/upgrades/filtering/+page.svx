@@ -3,7 +3,7 @@ layout: docs
 title: Filtering
 blurb: Building the rules that decide which items an upgrade can search.
 author: https://github.com/santiagosayshey
-order: 1
+order: 2
 next: [deploy/upgrades/fields, deploy/upgrades/selection]
 ---
 

@@ -3,8 +3,8 @@ layout: docs
 title: Fields
 blurb: What each field in an upgrade filter checks, for Radarr and Sonarr.
 author: https://github.com/santiagosayshey
-order: 2
-next: [deploy/upgrades/selection, deploy/upgrades/examples]
+order: 3
+next: [deploy/upgrades/selection]
 ---
 
 <script>

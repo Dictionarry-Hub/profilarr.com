@@ -4,7 +4,7 @@ title: Upgrades
 blurb: Automatically searching for better releases.
 author: https://github.com/santiagosayshey
 order: 5
-next: [deploy/upgrades/filtering, deploy/upgrades/examples]
+next: [deploy/upgrades/quick-start, deploy/upgrades/filtering]
 ---
 
 <script>
