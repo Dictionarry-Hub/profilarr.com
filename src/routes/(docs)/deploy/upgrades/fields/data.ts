@@ -16,14 +16,12 @@ export const sharedFields: FieldInfo[] = [
 	{
 		field: 'Monitored',
 		kind: 'Boolean',
-		checks:
-			"Whether Radarr or Sonarr is monitoring the item. For a series, it's the series-level setting only, so seasons you've unmonitored don't change it.",
+		checks: "Whether Radarr or Sonarr is monitoring the item. For a series, it's the series-level setting only, so seasons you've unmonitored don't change it."
 	},
 	{
 		field: 'Cutoff Met',
 		kind: 'Boolean',
-		checks:
-			"Whether the item's score has reached the target set by its quality profile and the filter's Cutoff %.",
+		checks: "Whether the item's score has reached the target set by its quality profile and the filter's Cutoff %.",
 		seeAlso: { label: 'Cutoff Met', href: '#cutoff-met' }
 	},
 	{
@@ -34,55 +32,47 @@ export const sharedFields: FieldInfo[] = [
 	{
 		field: 'Quality Profile',
 		kind: 'Text',
-		checks:
-			'The quality profile the item is assigned to. You pick it from a list, so the only operators are *is* and *is not*.'
+		checks: 'The quality profile the item is assigned to. You pick it from a list, so the only operators are *is* and *is not*.'
 	},
 	{
 		field: 'Original Language',
 		kind: 'Text',
-		checks:
-			"The language the movie or show was originally made in, not the audio on your file. Any language Radarr or Sonarr doesn't recognise shows up as English, and Radarr lists Cantonese and Mandarin both as Chinese. Picked from a list, with *is* and *is not*.",
+		checks: "The language the movie or show was originally made in, not the audio on your file. Any language Radarr or Sonarr doesn't recognise shows up as English, and Radarr lists Cantonese and Mandarin both as Chinese. Picked from a list, with *is* and *is not*."
 	},
 	{
 		field: 'Genres',
 		kind: 'List',
-		checks: "The genres from the item's metadata in Radarr or Sonarr.",
+		checks: "The genres from the item's metadata in Radarr or Sonarr."
 	},
 	{
 		field: 'Tags',
 		kind: 'List',
-		checks:
-			"The tags on the item in Radarr or Sonarr, including ones added by Auto Tagging rules. Profilarr's own cooldown tags show up here too.",
+		checks: "The tags on the item in Radarr or Sonarr, including ones added by Auto Tagging rules. Profilarr's own cooldown tags show up here too."
 	},
 	{
 		field: 'Rating',
 		kind: 'Number',
-		checks:
-			"In Radarr, the movie's TMDb rating. In Sonarr, the series rating from Sonarr's metadata. Both are out of 10, but Radarr and Sonarr show them as a percentage, so a rating shown as 83% is 8.3 here. Unrated items count as 0.",
+		checks: "In Radarr, the movie's TMDb rating. In Sonarr, the series rating from Sonarr's metadata. Both are out of 10, but Radarr and Sonarr show them as a percentage, so a rating shown as 83% is 8.3 here. Unrated items count as 0."
 	},
 	{
 		field: 'Year',
 		kind: 'Number',
-		checks:
-			"The movie's year according to TMDb, or the year a series first aired. Unknown years count as 0.",
+		checks: "The movie's year according to TMDb, or the year a series first aired. Unknown years count as 0."
 	},
 	{
 		field: 'Runtime',
 		kind: 'Number',
-		checks:
-			"The runtime listed in the item's metadata, in minutes, not your file's length. For a series, that's one episode.",
+		checks: "The runtime listed in the item's metadata, in minutes, not your file's length. For a series, that's one episode."
 	},
 	{
 		field: 'Size on Disk',
 		kind: 'Number',
-		checks:
-			"The size of the item's video files in GiB, the same number Radarr and Sonarr show. For a movie that's its file, and for a series it's every imported episode file, specials included. Subtitles and extras don't count.",
+		checks: "The size of the item's video files in GiB, the same number Radarr and Sonarr show. For a movie that's its file, and for a series it's every imported episode file, specials included. Subtitles and extras don't count."
 	},
 	{
 		field: 'Date Added',
 		kind: 'Date',
-		checks:
-			'When the item was added to Radarr or Sonarr, not when it was released or when its current file was downloaded.',
+		checks: 'When the item was added to Radarr or Sonarr, not when it was released or when its current file was downloaded.'
 	}
 ];
 
@@ -91,38 +81,32 @@ export const radarrFields: FieldInfo[] = [
 	{
 		field: 'Status',
 		kind: 'Status',
-		checks:
-			"Announced until the movie's cinema date passes, then In Cinemas, then Released once its digital or physical release date passes, or 90 days after cinemas if neither is known. Radarr works this out from TMDb's dates each time it refreshes the movie. A movie TMDb has removed becomes Deleted, which counts as past Released."
+		checks: "Announced until the movie's cinema date passes, then In Cinemas, then Released once its digital or physical release date passes, or 90 days after cinemas if neither is known. Radarr works this out from TMDb's dates each time it refreshes the movie. A movie TMDb has removed becomes Deleted, which counts as past Released."
 	},
 	{
 		field: 'Minimum Availability',
 		kind: 'Status',
-		checks:
-			"The stage at which Radarr starts searching for the movie, which you choose when you add it: Announced, In Cinemas, or Released. It doesn't change when the movie comes out. To filter on whether a movie is actually in cinemas or released, use Status."
+		checks: "The stage at which Radarr starts searching for the movie, which you choose when you add it: Announced, In Cinemas, or Released. It doesn't change when the movie comes out. To filter on whether a movie is actually in cinemas or released, use Status."
 	},
 	{
 		field: 'Collection',
 		kind: 'Text',
-		checks:
-			"The TMDb collection the movie belongs to, like The Matrix Collection. Empty if it isn't part of one."
+		checks: "The TMDb collection the movie belongs to, like The Matrix Collection. Empty if it isn't part of one."
 	},
 	{
 		field: 'Studio',
 		kind: 'Text',
-		checks:
-			'The studio Radarr lists for the movie. TMDb often credits several companies, but Radarr only keeps one.'
+		checks: 'The studio Radarr lists for the movie. TMDb often credits several companies, but Radarr only keeps one.'
 	},
 	{
 		field: 'Keywords',
 		kind: 'Text',
-		checks:
-			"The movie's TMDb keywords, matched as one long piece of text, so *contains* war also matches post-war. Radarr only has keywords from version `5.24`, for movies it has refreshed since."
+		checks: "The movie's TMDb keywords, matched as one long piece of text, so *contains* war also matches post-war. Radarr only has keywords from version `5.24`, for movies it has refreshed since."
 	},
 	{
 		field: 'Release Group',
 		kind: 'Text',
-		checks:
-			'The release group of the file on disk, as Radarr recorded it when the file was imported. You pick it from a list, so the only operators are *is* and *is not*.'
+		checks: 'The release group of the file on disk, as Radarr recorded it when the file was imported. You pick it from a list, so the only operators are *is* and *is not*.'
 	},
 	{
 		field: 'Custom Format',
@@ -132,8 +116,7 @@ export const radarrFields: FieldInfo[] = [
 	{
 		field: 'Popularity',
 		kind: 'Number',
-		checks:
-			"TMDb's popularity score, based on activity like views, votes, and watchlist additions. It has no fixed range, and Radarr only updates it when it refreshes the movie."
+		checks: "TMDb's popularity score, based on activity like views, votes, and watchlist additions. It has no fixed range, and Radarr only updates it when it refreshes the movie."
 	},
 	{
 		field: 'TMDb Rating',
@@ -172,44 +155,37 @@ export const sonarrFields: FieldInfo[] = [
 	{
 		field: 'Status',
 		kind: 'Status',
-		checks:
-			"Upcoming before the series premieres, Continuing while it's still airing, and Ended once it's finished, according to Sonarr's metadata. A series TheTVDB has removed becomes Deleted, which counts as past Ended, so *has reached* Ended matches it too."
+		checks: "Upcoming before the series premieres, Continuing while it's still airing, and Ended once it's finished, according to Sonarr's metadata. A series TheTVDB has removed becomes Deleted, which counts as past Ended, so *has reached* Ended matches it too."
 	},
 	{
 		field: 'Network',
 		kind: 'Text',
-		checks:
-			'The network the series airs on. A show that moved networks lists its latest one, like The Expanse on Prime Video. You pick it from a list, so the only operators are *is* and *is not*.'
+		checks: 'The network the series airs on. A show that moved networks lists its latest one, like The Expanse on Prime Video. You pick it from a list, so the only operators are *is* and *is not*.'
 	},
 	{
 		field: 'Certification',
 		kind: 'Text',
-		checks:
-			"The series' content rating, like TV-MA or TV-14. Picked from a list, with *is* and *is not*."
+		checks: "The series' content rating, like TV-MA or TV-14. Picked from a list, with *is* and *is not*."
 	},
 	{
 		field: 'Series Type',
 		kind: 'Text',
-		checks:
-			"Whether you've set the series up in Sonarr as Standard, Daily, or Anime, which changes how Sonarr numbers and searches its episodes. Sonarr never sets Anime on its own, so an anime series can still be Standard. Picked from a list, with *is* and *is not*."
+		checks: "Whether you've set the series up in Sonarr as Standard, Daily, or Anime, which changes how Sonarr numbers and searches its episodes. Sonarr never sets Anime on its own, so an anime series can still be Standard. Picked from a list, with *is* and *is not*."
 	},
 	{
 		field: 'Season Count',
 		kind: 'Number',
-		checks:
-			"How many seasons the series has, not counting specials. Unmonitored seasons and seasons that haven't aired yet still count."
+		checks: "How many seasons the series has, not counting specials. Unmonitored seasons and seasons that haven't aired yet still count."
 	},
 	{
 		field: 'Episode Count',
 		kind: 'Number',
-		checks:
-			"The episodes Sonarr expects you to have: monitored episodes that have aired, plus any episode with a file. It's the second number in Sonarr's progress bar, not the show's total."
+		checks: "The episodes Sonarr expects you to have: monitored episodes that have aired, plus any episode with a file. It's the second number in Sonarr's progress bar, not the show's total."
 	},
 	{
 		field: 'Episode File Count',
 		kind: 'Number',
-		checks:
-			'How many episodes have a file, including specials and unmonitored seasons. A file holding two episodes counts as two.'
+		checks: 'How many episodes have a file, including specials and unmonitored seasons. A file holding two episodes counts as two.'
 	},
 	{
 		field: 'First Aired',
@@ -219,8 +195,7 @@ export const sonarrFields: FieldInfo[] = [
 	{
 		field: 'Last Aired',
 		kind: 'Date',
-		checks:
-			"The air date of the series' latest episode. When Sonarr's metadata doesn't have one, Sonarr uses the latest episode it knows about, which can be one that hasn't aired yet."
+		checks: "The air date of the series' latest episode. When Sonarr's metadata doesn't have one, Sonarr uses the latest episode it knows about, which can be one that hasn't aired yet."
 	}
 ];
 

@@ -48,10 +48,13 @@ export function parseMermaid(code: string): MermaidSource {
 	for (const line of code.split('\n')) {
 		const rows = line.match(ROWS_LINE);
 		if (rows) {
-			if (source.rows) throw new Error('Mermaid diagram must have only one rows declaration.');
+			if (source.rows)
+				throw new Error('Mermaid diagram must have only one rows declaration.');
 			source.rows = rows[1].split('/').map((row) => row.trim().split(/\s+/));
 			if (source.rows.some((row) => row.some((node) => !/^[A-Za-z_][\w-]*$/.test(node)))) {
-				throw new Error('Mermaid rows must list node IDs separated by spaces and rows by /.');
+				throw new Error(
+					'Mermaid rows must list node IDs separated by spaces and rows by /.'
+				);
 			}
 			continue;
 		}

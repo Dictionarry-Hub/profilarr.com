@@ -133,16 +133,19 @@ describe('componentsToMarkdown', () => {
 				code: '{\n  "name": "Finished Shows",\n  "count": 1\n}'
 			}
 		];
-		const body = '<div class="mb-5">\n' +
+		const body =
+			'<div class="mb-5">\n' +
 			'<AdaptiveList data={filters} columns={columns} markdown="code">\n' +
 			'{#snippet card(row)}<Button>Copy Filter</Button>{/snippet}\n' +
 			'</AdaptiveList>\n</div>';
 
 		expect(componentsToMarkdown(body, { filters, columns })).toBe(
 			'`Favourites (Radarr)`\n\nSearch tagged movies.\n\n```json\n' +
-			filters[0].code + '\n```\n\n' +
-			'`Finished Shows (Sonarr)`\n\nSearch ended series.\n\n```json\n' +
-			filters[1].code + '\n```'
+				filters[0].code +
+				'\n```\n\n' +
+				'`Finished Shows (Sonarr)`\n\nSearch ended series.\n\n```json\n' +
+				filters[1].code +
+				'\n```'
 		);
 	});
 

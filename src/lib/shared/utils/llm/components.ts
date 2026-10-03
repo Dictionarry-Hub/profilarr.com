@@ -174,10 +174,14 @@ function isCodeList(value: unknown): value is CodeExample[] {
 
 function isCodeExample(value: unknown): value is CodeExample {
 	return (
-		typeof value === 'object' && value !== null &&
-		'title' in value && typeof value.title === 'string' &&
-		'language' in value && typeof value.language === 'string' &&
-		'code' in value && typeof value.code === 'string' &&
+		typeof value === 'object' &&
+		value !== null &&
+		'title' in value &&
+		typeof value.title === 'string' &&
+		'language' in value &&
+		typeof value.language === 'string' &&
+		'code' in value &&
+		typeof value.code === 'string' &&
 		(!('description' in value) || typeof value.description === 'string')
 	);
 }

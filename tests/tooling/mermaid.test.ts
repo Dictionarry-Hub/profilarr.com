@@ -102,13 +102,19 @@ describe('explicit Mermaid rows', () => {
 
 	it('extracts the row order from the source', () => {
 		const source = parseMermaid(loop);
-		expect(source.rows).toEqual([['A', 'B'], ['C', 'D']]);
+		expect(source.rows).toEqual([
+			['A', 'B'],
+			['C', 'D']
+		]);
 		expect(source.diagram).not.toContain('%% rows');
 	});
 
 	it('keeps a cycle in two rows with the return edge pointing at its original node', () => {
 		const svg = renderMermaid(loop);
-		const positions = new Map<string, { x: number; y: number; width: number; height: number }>();
+		const positions = new Map<
+			string,
+			{ x: number; y: number; width: number; height: number }
+		>();
 		for (const match of svg.matchAll(/<g class="node"([^>]+)>([\s\S]*?)<\/g>/g)) {
 			const id = match[1].match(/data-id="([^"]+)"/)![1];
 			const offset = match[1].match(/translate\(([-\d.]+) ([-\d.]+)\)/)!;
@@ -124,8 +130,12 @@ describe('explicit Mermaid rows', () => {
 		expect(positions.get('A')!.x).toBeLessThan(positions.get('B')!.x);
 		expect(positions.get('A')!.y).toBeLessThan(positions.get('D')!.y);
 		expect(positions.get('C')!.x).toBeGreaterThan(positions.get('D')!.x);
-		expect(positions.get('A')!.x + positions.get('A')!.width).toBeLessThan(positions.get('B')!.x);
-		expect(positions.get('D')!.x + positions.get('D')!.width).toBeLessThan(positions.get('C')!.x);
+		expect(positions.get('A')!.x + positions.get('A')!.width).toBeLessThan(
+			positions.get('B')!.x
+		);
+		expect(positions.get('D')!.x + positions.get('D')!.width).toBeLessThan(
+			positions.get('C')!.x
+		);
 		const bounds = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)!;
 		for (const node of positions.values()) {
 			expect(node.x).toBeGreaterThanOrEqual(0);

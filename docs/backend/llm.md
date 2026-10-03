@@ -172,16 +172,16 @@ doesn't export, and any other component, stays as it is.
 
 An `AdaptiveList` with `markdown="code"` exports each row as a title, optional description, and
 fenced code using the row's `language`. The upgrade examples use this to keep JSON out of the
-browser layout while including it in the Markdown artifact. Their Copy Filter buttons copy the
-same JSON string directly, rather than the page's Markdown artifact.
+browser layout while including it in the Markdown artifact. Their Copy Filter buttons copy the same
+JSON string directly, rather than the page's Markdown artifact.
 
 A `PromptBuilder` exports its prompt template as a titled fenced block from the page's `data.ts`.
 The browser form replaces `[User’s description]` with the user's input when copying; the Markdown
 artifact keeps the placeholder. Upgrade prompt data lives beside the Quick Start page in `ai.ts`.
-The Quick Start page currently omits the tool and its Markdown export pending further testing.
-Its field IDs, operators, selector IDs, and search limits are a snapshot
-of Profilarr's source and need updating when that contract changes. Field and selector descriptions
-reuse the existing documentation data; schemas do not appear on those pages.
+The Quick Start page currently omits the tool and its Markdown export pending further testing. Its
+field IDs, operators, selector IDs, and search limits are a snapshot of Profilarr's source and need
+updating when that contract changes. Field and selector descriptions reuse the existing
+documentation data; schemas do not appear on those pages.
 
 Images and videos are serialized in every article mirror, docs, dev logs, and wiki alike, by
 `mediaToMarkdown` in the same file, since it needs no page data: a `ThemeImage` becomes

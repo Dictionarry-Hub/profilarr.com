@@ -20,6 +20,9 @@
 		footer?: Snippet;
 	}
 
+	// Nothing here reads `markdown`: componentsToMarkdown takes it from the page
+	// source when it builds the Markdown mirror.
+	// eslint-disable-next-line svelte/no-unused-props
 	let {
 		data,
 		columns = [],

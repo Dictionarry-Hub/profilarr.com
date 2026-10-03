@@ -15,7 +15,11 @@
 
 	const icon = $derived(status === 'copied' ? Check : status === 'failed' ? CircleAlert : Copy);
 	const label = $derived(
-		status === 'copied' ? 'Copied' : status === 'failed' ? 'Try Copying Again' : 'Copy AI Prompt'
+		status === 'copied'
+			? 'Copied'
+			: status === 'failed'
+				? 'Try Copying Again'
+				: 'Copy AI Prompt'
 	);
 
 	function resetStatus() {
@@ -49,16 +53,19 @@
 	<label
 		for={id}
 		class="mb-2 block text-sm font-medium text-text">Description</label>
-	<div class="relative overflow-hidden rounded-control border border-border bg-surface shadow-control focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-bg">
+	<div
+		class="relative overflow-hidden rounded-control border border-border bg-surface shadow-control focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent-bg">
 		<textarea
 			{id}
 			bind:value={description}
 			{placeholder}
 			rows="4"
 			class="block w-full resize-y bg-transparent py-3 pr-12 pl-3 text-sm text-text placeholder:text-text-muted focus:outline-none"
-			oninput={resetStatus} />
+			oninput={resetStatus}></textarea>
 		<div class="absolute top-2 right-2">
-			<Tooltip text={label} position="top">
+			<Tooltip
+				text={label}
+				position="top">
 				<Button
 					type="button"
 					size="sm"
@@ -70,7 +77,9 @@
 			</Tooltip>
 		</div>
 	</div>
-	<span class="sr-only" aria-live="polite">
+	<span
+		class="sr-only"
+		aria-live="polite">
 		{#if status === 'copied'}
 			Prompt copied. Paste it into your preferred AI.
 		{:else if status === 'failed'}

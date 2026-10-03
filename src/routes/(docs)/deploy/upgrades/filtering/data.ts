@@ -48,14 +48,7 @@ export const fieldKinds: FieldKind[] = [
 	},
 	{
 		kind: 'Status',
-		operators: [
-			'is exactly',
-			'is not',
-			'has reached',
-			"hasn't passed",
-			'is past',
-			'is before'
-		],
+		operators: ['is exactly', 'is not', 'has reached', "hasn't passed", 'is past', 'is before'],
 		example: { field: 'Status', operator: 'has reached', value: 'Released' }
 	}
 ];

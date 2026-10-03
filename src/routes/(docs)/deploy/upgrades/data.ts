@@ -76,7 +76,8 @@ export const profilarrScreens: Screenshot[] = [
 		label: 'Preview',
 		icon: Eye,
 		alt: "Profilarr's preview of the filter: 12 items checked, 1 matched, 1 after cooldown, and Lowest Score picks 1 of 1. The Dark Knight (2008) is marked Will search next, and the other movies don't match because their quality profile is 720p Quality, not 1080p Quality",
-		caption: 'Of the 12 movies checked, only The Dark Knight matches, so it gets searched next.',
+		caption:
+			'Of the 12 movies checked, only The Dark Knight matches, so it gets searched next.',
 		light: '/images/docs_upgrades_profilarr_preview[style=light].png',
 		dark: '/images/docs_upgrades_profilarr_preview[style=dark].png',
 		border: true

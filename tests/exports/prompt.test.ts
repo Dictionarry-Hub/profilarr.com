@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { DESCRIPTION_PLACEHOLDER, populatePrompt } from '$lib/shared/utils/llm/prompt';
-import { upgradePrompt, upgradeFieldCatalog } from '../../src/routes/(docs)/deploy/upgrades/quick-start/ai';
+import {
+	upgradePrompt,
+	upgradeFieldCatalog
+} from '../../src/routes/(docs)/deploy/upgrades/quick-start/ai';
 
 describe('populatePrompt', () => {
 	it('inserts a multiline description literally without interpreting replacement patterns', () => {
@@ -8,7 +11,7 @@ describe('populatePrompt', () => {
 		const description = "  Movies tagged $& or $'.\nLeave $` and $$ unchanged.  ";
 
 		expect(populatePrompt(template, description)).toBe(
-			"Goal:\nMovies tagged $& or $'.\nLeave $` and $$ unchanged.\n\nSchema: {\"type\":\"object\"}"
+			'Goal:\nMovies tagged $& or $\'.\nLeave $` and $$ unchanged.\n\nSchema: {"type":"object"}'
 		);
 	});
 
@@ -25,16 +28,25 @@ describe('populatePrompt', () => {
 
 describe('upgrade prompt field contract', () => {
 	it('keeps app-specific fields and value types distinct', () => {
-		expect(upgradeFieldCatalog.radarr.find((field) => field.id === 'custom_format')).toMatchObject({
+		expect(
+			upgradeFieldCatalog.radarr.find((field) => field.id === 'custom_format')
+		).toMatchObject({
 			operators: ['includes', 'does_not_include', 'is_only', 'has_any', 'has_none']
 		});
-		expect(upgradeFieldCatalog.sonarr.some((field) => field.id === 'custom_format')).toBe(false);
+		expect(upgradeFieldCatalog.sonarr.some((field) => field.id === 'custom_format')).toBe(
+			false
+		);
 		expect(upgradeFieldCatalog.sonarr.find((field) => field.id === 'status')?.values).toEqual([
-			'upcoming', 'continuing', 'ended', 'deleted'
+			'upcoming',
+			'continuing',
+			'ended',
+			'deleted'
 		]);
-		expect(upgradeFieldCatalog.shared.find((field) => field.id === 'quality_profile')?.operators)
-			.toEqual(['eq', 'neq']);
-		expect(upgradeFieldCatalog.shared.find((field) => field.id === 'date_added')?.value)
-			.toContain('number of days');
+		expect(
+			upgradeFieldCatalog.shared.find((field) => field.id === 'quality_profile')?.operators
+		).toEqual(['eq', 'neq']);
+		expect(
+			upgradeFieldCatalog.shared.find((field) => field.id === 'date_added')?.value
+		).toContain('number of days');
 	});
 });

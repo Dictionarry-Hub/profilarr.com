@@ -8,12 +8,27 @@ import { selectors } from '../selection/data';
 // Field and selector explanations reuse the authored documentation.
 const operatorSets = {
 	boolean: { operators: ['is', 'is_not'], value: 'boolean' },
-	text: { operators: ['contains', 'not_contains', 'starts_with', 'ends_with', 'eq', 'neq'], value: 'string' },
-	exact: { operators: ['eq', 'neq'], value: 'string; use an exact existing name or listed value' },
+	text: {
+		operators: ['contains', 'not_contains', 'starts_with', 'ends_with', 'eq', 'neq'],
+		value: 'string'
+	},
+	exact: {
+		operators: ['eq', 'neq'],
+		value: 'string; use an exact existing name or listed value'
+	},
 	number: { operators: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'], value: 'number' },
-	status: { operators: ['eq', 'neq', 'gte', 'lte', 'gt', 'lt'], value: 'one of the listed status strings; comparisons follow their listed order' },
-	list: { operators: ['includes', 'does_not_include', 'is_only', 'has_any', 'has_none'], value: 'a single string for includes, does_not_include, or is_only; null for has_any or has_none' },
-	date: { operators: ['before', 'after', 'in_last', 'not_in_last'], value: 'an ISO date string for before or after; a number of days for in_last or not_in_last' }
+	status: {
+		operators: ['eq', 'neq', 'gte', 'lte', 'gt', 'lt'],
+		value: 'one of the listed status strings; comparisons follow their listed order'
+	},
+	list: {
+		operators: ['includes', 'does_not_include', 'is_only', 'has_any', 'has_none'],
+		value: 'a single string for includes, does_not_include, or is_only; null for has_any or has_none'
+	},
+	date: {
+		operators: ['before', 'after', 'in_last', 'not_in_last'],
+		value: 'an ISO date string for before or after; a number of days for in_last or not_in_last'
+	}
 };
 
 function field(
@@ -25,7 +40,13 @@ function field(
 ) {
 	const doc = docs.find((entry) => entry.field === label);
 	if (!doc) throw new Error(`Missing upgrade field description: ${label}`);
-	return { id, label, description: doc.checks, ...operatorSets[kind], ...(values ? { values } : {}) };
+	return {
+		id,
+		label,
+		description: doc.checks,
+		...operatorSets[kind],
+		...(values ? { values } : {})
+	};
 }
 
 export const upgradeFieldCatalog = {
@@ -44,8 +65,18 @@ export const upgradeFieldCatalog = {
 		field(sharedFields, 'date_added', 'Date Added', 'date')
 	],
 	radarr: [
-		field(radarrFields, 'status', 'Status', 'status', ['tba', 'announced', 'inCinemas', 'released']),
-		field(radarrFields, 'minimum_availability', 'Minimum Availability', 'status', ['tba', 'announced', 'inCinemas', 'released']),
+		field(radarrFields, 'status', 'Status', 'status', [
+			'tba',
+			'announced',
+			'inCinemas',
+			'released'
+		]),
+		field(radarrFields, 'minimum_availability', 'Minimum Availability', 'status', [
+			'tba',
+			'announced',
+			'inCinemas',
+			'released'
+		]),
 		field(radarrFields, 'collection', 'Collection', 'text'),
 		field(radarrFields, 'studio', 'Studio', 'text'),
 		field(radarrFields, 'keywords', 'Keywords', 'text'),
@@ -60,7 +91,12 @@ export const upgradeFieldCatalog = {
 		field(radarrFields, 'physical_release', 'Physical Release', 'date')
 	],
 	sonarr: [
-		field(sonarrFields, 'status', 'Status', 'status', ['upcoming', 'continuing', 'ended', 'deleted']),
+		field(sonarrFields, 'status', 'Status', 'status', [
+			'upcoming',
+			'continuing',
+			'ended',
+			'deleted'
+		]),
 		field(sonarrFields, 'network', 'Network', 'exact'),
 		field(sonarrFields, 'series_type', 'Series Type', 'exact', ['standard', 'daily', 'anime']),
 		field(sonarrFields, 'certification', 'Certification', 'exact'),
@@ -73,14 +109,30 @@ export const upgradeFieldCatalog = {
 };
 
 const selectorIds = [
-	'random', 'oldest', 'newest', 'lowest_score', 'size_desc', 'size_asc',
-	'most_popular', 'least_popular', 'alphabetical_asc', 'alphabetical_desc'
+	'random',
+	'oldest',
+	'newest',
+	'lowest_score',
+	'size_desc',
+	'size_asc',
+	'most_popular',
+	'least_popular',
+	'alphabetical_asc',
+	'alphabetical_desc'
 ];
 
 // Labels identify authored descriptions; their order does not determine IDs.
 const selectorLabels = [
-	'Random', 'Oldest', 'Newest', 'Lowest Score', 'Size (Largest First)', 'Size (Smallest First)',
-	'Most Popular', 'Least Popular', 'A-Z', 'Z-A'
+	'Random',
+	'Oldest',
+	'Newest',
+	'Lowest Score',
+	'Size (Largest First)',
+	'Size (Smallest First)',
+	'Most Popular',
+	'Least Popular',
+	'A-Z',
+	'Z-A'
 ];
 
 const selectorCatalog = selectorIds.map((id, index) => {
@@ -105,21 +157,29 @@ const filterSchema = {
 	},
 	$defs: {
 		group: {
-			type: 'object', additionalProperties: false,
+			type: 'object',
+			additionalProperties: false,
 			required: ['type', 'match', 'children'],
 			properties: {
 				type: { const: 'group' },
 				match: { enum: ['all', 'any'] },
-				children: { type: 'array', items: { anyOf: [{ $ref: '#/$defs/rule' }, { $ref: '#/$defs/group' }] } }
+				children: {
+					type: 'array',
+					items: { anyOf: [{ $ref: '#/$defs/rule' }, { $ref: '#/$defs/group' }] }
+				}
 			}
 		},
 		rule: {
-			type: 'object', additionalProperties: false,
+			type: 'object',
+			additionalProperties: false,
 			required: ['type', 'field', 'operator', 'value'],
 			properties: {
 				type: { const: 'rule' },
 				field: { type: 'string', enum: [...new Set(fields.map((entry) => entry.id))] },
-				operator: { type: 'string', enum: [...new Set(fields.flatMap((entry) => entry.operators))] },
+				operator: {
+					type: 'string',
+					enum: [...new Set(fields.flatMap((entry) => entry.operators))]
+				},
 				value: { type: ['string', 'number', 'boolean', 'null'] }
 			}
 		}

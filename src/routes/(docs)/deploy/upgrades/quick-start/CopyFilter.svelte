@@ -36,4 +36,6 @@
 		aria-label={`Copy ${title} filter`}
 		onclick={copy} />
 </Tooltip>
-<span class="sr-only" aria-live="polite">{status === 'idle' ? '' : label}</span>
+<span
+	class="sr-only"
+	aria-live="polite">{status === 'idle' ? '' : label}</span>
