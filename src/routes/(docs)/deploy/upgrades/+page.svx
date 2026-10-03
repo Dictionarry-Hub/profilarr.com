@@ -86,6 +86,6 @@ That's right. Profilarr can automatically click a button for you! It picks a few
 </AdaptiveList>
 </div>
 
-Let's put this to work on The Dark Knight. Our `nikt0` encode probably isn't the only file in the library from a banned group, so instead of targeting the movie, we can target the problem: movies on 1080p Quality whose file comes from a banned release group. That's a filter with two rules, **Quality Profile** is 1080p Quality and **Custom Format** has Banned Groups. Set the method to **Lowest Score**, and the worst of them get searched first.
+Let's put this to work on The Dark Knight. Our `nikt0` encode probably isn't the only file in the library from a banned group, so instead of targeting the movie, we can target the problem: movies on 1080p Quality whose file comes from a banned release group. We can create a filter with two rules: **Quality Profile** *is* <u>1080p Quality</u> and **Custom Format** *has* <u>Banned Groups</u>. Choose **Lowest Score** as its selection method so Profilarr searches the matching movies with the lowest custom format scores first.
 
 <Screenshots items={profilarrScreens} />
