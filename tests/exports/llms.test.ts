@@ -69,6 +69,12 @@ describe('llmsTxt', () => {
 		expect(text).toContain('- [Profilarr API v1](https://profilarr.com/api/v1.md): ');
 	});
 
+	it('says where a section and the whole docs are served as one file', () => {
+		expect(text).toContain(
+			'`.group.md` appended instead; https://profilarr.com/index.group.md holds every docs page.'
+		);
+	});
+
 	it('links docs pages in reading order with child pages indented', () => {
 		expect(text).toContain(
 			'## Docs\n\n' +

@@ -2,6 +2,7 @@
 layout: docs
 title: Profilarr
 blurb: Profilarr is a configuration management platform for the arr stack. Build and test quality profiles against real releases, then sync them to your arr instances.
+groupDescription: "The Big Book of Profilarr™. Every page of the docs in reading order: what Profilarr is, a quick start, and installation, then building configurations from a database and your own changes, testing them against real releases, deploying them to Radarr and Sonarr, and monitoring what Profilarr does."
 author: https://github.com/santiagosayshey
 order: 1
 next:

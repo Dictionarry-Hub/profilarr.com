@@ -8,6 +8,8 @@
 	import DateTime from '$lib/client/ui/datetime/DateTime.svelte';
 	import {
 		docFullTitle,
+		docGroupMarkdownPath,
+		docHasGroup,
 		docNavEntries,
 		type DocLink,
 		type DocNavNode,
@@ -27,15 +29,23 @@
 
 	let { title, blurb, author, created, tags, children }: Props = $props();
 
+	// The sidebar data holds every docs page's title and where it sits; dev logs
+	// and wiki articles are not in it.
+	const docs = $derived(docNavEntries((page.data.docs as DocNavNode[] | undefined) ?? []));
+	const slug = $derived(page.url.pathname.replace(/^\//, ''));
+
 	// Docs child pages put their section in the document title, since titles
-	// repeat across sections. The sidebar data holds every page's title and
-	// where it sits; dev logs and wiki articles are not in it.
+	// repeat across sections.
 	const documentTitle = $derived.by(() => {
-		const docs = docNavEntries((page.data.docs as DocNavNode[] | undefined) ?? []);
-		const slug = page.url.pathname.replace(/^\//, '');
 		const parent = docs.find((doc) => doc.slug === slug)?.parent;
 		return docFullTitle(title, docs.find((doc) => doc.slug === parent)?.title);
 	});
+
+	// Docs only: a page with child pages, and the home page, which heads every
+	// docs page, can copy its whole group from the Actions menu.
+	const groupArtifactPath = $derived(
+		docHasGroup(slug, docs) ? docGroupMarkdownPath(slug) : undefined
+	);
 
 	function parseAuthor(value: string) {
 		try {
@@ -77,6 +87,7 @@
 		{#snippet actions()}
 			<PageActionsMenu
 				artifactPath={markdownPath(page.url.pathname)}
+				{groupArtifactPath}
 				editUrl={source?.editUrl}
 				pagePath={page.url.pathname} />
 		{/snippet}

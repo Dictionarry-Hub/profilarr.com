@@ -2,6 +2,7 @@
 layout: docs
 title: Test
 blurb: Checking your configuration before it reaches Radarr or Sonarr.
+groupDescription: "Why a configuration needs tests, then how to test each kind of entity: Regex101 unit tests for regular expressions, release titles against custom formats, and real releases scored against quality profiles. Every test runs through the parser."
 author: https://github.com/santiagosayshey
 order: 5
 next: [test/regular-expressions]

@@ -409,9 +409,11 @@ Unified page-level menu for page views, machine-readable formats, and AI actions
 actions plus their Markdown artifact and page paths. Setting `viewSwitcher` adds Rich view and YAML
 view choices under Page view, with the active choice selected. Page formats contains the entity
 format actions followed by Copy page as Markdown and View as Markdown; AI actions contains the
-assistant links. Passing `editUrl` adds an Edit this page item under Contribute, which docs pages
-use to open their source on GitHub. Successful copies close the menu and replace the trigger with a
-green confirmation for two seconds; failures use the same pattern with the danger state.
+assistant links. Passing `groupArtifactPath` adds a Group section, which docs pages with child pages
+use: it copies, views, or opens in an assistant the Markdown of the page and every page under it.
+Passing `editUrl` adds an Edit this page item under Contribute, which docs pages use to open their
+source on GitHub. Successful copies close the menu and replace the trigger with a green confirmation
+for two seconds; failures use the same pattern with the danger state.
 
 ### Search
 

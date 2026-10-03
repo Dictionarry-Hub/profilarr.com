@@ -90,7 +90,9 @@ export function llmsTxt(input: LlmsInput): string {
 			' deploy configurations across your media stack. This site hosts its documentation, API' +
 			' reference, dev logs, wiki, and a browser for Profilarr Compliant Databases (PCDs).',
 		'Pages with a Markdown version serve it at the same URL with `.md` appended, and every' +
-			' Markdown page links back to this index.',
+			' Markdown page links back to this index. A docs page with child pages also serves' +
+			' itself and every page under it as one file, with `.group.md` appended instead;' +
+			` ${SITE_URL}/index.group.md holds every docs page.`,
 		input.docs.length > 0 ? '## Docs' : null,
 		docsSection(input.docs),
 		'## API Reference',

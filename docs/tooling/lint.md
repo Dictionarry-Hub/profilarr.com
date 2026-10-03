@@ -42,7 +42,9 @@ tooling/
 ### How it works
 
 Each rule declares a name, category, severity, a glob pattern for files, and a `check` function. The
-runner globs matching files, reads them, and passes them to the rule. The rule returns violations.
+runner globs matching files, reads them, and passes them to the rule. The rule returns violations. A
+violation can set its own `severity`, which overrides the rule's, so one rule can fail on one
+problem and warn on another.
 
 Rules receive all matching files at once (not one at a time) so cross-file checks like "no duplicate
 titles" are possible.
@@ -155,6 +157,15 @@ Screen readers read the text, and the Markdown mirrors replace the media with it
 [backend/llm.md](../backend/llm.md)). The minimums only catch placeholders like `alt="cf"`; they
 can't judge whether a description is good. Reports the line each tag starts on. Reads source files,
 so it doesn't need a build.
+
+#### `require-group-description` (category: `llm`)
+
+Every docs page with child pages needs a `groupDescription` in its frontmatter, which opens the
+group's Markdown (see [backend/llm.md](../backend/llm.md#docs-groups)). The root page counts, since
+it heads every other docs page. A missing or empty description is an error. One shorter than 80
+characters is a warning, so a group can ship with the `#todo` placeholder before its description is
+written. The minimum only catches placeholders; it can't judge whether a description is good.
+Reports the line the field is on. Reads source files, so it doesn't need a build.
 
 #### `require-yaml-artifact` (category: `exports`)
 

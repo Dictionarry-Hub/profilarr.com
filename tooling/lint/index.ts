@@ -10,6 +10,7 @@ import requirePcdHtml from './rules/require-pcd-html.js';
 import requireYamlArtifact from './rules/require-yaml-artifact.js';
 import themeSync from './rules/theme-sync.js';
 import requireMediaAlt from './rules/require-media-alt.js';
+import requireGroupDescription from './rules/require-group-description.js';
 
 const rules: LintRule[] = [
 	requireSeo,
@@ -19,7 +20,8 @@ const rules: LintRule[] = [
 	requirePcdHtml,
 	requireYamlArtifact,
 	themeSync,
-	requireMediaAlt
+	requireMediaAlt,
+	requireGroupDescription
 ];
 
 function run(): void {
@@ -54,7 +56,7 @@ function run(): void {
 	let hasError = false;
 
 	for (const v of violations) {
-		const severity = filtered.find((r) => r.name === v.rule)?.severity ?? 'error';
+		const severity = v.severity ?? filtered.find((r) => r.name === v.rule)?.severity ?? 'error';
 		const icon = severity === 'error' ? '✘' : '⚠️';
 		const location =
 			v.line && v.column

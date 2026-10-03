@@ -7,13 +7,18 @@ import {
 	commitUrl,
 	docEditUrl,
 	docMarkdownPath,
+	docGroupMarkdownPath,
+	docHasGroup,
+	docGroup,
+	docGroupToMarkdown,
 	docPath,
 	docSourcePath,
 	docSlugFromPath,
 	docParentSlug,
 	docIndexEntry,
 	docToMarkdown,
-	docTree
+	docTree,
+	type DocIndexEntry
 } from '$lib/shared/utils/llm/docs';
 
 describe('docToMarkdown', () => {
@@ -290,5 +295,97 @@ describe('docParentSlug and docIndexEntry', () => {
 			title: 'FAQ',
 			slug: 'faq'
 		});
+	});
+});
+
+describe('docGroupMarkdownPath', () => {
+	it('puts .group before the extension of the mirror path', () => {
+		expect(docGroupMarkdownPath('')).toBe('/index.group.md');
+		expect(docGroupMarkdownPath('deploy/upgrades')).toBe('/deploy/upgrades.group.md');
+	});
+});
+
+describe('docHasGroup, docGroup, and docGroupToMarkdown', () => {
+	const docs: DocIndexEntry[] = [
+		{ title: 'FAQ', slug: 'faq', order: 3 },
+		{
+			title: 'Filtering',
+			slug: 'deploy/upgrades/filtering',
+			parent: 'deploy/upgrades',
+			order: 2
+		},
+		{
+			title: 'Upgrades',
+			slug: 'deploy/upgrades',
+			parent: 'deploy',
+			order: 2,
+			groupDescription: 'Why upgrades exist, then each part in detail.'
+		},
+		{ title: 'Profilarr', slug: '', order: 1, groupDescription: 'Every page of the docs.' },
+		{
+			title: 'Quick Start',
+			slug: 'deploy/upgrades/quick-start',
+			parent: 'deploy/upgrades',
+			order: 1
+		},
+		{ title: 'Deploy', slug: 'deploy', order: 2, groupDescription: '#todo' },
+		{ title: 'Sync', slug: 'deploy/sync', parent: 'deploy', order: 1 }
+	];
+	const page = (doc: DocIndexEntry) => `# ${doc.title}\n\nBody.`;
+
+	it('count a page with child pages, and the root page, as heading a group', () => {
+		expect(docHasGroup('', docs)).toBe(true);
+		expect(docHasGroup('deploy', docs)).toBe(true);
+		expect(docHasGroup('deploy/upgrades', docs)).toBe(true);
+		expect(docHasGroup('deploy/sync', docs)).toBe(false);
+		expect(docHasGroup('faq', docs)).toBe(false);
+		expect(docGroup('faq', docs)).toBeUndefined();
+		expect(docGroup('missing', docs)).toBeUndefined();
+	});
+
+	it('open with the title, description, and contents, then the pages in reading order', () => {
+		const group = docGroup('deploy/upgrades', docs)!;
+
+		expect(docGroupToMarkdown(group, page)).toBe(
+			[
+				'# Upgrades',
+				'> Why upgrades exist, then each part in detail.',
+				'The Upgrades section of the Profilarr documentation, 3 pages in reading order. Web version: https://profilarr.com/deploy/upgrades',
+				'- [Upgrades](/deploy/upgrades.md)\n' +
+					'  - [Quick Start](/deploy/upgrades/quick-start.md)\n' +
+					'  - [Filtering](/deploy/upgrades/filtering.md)',
+				'---',
+				'# Upgrades\n\nBody.',
+				'---',
+				'# Upgrades: Quick Start\n\nBody.',
+				'---',
+				'# Upgrades: Filtering\n\nBody.'
+			].join('\n\n')
+		);
+	});
+
+	it('put every other page under the root page, with top-level titles left plain', () => {
+		const markdown = docGroupToMarkdown(docGroup('', docs)!, page);
+
+		expect(markdown).toContain(
+			'The Profilarr documentation, 7 pages in reading order. Web version: https://profilarr.com/\n'
+		);
+		expect(markdown.match(/^# .*$/gm)).toEqual([
+			'# Profilarr',
+			'# Profilarr',
+			'# Deploy',
+			'# Deploy: Sync',
+			'# Deploy: Upgrades',
+			'# Upgrades: Quick Start',
+			'# Upgrades: Filtering',
+			'# FAQ'
+		]);
+	});
+
+	it('leave out a description that is still a placeholder', () => {
+		const markdown = docGroupToMarkdown(docGroup('deploy', docs)!, page);
+
+		expect(markdown.startsWith('# Deploy\n\nThe Deploy section')).toBe(true);
+		expect(markdown).not.toContain('#todo');
 	});
 });

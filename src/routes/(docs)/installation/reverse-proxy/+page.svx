@@ -2,6 +2,7 @@
 layout: docs
 title: Reverse Proxies
 blurb: Serving Profilarr from your own domain through a reverse proxy.
+groupDescription: "Serving Profilarr from your own domain: what a reverse proxy does, what Profilarr needs from one, and a full Traefik setup."
 author: https://github.com/santiagosayshey
 order: 3
 ---
