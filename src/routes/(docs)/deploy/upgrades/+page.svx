@@ -65,7 +65,7 @@ So now that we've established a need for *direct* upgrades, how can we start doi
 
 ## Automating Upgrades
 
-That's right. Profilarr can automatically click a button for you! It picks a few items from your library and asks Radarr to search for them. What gets picked, and when, comes down to a few concepts:
+That's right. Profilarr can automatically click a button for you. It picks a few items from your library and asks Radarr to search for them. What gets picked, and when, comes down to a few concepts:
 
 <div class="mb-5">
 <AdaptiveList
