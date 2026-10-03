@@ -167,7 +167,10 @@
 					src="/icon.png"
 					alt=""
 					class="size-5" />
-				<span class="font-accent text-lg font-semibold">profilarr</span>
+				<span class="flex items-baseline gap-1">
+					<span class="font-accent text-lg font-semibold">profilarr</span>
+					<span class="font-mono text-sm text-text-muted">/docs</span>
+				</span>
 			</a>
 		</Tooltip>
 		<div class="flex items-center gap-2">
