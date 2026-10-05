@@ -5,4 +5,31 @@ blurb: Removing custom formats, profiles, and media that Profilarr no longer man
 order: 4
 ---
 
-TODO: Removing what Profilarr no longer manages. Covers what cleanup deletes (every custom format and quality profile your sync selections don't use, including ones created by hand in the Arr, and media the Arr reports as removed from TMDB or TVDB), previewing a run before it happens, and scheduling it. Makes clear what can't be undone before you turn it on.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+</script>
+
+Changing your sync selections can leave old quality profiles and custom formats behind in Radarr or Sonarr. Cleanup removes those configurations, keeping the profiles you've selected and the custom formats they use. Configurations you added by hand are removed too if your sync selections don't use them. Cleanup also removes movies or series the Arr reports as removed from TMDB or TVDB.
+
+<Callout type="info">
+
+Quality profiles still assigned to movies or series are skipped. Reassign those items to another profile before running cleanup if you want the old profile removed.
+
+If the profile still can't be deleted, an import list or collection may still reference it. Check **Settings > Import Lists** in your Arr and, for Radarr, **Movies > Collections**. Assign a different profile to any lists or collections that still use it, then run cleanup again.
+
+</Callout>
+
+## Running Cleanup
+
+Open your Arr instance's **Settings** tab, enable **Cleanup**, and save. **Run Now** scans the instance and opens a preview of the configurations and removed media it found. Click **Clean Up** to delete what the preview found, or cancel to leave everything as it is.
+
+<ThemeImage
+	light="/images/docs_cleanup[style=light].png"
+	dark="/images/docs_cleanup[style=dark].png"
+	alt="The Settings tab for the Movies Test instance, with Cleanup enabled, a weekly Sunday midnight schedule, and a Run Now button."
+	border />
+
+## Scheduling
+
+Cleanup defaults to Sunday at midnight. You can change its [schedule](/monitoring/jobs#scheduling) in the instance's **Settings** tab. Scheduled runs scan and delete automatically, without asking you to confirm a preview.
