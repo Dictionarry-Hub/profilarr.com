@@ -2,7 +2,9 @@
 layout: docs
 title: Cleanup
 blurb: Removing custom formats, profiles, and media that Profilarr no longer manages.
+author: https://github.com/santiagosayshey
 order: 4
+next: [deploy/upgrades, deploy/sync]
 ---
 
 <script>
@@ -29,7 +31,5 @@ Open your Arr instance's **Settings** tab, enable **Cleanup**, and save. **Run N
 	dark="/images/docs_cleanup[style=dark].png"
 	alt="The Settings tab for the Movies Test instance, with Cleanup enabled, a weekly Sunday midnight schedule, and a Run Now button."
 	border />
-
-## Scheduling
 
 Cleanup defaults to Sunday at midnight. You can change its [schedule](/monitoring/jobs#scheduling) in the instance's **Settings** tab. Scheduled runs scan and delete automatically, without asking you to confirm a preview.
