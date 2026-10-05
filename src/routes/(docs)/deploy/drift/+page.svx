@@ -2,7 +2,45 @@
 layout: docs
 title: Drift
 blurb: Finding changes made directly in Radarr or Sonarr that no longer match Profilarr.
+author: https://github.com/santiagosayshey
 order: 3
+next: [deploy/cleanup, deploy/sync]
 ---
 
-TODO: Checking whether an instance still matches what Profilarr would sync. Covers turning drift detection on and scheduling it, reading the list of drifted items and their field differences, the drift indicators on the Sync tab, and the notifications sent when drift is found. Notes that drift detection never changes anything in the Arr.
+<script>
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+</script>
+
+Drift detection checks whether Radarr or Sonarr still matches your configurations in Profilarr. If you change a custom format score directly in the Arr, for example, the two versions no longer agree. Profilarr shows those differences so you can see what changed before deciding whether to sync again.
+
+## Checking for Drift
+
+Each Arr instance has its own drift settings. In its **Drift** tab, enable **Detection** and save, then click **Run Now** to check it. Profilarr compares the profiles and custom formats you've selected for sync, along with your default delay profile and media management configurations.
+
+Drift checks default to daily at midnight, with at least ten minutes between runs. You can change the [schedule](/monitoring/jobs#scheduling) in the instance's **Drift** tab.
+
+## Reading the Results
+
+Each row shows a configuration that is missing from the Arr or differs from Profilarr. Expand it to see the differences side by side: the **Profilarr** column shows what Profilarr expects, and the Arr column shows the current values.
+
+<ThemeImage
+	light="/images/docs_drift[style=light].png"
+	dark="/images/docs_drift[style=dark].png"
+	alt="The Drift tab for Movies Test, with expanded rows comparing the 3D custom format's release title pattern and five settings in the 720p Quality profile between Profilarr and Radarr."
+	border />
+
+Here, the `3D` custom format's pattern differs, while `720p Quality` has changes to its scores, language, and upgrade settings. Detection runs again after a successful sync to update the results and the matching-item counts on the **Sync** tab.
+
+## Multiple Databases
+
+When you [sync profiles from multiple databases](/deploy/sync), database priority decides which version wins if they share a profile or custom format name. Drift detection still compares the Arr against each database separately, so the lower-priority version can report drift even after a successful sync.
+
+Those rows show `Duplicate` and name the winning database.
+
+<ThemeImage
+	light="/images/docs_drift_duplicates[style=light].png"
+	dark="/images/docs_drift_duplicates[style=dark].png"
+	alt="The Drift tab for Movies Test, with TRaSH Guides custom formats marked Duplicate and Dictionarry wins. The expanded 3D row compares TRaSH's expected conditions with Dictionarry's version in Radarr."
+	border />
+
+In the example above, TRaSH Guides expects a different `3D` custom format, but Dictionarry has higher priority. The Arr matches Dictionarry, so TRaSH's version reports drift.
