@@ -2,7 +2,40 @@
 layout: docs
 title: Renames
 blurb: Renaming files and folders to match your naming format.
+author: https://github.com/santiagosayshey
 order: 6
+next: [monitoring]
 ---
 
-TODO: Keeping file and folder names in line with your naming format. Starts by answering whether Radarr and Sonarr already do this: they rename only on import or when you run it by hand, so names go stale. This matters most for TV, where episodes imported as TBA, changed TMDB IDs, and out-of-date years leave names that Plex and Jellyfin can't match. Makes clear that Profilarr never renames anything itself: it tells the Arr to rename, which is why Profilarr doesn't need access to your library files. Covers what a rename run checks, renaming folders, skipping items with an ignore tag, dry runs and their limits, scheduling, and summary or detailed notifications.
+<script>
+	import Callout from '$lib/client/ui/callout/Callout.svelte';
+	import ThemeImage from '$lib/client/ui/markdown/image/ThemeImage.svelte';
+</script>
+
+Profilarr's automatic renames keep your existing library's file and folder names up to date as metadata and naming formats change. You might have added a movie as `Untitled The Batman Sequel (2027)`, only for it to become `The Batman Part II (2028)` while its folder kept the old name. Rather than having to find and rename those items yourself, you can schedule Profilarr to do it for you.
+
+<Callout type="info">
+
+Profilarr doesn't rename anything itself. It asks Radarr or Sonarr to run their own renames, using the naming formats configured there.
+
+</Callout>
+
+## Automatic Renames
+
+Each Arr instance has its own rename settings under **Renames**. Enable **Status** to turn on automatic file renames, and enable **Folders** if you want movie or series folders renamed as well. Save your settings before running either **Dry Run** or **Run Now**.
+
+<ThemeImage
+	light="/images/docs_renames[style=light].png"
+	dark="/images/docs_renames[style=dark].png"
+	alt="The Renames tab for the Movies instance, with renames and folders enabled, a weekly schedule, an Ignore Tag field, and Dry Run, Run Now, and Save buttons."
+	border />
+
+**Dry Run** lets you check the proposed filenames first, but it doesn't show folder changes. **Run Now** applies the renames.
+
+If you have items with names you want to keep, set an **Ignore Tag** and add it to those movies or series in the Arr. They won't be renamed.
+
+## Scheduling
+
+Pick a schedule from the dropdown, or choose **Custom** to write a cron expression. [Crontab Guru](https://crontab.guru/) helps you check an expression, and its [syntax reference](https://crontab.guru/crontab.5.html) explains how to write one. Schedules use Profilarr's [timezone](/installation#general).
+
+Renames default to daily at midnight, with at least ten minutes between runs.
