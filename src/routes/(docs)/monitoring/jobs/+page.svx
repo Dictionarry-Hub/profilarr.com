@@ -6,3 +6,7 @@ order: 1
 ---
 
 TODO: The background jobs Profilarr runs. Covers each kind of job (syncs, upgrades, renames, cleanup, drift checks, library refreshes, database pulls, backups, and log cleanup) and where each one is scheduled, the Jobs page with scheduled jobs and recent runs, the live job status in the sidebar, and that failed jobs are not retried automatically. Notes that jobs can't be started from the Jobs page; each one runs from its own page.
+
+## Scheduling
+
+Pick a schedule from the dropdown, or choose **Custom** to write a cron expression. [Crontab Guru](https://crontab.guru/) helps you check an expression, and its [syntax reference](https://crontab.guru/crontab.5.html) explains how to write one. Schedules use Profilarr's [timezone](/installation#general).

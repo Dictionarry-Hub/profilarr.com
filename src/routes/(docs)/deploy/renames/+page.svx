@@ -36,6 +36,4 @@ If you have items with names you want to keep, set an **Ignore Tag** and add it 
 
 ## Scheduling
 
-Pick a schedule from the dropdown, or choose **Custom** to write a cron expression. [Crontab Guru](https://crontab.guru/) helps you check an expression, and its [syntax reference](https://crontab.guru/crontab.5.html) explains how to write one. Schedules use Profilarr's [timezone](/installation#general).
-
-Renames default to daily at midnight, with at least ten minutes between runs.
+Renames default to daily at midnight, with at least ten minutes between runs. You can change the [schedule](/monitoring/jobs#scheduling) in the instance's **Renames** tab.
