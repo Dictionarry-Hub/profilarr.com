@@ -2,7 +2,9 @@
 layout: docs
 title: Contributing
 blurb: Contributing to Profilarr, its databases, and these docs.
+author: https://github.com/santiagosayshey
 order: 10
+next: [sponsor]
 ---
 
 <script>
@@ -26,7 +28,9 @@ You'll need Git, Deno, and Node.js. The .NET SDK is only needed for the parser, 
 
 ### Making a Change
 
-Branch off `develop`, keep the pull request to one feature or fix, and open it against `develop`. Pull requests are squash merged, so the title becomes the commit message and has to follow [Conventional Commits](https://www.conventionalcommits.org/), such as `fix: sync status not updating after save`. You don't need to write tests; the maintainer writes them.
+Branch off `develop`, keep the pull request to one feature or fix, and open it against `develop`. Pull requests are squash merged, so the title becomes the commit message and has to follow [Conventional Commits](https://www.conventionalcommits.org/), such as `fix: sync status not updating after save`.
+
+The pull request template asks what changed, whether the user-facing and technical docs need updating, and how the change was tested, then ends with three confirmations. A check fails the pull request until those sections are answered and the confirmations are ticked. You don't need to write tests; the maintainer writes them. If tests don't apply to your change, or you haven't verified it, say so in the Testing section.
 
 Before you start, know that:
 
@@ -43,4 +47,4 @@ To run a database of your own, see [Maintaining a Database](/build/maintaining-a
 
 ## These Docs
 
-This site lives in [Dictionarry-Hub/profilarr.com](https://github.com/Dictionarry-Hub/profilarr.com). Each docs page is a Markdown file under `src/routes/docs/`, so fixing a typo or a wrong step can be as small as editing that file on GitHub and opening a pull request against `develop`. For local setup and conventions, see the site's [CONTRIBUTING.md](https://github.com/Dictionarry-Hub/profilarr.com/blob/develop/docs/CONTRIBUTING.md).
+This site lives in [Dictionarry-Hub/profilarr.com](https://github.com/Dictionarry-Hub/profilarr.com). Each docs page is a Markdown file under `src/routes/(docs)/`, so fixing a typo or a wrong step can be as small as editing that file on GitHub and opening a pull request against `develop`. For local setup and conventions, see the site's [CONTRIBUTING.md](https://github.com/Dictionarry-Hub/profilarr.com/blob/develop/docs/CONTRIBUTING.md).
