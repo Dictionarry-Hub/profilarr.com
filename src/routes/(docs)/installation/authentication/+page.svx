@@ -137,6 +137,12 @@ The password account isn't linked to anyone's SSO account. Removing someone's ac
 
 [API keys](https://en.wikipedia.org/wiki/API_key) let scripts and other apps use [Profilarr's API](/api/v1) without signing in. Send the key in the `X-Api-Key` header. A key only works on `/api/v1/` paths. It can't load pages or submit the web UI's forms, so a key can't create more keys or change how you sign in.
 
+<Callout type="info">
+
+Requests that change data (`POST`, `PUT`, `PATCH`, or `DELETE`) must also send a `Content-Type` header, like `Content-Type: application/json`, even when they have no body. Without one, the request gets a 403 with a message like `Cross-site DELETE form submissions are forbidden`.
+
+</Callout>
+
 ### Creating a Key
 
 Open Settings > Security and create a new API key. Give it:
