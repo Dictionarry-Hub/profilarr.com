@@ -58,7 +58,7 @@ You can't reset a forgotten password from the web UI. Getting back in means edit
 
 ### Failed Sign-Ins
 
-Profilarr counts failed sign-ins from each IP address over the last 15 minutes. After 10 failures, it blocks sign-ins from that address for up to 15 minutes and shows "Too many login attempts. Please try again later." Usernames that attackers commonly try, like `admin` or `root`, trigger the block after only 3 failures when no account has that name. A successful sign-in clears the count.
+Profilarr counts failed sign-ins from each IP address over the last 15 minutes. After 10 failures, it blocks sign-ins from that address for up to 15 minutes and shows "Too many login attempts. Please try again later." Usernames that attackers commonly try, like `admin` or `root`, trigger the block after only 3 failures when no account has that name. A successful sign-in clears the count. Typing a wrong password when Profilarr asks you to confirm your identity for an API key counts as a failed sign-in too.
 
 Profilarr keeps the count in its database, so restarting it doesn't clear the block. Otherwise, an attacker who could crash Profilarr would get a fresh set of attempts every time it restarted.
 
@@ -145,6 +145,19 @@ Open Settings > Security and create a new API key. Give it:
 - **Expires After:** 30 days, 90 days (the default), 1 year, or never. Once a key expires, requests that use it get a 401 `API key has expired`.
 - **Access:** full access, or access per area of the API. Each area can be No access, Read, or Read & write, and some areas only offer Read. Full access also covers areas added in future versions. A request the key doesn't have access for gets a 403.
 
+Before the form opens, Profilarr asks you to confirm your identity. A key keeps working long after your session ends, so Profilarr wants proof that the person creating it is you, and not just someone who got hold of your session cookie. How you confirm depends on how you signed in:
+
+- **Password account:** type your password.
+- **SSO:** Profilarr sends you to your provider to sign in again, then brings you back to the form.
+
+Once you've confirmed, Profilarr doesn't ask that session again for 30 minutes. Signing in counts as confirming, so it won't ask you straight after you log in either. Changing your password undoes that for every other session, so each of them has to confirm again before it can create a key.
+
+<Callout type="warning">
+
+Some providers, like Google, never tell Profilarr when you last signed in. Profilarr can't confirm your identity through those providers, so creating an API key needs a password account instead. See [Password and SSO Together](#password-and-sso-together).
+
+</Callout>
+
 Profilarr shows the key once, right after you create it, so copy it then. Profilarr only stores a hash of the key and can't show it to you again. The key list shows the last 4 characters of each key to help you tell them apart.
 
 You can't edit a key after you create it. To change its access or expiry, create a new key and delete the old one. A deleted key stops working straight away.
@@ -155,6 +168,7 @@ You can't edit a key after you create it. To change its access or expiry, create
 
 - It must be at least 32 characters long, or Profilarr won't start. `openssl rand -hex 32` generates one.
 - It always has full access and never expires.
+- It needs no identity confirmation. Whoever can set Profilarr's environment already controls the [config folder](#defence-in-depth), and protecting that layer is up to you.
 - Profilarr doesn't store it in the database. To revoke it, remove the variable and restart Profilarr.
 - It works alongside the keys you create in Settings > Security. It shows up in the key list as Environment, but you can't delete it there.
 
