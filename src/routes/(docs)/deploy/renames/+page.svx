@@ -22,15 +22,15 @@ Profilarr doesn't rename anything itself. It asks Radarr or Sonarr to run their 
 
 ## Automatic Renames
 
-Each Arr instance has its own rename settings under **Renames**. Enable **Status** to turn on automatic file renames, and enable **Folders** if you want movie or series folders renamed as well. Save your settings before running either **Dry Run** or **Run Now**.
+Each Arr instance has its own rename settings under **Renames**. Turn on **Schedule** to rename automatically, and enable **Folders** if you want movie or series folders renamed as well. Save your settings before running either **Dry Run** or **Run Now**.
 
 <ThemeImage
 	light="/images/docs_renames[style=light].png"
 	dark="/images/docs_renames[style=dark].png"
-	alt="The Renames tab for the Movies instance, with renames and folders enabled, a weekly schedule, an Ignore Tag field, and Dry Run, Run Now, and Save buttons."
+	alt="The Renames tab for the Movies Test instance, with Folders and Summary on, an hourly schedule turned on, an Ignore Tag field, Dry Run, Run Now, and Save buttons, and the run history."
 	border />
 
-**Dry Run** lets you check the proposed filenames first, but it doesn't show folder changes. **Run Now** applies the renames.
+**Dry Run** lets you check the proposed filenames first, but it doesn't show folder changes. **Run Now** applies the renames after you confirm. Both work whether or not the schedule is on. When a button is unavailable, hover it to see why.
 
 If you have items with names you want to keep, set an **Ignore Tag** and add it to those movies or series in the Arr. They won't be renamed.
 
