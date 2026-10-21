@@ -162,6 +162,14 @@ export const envProxy: EnvVar[] = [
 	}
 ];
 
+export const envCertificates: EnvVar[] = [
+	{
+		variable: 'NODE_EXTRA_CA_CERTS',
+		default: '',
+		description: 'Path to a PEM file of extra certificates for Profilarr to trust.'
+	}
+];
+
 export const envAnnouncements: EnvVar[] = [
 	{
 		variable: 'PROFILARR_BULLETIN_URL',
@@ -201,6 +209,17 @@ export const proxyExample: CodeExample[] = [
 		code: `environment:
   - HTTPS_PROXY=http://user:pass@gluetun:8888
   - NO_PROXY=localhost,127.0.0.1,parser,radarr,sonarr`
+	}
+];
+
+export const certificatesExample: CodeExample[] = [
+	{
+		title: 'compose.yml',
+		language: 'yaml',
+		code: `environment:
+  - NODE_EXTRA_CA_CERTS=/certs/ca.pem
+volumes:
+  - ./certs/ca.pem:/certs/ca.pem:ro`
 	}
 ];
 

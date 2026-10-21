@@ -25,9 +25,11 @@ keywords:
 		envAuth,
 		envParser,
 		envProxy,
+		envCertificates,
 		envAnnouncements,
 		envColumns,
 		proxyExample,
+		certificatesExample,
 		secretsExample
 	} from './data';
 </script>
@@ -265,6 +267,52 @@ Add your Radarr and Sonarr instances and the parser to `NO_PROXY`. Any host that
 For example, this routes Profilarr through a proxy container named `gluetun`, while your Arrs and the parser stay direct:
 
 <CodeBlock items={proxyExample} />
+
+### Trusted Certificates
+
+If your Arrs or SSO provider use self-signed certificates or certificates from your own certificate authority (CA), Profilarr can't connect to them over HTTPS. To fix this, create a file with the certificates Profilarr should trust and set `NODE_EXTRA_CA_CERTS` to its path.
+
+<div class="mb-5">
+<AdaptiveList
+	data={envCertificates}
+	columns={envColumns}>
+	{#snippet cell(row, col)}
+		{#if col.key === 'variable'}
+			<span class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</span>
+		{:else if col.key === 'default'}
+			{#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}<span class="text-text-muted">Not set</span>{/if}
+		{:else}
+			{row.description}
+			{#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}
+		{/if}
+	{/snippet}
+	{#snippet card(row)}
+		<div class="flex flex-col gap-1">
+			<div class="flex flex-wrap items-center gap-2">
+				<code>{row.variable}</code>
+				{#if row.dockerOnly}<Badge color="success" variant="subtle" pill>Docker only</Badge>{/if}
+			</div>
+			<div class="text-sm text-text-muted">Default: {#if row.defaultHref}<a href={row.defaultHref} title={row.default}><code>{row.defaultLabel}</code></a>{:else if row.default}<code>{row.default}</code>{:else}not set{/if}</div>
+			<div class="text-sm">{row.description} {#if row.seeAlso}See <a href={row.seeAlso.href}>{row.seeAlso.label}</a>.{/if}</div>
+		</div>
+	{/snippet}
+</AdaptiveList>
+</div>
+
+If your own CA signed your servers' certificates, add the CA's certificate. If a server's certificate is self-signed, add that server's certificate. Several certificates can share one file.
+
+Mount the file and point the variable at it:
+
+<CodeBlock items={certificatesExample} />
+
+<Callout type="warning">
+
+Profilarr rejects a self-signed certificate that's marked as a CA, even after you add it to your `NODE_EXTRA_CA_CERTS` file. Certificates made with `openssl req -x509` get this mark by default. If your certificate's basic constraints say `CA:TRUE`, recreate the certificate with `CA:FALSE`.
+
+</Callout>
 
 ### Announcements
 
