@@ -67,4 +67,6 @@ type. It groups endpoints by tag, extracts parameters, generates example JSON fr
 converts markdown descriptions to HTML.
 
 Code snippet generators produce copy-paste examples for each endpoint in four languages. The
-snippets use placeholder values (`${PROFILARR_URL}`, `${API_KEY}`) for the user to fill in.
+snippets use placeholder values (`${PROFILARR_URL}`, `${API_KEY}`) for the user to fill in. Snippets
+for every method except `GET` send a `Content-Type: application/json` header, even without a body.
+Profilarr rejects requests that change data when the `Content-Type` header is missing.

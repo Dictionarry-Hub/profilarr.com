@@ -26,6 +26,12 @@ export function generateSnippets(endpoint: ApiEndpoint, baseUrl: string): CodeSn
 	];
 }
 
+// Profilarr rejects requests that change data without a Content-Type header,
+// even when they have no body.
+function sendsContentType(endpoint: ApiEndpoint): boolean {
+	return endpoint.method !== 'GET';
+}
+
 function generateCurl(endpoint: ApiEndpoint, baseUrl: string): string {
 	const lines: string[] = [];
 	const url = `\${PROFILARR_URL}${baseUrl}${endpoint.path}`;
@@ -33,9 +39,13 @@ function generateCurl(endpoint: ApiEndpoint, baseUrl: string): string {
 	lines.push(`curl -X ${endpoint.method} "${url}" \\`);
 	lines.push(`  -H "X-Api-Key: \${API_KEY}"`);
 
+	if (sendsContentType(endpoint)) {
+		lines[lines.length - 1] += ' \\';
+		lines.push(`  -H "Content-Type: application/json"`);
+	}
+
 	if (endpoint.requestBody) {
 		lines[lines.length - 1] += ' \\';
-		lines.push(`  -H "Content-Type: application/json" \\`);
 		lines.push(`  -d '${endpoint.requestBody.example}'`);
 	}
 
@@ -53,7 +63,12 @@ function generatePython(endpoint: ApiEndpoint, baseUrl: string): string {
 	lines.push('');
 	lines.push(`response = requests.${method}(`);
 	lines.push(`    "${url}",`);
-	lines.push('    headers={"X-Api-Key": API_KEY},');
+	// requests sets Content-Type itself when it sends a JSON body
+	if (sendsContentType(endpoint) && !endpoint.requestBody) {
+		lines.push('    headers={"X-Api-Key": API_KEY, "Content-Type": "application/json"},');
+	} else {
+		lines.push('    headers={"X-Api-Key": API_KEY},');
+	}
 
 	if (endpoint.requestBody) {
 		lines.push(`    json=${pythonDict(endpoint.requestBody.example)},`);
@@ -81,7 +96,7 @@ function generateJavaScript(endpoint: ApiEndpoint, baseUrl: string): string {
 	lines.push('  headers: {');
 	lines.push('    "X-Api-Key": API_KEY,');
 
-	if (endpoint.requestBody) {
+	if (sendsContentType(endpoint)) {
 		lines.push('    "Content-Type": "application/json",');
 	}
 
@@ -120,6 +135,18 @@ function generateCSharp(endpoint: ApiEndpoint, baseUrl: string): string {
 		lines.push(`    $"${url}",`);
 		lines.push('    content');
 		lines.push(');');
+	} else if (sendsContentType(endpoint)) {
+		// Content-Type belongs to the content, so a write without a body sends empty content
+		lines.push(
+			`var request = new HttpRequestMessage(HttpMethod.${csharpMethod(endpoint.method)}, $"${url}")`
+		);
+		lines.push('{');
+		lines.push(
+			'    Content = new StringContent("", System.Text.Encoding.UTF8, "application/json")'
+		);
+		lines.push('};');
+		lines.push('');
+		lines.push('var response = await client.SendAsync(request);');
 	} else {
 		lines.push(`var response = await client.${csharpMethod(endpoint.method)}Async(`);
 		lines.push(`    $"${url}"`);
