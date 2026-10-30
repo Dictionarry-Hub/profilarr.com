@@ -25,11 +25,15 @@ export const requirements: Requirement[] = [
 		without: 'Pages load, but every form fails with "Request blocked: origin mismatch".'
 	},
 	{
-		requirement: 'Use one address',
-		why: 'ORIGIN holds one address, and Profilarr only accepts forms submitted from that address.',
+		requirement: 'Set',
+		variable: {
+			name: 'ORIGIN',
+			href: '/installation#authentication',
+			after: 'to every address you use, separated by commas'
+		},
+		why: 'Profilarr only accepts forms submitted from an address in ORIGIN. With several listed, it works out which one each request came in on, and answers requests for any other address with a 400 that says it is not configured to serve it.',
 		without:
-			'Pages load at other addresses, like http://192.168.1.10:6868, but every form fails there.',
-		seeAlso: { label: '#927', href: 'https://github.com/Dictionarry-Hub/profilarr/issues/927' }
+			'With one address in ORIGIN, pages load at other addresses, like http://192.168.1.10:6868, but every form fails there.'
 	},
 	{
 		requirement: 'Use a subdomain',

@@ -89,7 +89,7 @@ Single sign-on (SSO) lets you sign in to Profilarr with an account from a provid
 In your provider, create an OIDC client (some providers call it an application) with these settings:
 
 - **Client type:** confidential, so the provider gives you a client secret.
-- **Redirect URL:** your Profilarr address followed by `/auth/oidc/callback`, like `https://profilarr.example.com/auth/oidc/callback`. The address has to match [`ORIGIN`](/installation#authentication) exactly.
+- **Redirect URL:** your Profilarr address followed by `/auth/oidc/callback`, like `https://profilarr.example.com/auth/oidc/callback`. Register one for each address in [`ORIGIN`](/installation#authentication); each has to match exactly.
 - **Scopes:** `openid`, `email`, and `profile`.
 - **Token endpoint authentication:** `client_secret_post`. Authelia expects `client_secret_basic` unless you set `token_endpoint_auth_method: client_secret_post` on the client.
 
@@ -103,7 +103,7 @@ Profilarr lets in anyone your provider signs in for this client, and every SSO a
 
 ### Configuring Profilarr
 
-Set these three variables, along with [`ORIGIN`](/installation#authentication), and restart Profilarr:
+Set these three variables, along with [`ORIGIN`](/installation#authentication) if you use a reverse proxy, and restart Profilarr:
 
 - [`OIDC_DISCOVERY_URL`](/installation#authentication): your provider's discovery URL, which ends in `/.well-known/openid-configuration`. In Authentik, for example, it's `https://authentik.example.com/application/o/<application slug>/.well-known/openid-configuration`.
 - [`OIDC_CLIENT_ID`](/installation#authentication): the client ID from your provider.
