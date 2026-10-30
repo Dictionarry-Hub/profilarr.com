@@ -31,7 +31,7 @@ export const requirements: Requirement[] = [
 			href: '/installation#authentication',
 			after: 'to every address you use, separated by commas'
 		},
-		why: 'Profilarr only accepts forms submitted from an address in ORIGIN. With several listed, it works out which one each request came in on, and answers requests for any other address with a 400 that says it is not configured to serve it.',
+		why: 'Profilarr only accepts forms submitted from an address in ORIGIN. With several listed, it works out which one each request came in on. Health checks and API calls on other addresses, like the container name, still work.',
 		without:
 			'With one address in ORIGIN, pages load at other addresses, like http://192.168.1.10:6868, but every form fails there.'
 	},

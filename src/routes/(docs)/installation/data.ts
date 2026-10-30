@@ -126,7 +126,7 @@ export const envAuth: EnvVar[] = [
 		variable: 'ORIGIN',
 		default: '',
 		description:
-			'The address you reach Profilarr at behind a reverse proxy, such as https://profilarr.example.com. To use more than one address, list them separated by commas, such as http://192.168.1.10:6868,https://profilarr.example.com.',
+			'The address you reach Profilarr at behind a reverse proxy, such as https://profilarr.example.com. To use more than one address, list them separated by commas, such as http://192.168.1.10:6868,https://profilarr.example.com. Use one scheme per hostname.',
 		seeAlso: { label: 'Reverse Proxy', href: '/installation/reverse-proxy' }
 	},
 	{
