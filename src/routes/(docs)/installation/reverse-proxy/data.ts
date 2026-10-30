@@ -25,11 +25,11 @@ export const requirements: Requirement[] = [
 		without: 'Pages load, but every form fails with "Request blocked: origin mismatch".'
 	},
 	{
-		requirement: 'List every address you use in',
+		requirement: 'Set',
 		variable: {
 			name: 'ORIGIN',
 			href: '/installation#authentication',
-			after: 'separated by commas'
+			after: 'to every address you use, separated by commas'
 		},
 		why: 'Profilarr only accepts forms submitted from an address in ORIGIN. With several listed, it works out which one each request came in on, and answers requests for any other address with a 400 that says it is not configured to serve it.',
 		without:
