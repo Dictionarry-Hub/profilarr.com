@@ -9,6 +9,8 @@ export const devSetup: CodeExample[] = [
 		language: 'sh',
 		code: `git clone https://github.com/Dictionarry-Hub/profilarr.git
 cd profilarr
-deno task dev`
+mise install
+pnpm install
+pnpm dev`
 	}
 ];
