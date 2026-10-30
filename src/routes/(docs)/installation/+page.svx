@@ -38,13 +38,13 @@ Profilarr is a self-hosted web app that runs continuously, like Radarr and Sonar
 
 ## Requirements
 
-- A Docker host running Linux kernel 3.17 or newer, on `linux/amd64` or `linux/arm64`.
+- A Docker host running Linux kernel 3.10 or newer, on `linux/amd64` or `linux/arm64`. Kernel 5.6 or newer is recommended.
 - [Sonarr](https://sonarr.tv) `v4` (`v4.0.9.2386` or newer) and `v5`. Sonarr v5 support is experimental while Sonarr v5 is in beta.
 - [Radarr](https://radarr.video) `v5` (`v5.10.4` or newer) and `v6`.
 
 <Callout type="info">
 
-Profilarr crashes at startup with `getentropy failed` on kernels older than 3.17. [Deno](https://deno.com), the runtime Profilarr is built on, relies on the `getrandom` system call, which Linux added in 3.17. This mostly affects older NAS devices, such as Synology DSM installs that still run kernel 3.10. See [issue #650](https://github.com/Dictionarry-Hub/profilarr/issues/650) for more details.
+Profilarr runs on [Bun](https://bun.com), which supports kernels as old as 3.10 and recommends 5.6 or newer. On older kernels, such as the 4.4 kernel on many Synology NAS devices, Bun falls back to older system calls where newer ones are missing.
 
 </Callout>
 
@@ -255,8 +255,15 @@ Profilarr has no proxy setting of its own. It follows these standard variables f
 </AdaptiveList>
 </div>
 
-- Proxy URLs take the form `scheme://user:pass@host:port`, where the scheme is `http`, `socks5`, or `socks5h`. Use `socks5h` to send DNS lookups through the proxy too.
+- Proxy URLs take the form `http://user:pass@host:port`. A URL without a scheme counts as `http://`.
+- If both an uppercase and a lowercase variable are set, such as `HTTPS_PROXY` and `https_proxy`, Profilarr uses the lowercase one.
 - Special characters in the username or password need to be URL-encoded, such as `@` as `%40` and `:` as `%3A`.
+
+<Callout type="warning">
+
+Profilarr can't use SOCKS proxies, because Bun, the runtime it's built on, doesn't support them yet. If any proxy variable is set to a `socks5://` or `socks5h://` URL, Profilarr refuses to start and logs an error. Use an HTTP proxy instead, such as gluetun's built-in one. Bun tracks SOCKS support in [issue #16812](https://github.com/oven-sh/bun/issues/16812) and [pull request #40461](https://github.com/oven-sh/bun/pull/40461).
+
+</Callout>
 
 <Callout type="warning">
 
@@ -307,12 +314,6 @@ If your own CA signed your servers' certificates, add the CA's certificate. If a
 Mount the file and point the variable at it:
 
 <CodeBlock items={certificatesExample} />
-
-<Callout type="warning">
-
-Profilarr rejects a self-signed certificate that's marked as a CA, even after you add it to your `NODE_EXTRA_CA_CERTS` file. Certificates made with `openssl req -x509` get this mark by default. If your certificate's basic constraints say `CA:TRUE`, recreate the certificate with `CA:FALSE`.
-
-</Callout>
 
 ### Announcements
 
