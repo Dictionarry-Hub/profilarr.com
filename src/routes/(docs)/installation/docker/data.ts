@@ -20,7 +20,7 @@ export const install: CodeExample[] = [
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      # Uncomment if you use a reverse proxy.
+      # Uncomment if you use a reverse proxy. Separate several addresses with commas.
       # - ORIGIN=https://profilarr.example.com
       - PARSER_HOST=parser
       - PARSER_PORT=5000
