@@ -20,7 +20,7 @@ Profilarr's code lives in [Dictionarry-Hub/profilarr](https://github.com/Diction
 
 ### Setting Up
 
-You'll need Git, Node.js, and pnpm. Deno is only used by `pnpm build`, which compiles the release binary. The .NET SDK is only needed for the parser, which powers custom format and quality profile testing. The repository's `.tool-versions` file pins the version of each, and `mise install` installs them.
+You'll need Git, Node.js, pnpm, and Bun. Bun runs the production build, which the integration tests, flow tests, and security scans start. The .NET SDK is only needed for the parser, which powers custom format and quality profile testing. The repository's `.tool-versions` file pins the version of each, and `mise install` installs them.
 
 <CodeBlock items={devSetup} />
 
