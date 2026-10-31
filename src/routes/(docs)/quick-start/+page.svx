@@ -47,7 +47,7 @@ We maintain Dictionarry and think it's a sensible default for everyone, but Prof
 <ThemeImage
 	light="/images/quickstart_database[style=light].png"
 	dark="/images/quickstart_database[style=dark].png"
-	alt="The Dictionarry database on Profilarr's Databases page, with 11 quality profiles, 263 custom formats, and 2 delay profiles, set to sync hourly with auto pull on"
+	alt="The Dictionarry database on Profilarr's Databases page, set to sync hourly with auto pull on, with 11 quality profiles, 261 custom formats, and 2 delay profiles"
 	border />
 
 > <MoreInfo pages="build/databases, build/local-changes" />
