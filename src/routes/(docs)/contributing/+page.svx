@@ -20,7 +20,9 @@ Profilarr's code lives in [Dictionarry-Hub/profilarr](https://github.com/Diction
 
 ### Setting Up
 
-You'll need Git, Node.js, pnpm, and Bun. Bun runs the production build, which the integration tests, flow tests, and security scans start. The .NET SDK is only needed for the parser, which powers custom format and quality profile testing. The repository's `.tool-versions` file pins the version of each, and `mise install` installs them.
+You'll need Git, Node.js, pnpm, and Bun. Bun runs the production build, which the integration tests, flow tests, and security scans start. The .NET SDK is only needed for the parser, which powers custom format and quality profile testing. The repository's `.tool-versions` file pins the version of each.
+
+The simplest way to get those versions is [mise](https://mise.jdx.dev/getting-started.html): install it, add `mise activate` to your shell, and run `mise install` in the repository. mise then switches to the pinned versions whenever you enter the repository. Run `mise install` again after `.tool-versions` changes. You can also install the versions by hand or with asdf, which reads the same file.
 
 <CodeBlock items={devSetup} />
 
